@@ -4,33 +4,23 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/auth.service'
-import { validateRegister } from '@/lib/validations/auth.validation'
+import { validateResetPassword } from '@/lib/validations/auth.validation'
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
   const router = useRouter()
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [isRegisteredSuccess, setIsRegisteredSuccess] = useState(false)
-  const [requiresEmailConfirmation, setRequiresEmailConfirmation] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMessage(null)
 
-    // Validasi input form
-    const validation = validateRegister({
-      name,
-      email,
-      password,
-      confirmPassword,
-    })
-
+    const validation = validateResetPassword({ password, confirmPassword })
     if (!validation.isValid) {
       const firstError = Object.values(validation.errors)[0]
       setErrorMessage(firstError)
@@ -40,29 +30,21 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await authService.register({
-        name,
-        email,
-        password,
-      })
+      const response = await authService.resetPassword(password)
 
       if (!response.success) {
-        setErrorMessage(response.error?.message || 'Registrasi gagal.')
+        setErrorMessage(response.error?.message || 'Gagal memperbarui kata sandi.')
         setLoading(false)
         return
       }
 
-      setIsRegisteredSuccess(true)
-      setRequiresEmailConfirmation(response.data?.requiresEmailConfirmation || false)
+      setIsSuccess(true)
       setLoading(false)
 
-      // Jika tidak butuh konfirmasi email, otomatis arahkan ke dashboard setelah 2 detik
-      if (!response.data?.requiresEmailConfirmation) {
-        setTimeout(() => {
-          router.push('/pengguna/dashboard')
-          router.refresh()
-        }, 1500)
-      }
+      setTimeout(() => {
+        router.push('/login')
+        router.refresh()
+      }, 2500)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.'
       setErrorMessage(msg)
@@ -83,7 +65,7 @@ export default function RegisterPage() {
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '440px',
+        maxWidth: '420px',
         backgroundColor: '#ffffff',
         borderRadius: '16px',
         padding: '2.5rem',
@@ -92,7 +74,7 @@ export default function RegisterPage() {
         boxSizing: 'border-box'
       }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -109,15 +91,14 @@ export default function RegisterPage() {
             SM
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-            Daftar Akun Baru
+            Atur Password Baru
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
-            Buat akun untuk memulai pengajuan magang
+            Masukkan kata sandi baru untuk akun Anda
           </p>
         </div>
 
-        {/* Sukses Registrasi */}
-        {isRegisteredSuccess ? (
+        {isSuccess ? (
           <div style={{
             padding: '1.25rem',
             backgroundColor: '#f0fdf4',
@@ -126,12 +107,10 @@ export default function RegisterPage() {
             textAlign: 'center'
           }}>
             <h3 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '1rem', fontWeight: 600 }}>
-              🎉 Pendaftaran Berhasil!
+              Password Berhasil Diperbarui!
             </h3>
             <p style={{ margin: '0 0 1rem 0', color: '#15803d', fontSize: '0.875rem', lineHeight: 1.5 }}>
-              {requiresEmailConfirmation
-                ? `Kami telah mengirimkan email verifikasi ke ${email}. Silakan buka email Anda untuk mengaktifkan akun sebelum login.`
-                : 'Akun Anda berhasil dibuat. Mengarahkan Anda ke Dashboard...'}
+              Kata sandi baru Anda telah aktif. Anda akan dialihkan ke halaman login...
             </p>
             <Link
               href="/login"
@@ -146,7 +125,7 @@ export default function RegisterPage() {
                 fontWeight: 600
               }}
             >
-              Menuju Halaman Login
+              Masuk Sekarang
             </Link>
           </div>
         ) : (
@@ -167,59 +146,10 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Form Registrasi */}
-            <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
+            <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.375rem' }}>
-                  Nama Lengkap
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Masukkan nama lengkap"
-                  required
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '0.875rem',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    backgroundColor: loading ? '#f1f5f9' : '#ffffff'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.375rem' }}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="nama@email.com"
-                  required
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '0.875rem',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    backgroundColor: loading ? '#f1f5f9' : '#ffffff'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.375rem' }}>
-                  Password (Minimal 6 karakter)
+                  Password Baru (Minimal 6 karakter)
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
@@ -263,13 +193,13 @@ export default function RegisterPage() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.375rem' }}>
-                  Konfirmasi Password
+                  Konfirmasi Password Baru
                 </label>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Ulangi password"
+                  placeholder="••••••••"
                   required
                   disabled={loading}
                   style={{
@@ -303,17 +233,9 @@ export default function RegisterPage() {
                   marginTop: '0.5rem'
                 }}
               >
-                {loading ? 'Mendaftarkan Akun...' : 'Daftar Akun'}
+                {loading ? 'Menyimpan...' : 'Simpan Password Baru'}
               </button>
             </form>
-
-            {/* Footer */}
-            <div style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.875rem', color: '#64748b' }}>
-              Sudah punya akun?{' '}
-              <Link href="/login" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
-                Masuk di Sini
-              </Link>
-            </div>
           </>
         )}
       </div>
