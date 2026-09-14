@@ -40,7 +40,8 @@ export async function updateSession(request: NextRequest) {
   const isAuthPage =
     pathname === '/login' ||
     pathname === '/register' ||
-    pathname === '/forgot-password'
+    pathname === '/forgot-password' ||
+    pathname === '/verify-otp'
   const isResetPasswordPage = pathname === '/reset-password'
   const isCallbackPage = pathname.startsWith('/auth/callback') || pathname.startsWith('/callback')
   const isAdminRoute = pathname.startsWith('/admin')

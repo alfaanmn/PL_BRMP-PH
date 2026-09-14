@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/client'
 import type {
   LoginCredentials,
   RegisterCredentials,
+  VerifyOtpCredentials,
+  ResendOtpCredentials,
   Profile,
   AuthResponse,
 } from '@/types/auth.types'
@@ -98,6 +100,9 @@ export const authService = {
       options: {
         data: {
           name: credentials.name.trim(),
+          no_hp: credentials.no_hp?.trim() || null,
+          asal_instansi: credentials.asal_instansi?.trim() || null,
+          jurusan: credentials.jurusan?.trim() || null,
         },
         emailRedirectTo: `${origin}/auth/callback`,
       },
@@ -148,6 +153,105 @@ export const authService = {
         user: data.user,
         requiresEmailConfirmation,
       },
+    }
+  },
+
+  /**
+   * Verifikasi Kode OTP 6 Digit untuk Pendaftaran Pengguna Baru
+   */
+  async verifyOtp(credentials: VerifyOtpCredentials): Promise<AuthResponse<{ profile: Profile; role: string }>> {
+    const supabase = createClient()
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: credentials.email.trim(),
+      token: credentials.token.trim(),
+      type: credentials.type || 'signup',
+    })
+
+    if (error) {
+      let message = error.message || 'Kode OTP tidak valid atau telah kedaluwarsa'
+      const lowerMsg = error.message?.toLowerCase() || ''
+      if (lowerMsg.includes('expired') || lowerMsg.includes('token has expired')) {
+        message = 'Kode OTP telah kedaluwarsa. Silakan kirim ulang kode OTP baru.'
+      } else if (lowerMsg.includes('invalid') || lowerMsg.includes('token is invalid') || lowerMsg.includes('incorrect')) {
+        message = 'Kode OTP salah. Silakan periksa kembali 6 digit kode Anda.'
+      }
+
+      return {
+        success: false,
+        error: {
+          code: 'OTP_VERIFICATION_ERROR',
+          message,
+        },
+      }
+    }
+
+    if (!data.user) {
+      return {
+        success: false,
+        error: {
+          code: 'USER_NOT_FOUND',
+          message: 'Gagal memverifikasi akun pengguna.',
+        },
+      }
+    }
+
+    // Ambil profile dari public.profiles (yang otomatis dibuat oleh trigger handle_new_user)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, name, email, role, no_hp, avatar, is_active, asal_instansi, jurusan')
+      .eq('id', data.user.id)
+      .single()
+
+    if (profileError || !profile) {
+      return {
+        success: false,
+        error: {
+          code: 'PROFILE_NOT_FOUND',
+          message: 'Profil pengguna tidak ditemukan.',
+        },
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        profile: profile as Profile,
+        role: profile.role,
+      },
+    }
+  },
+
+  /**
+   * Kirim Ulang (Resend) Kode OTP Pendaftaran
+   */
+  async resendOtp(credentials: ResendOtpCredentials): Promise<AuthResponse<null>> {
+    const supabase = createClient()
+
+    const { error } = await supabase.auth.resend({
+      type: credentials.type || 'signup',
+      email: credentials.email.trim(),
+    })
+
+    if (error) {
+      let message = error.message || 'Gagal mengirim ulang kode OTP'
+      const lowerMsg = error.message?.toLowerCase() || ''
+      if (lowerMsg.includes('rate limit') || lowerMsg.includes('too many')) {
+        message = 'Batas pengiriman OTP tercapai (Rate limit). Silakan tunggu beberapa saat.'
+      }
+
+      return {
+        success: false,
+        error: {
+          code: 'RESEND_OTP_ERROR',
+          message,
+        },
+      }
+    }
+
+    return {
+      success: true,
+      data: null,
     }
   },
 

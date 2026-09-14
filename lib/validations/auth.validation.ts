@@ -34,6 +34,9 @@ export function validateRegister(data: {
   email: string
   password: string
   confirmPassword?: string
+  no_hp?: string
+  asal_instansi?: string
+  jurusan?: string
 }): { isValid: boolean; errors: Record<string, string> } {
   const errors: Record<string, string> = {}
 
@@ -48,6 +51,13 @@ export function validateRegister(data: {
 
   if (data.confirmPassword !== undefined && data.password !== data.confirmPassword) {
     errors.confirmPassword = 'Konfirmasi password tidak cocok'
+  }
+
+  if (data.no_hp && data.no_hp.trim()) {
+    const phoneRegex = /^[0-9+() -]{8,20}$/
+    if (!phoneRegex.test(data.no_hp.trim())) {
+      errors.no_hp = 'Format nomor HP/WA tidak valid'
+    }
   }
 
   return {
@@ -73,4 +83,15 @@ export function validateResetPassword(data: {
     isValid: Object.keys(errors).length === 0,
     errors,
   }
+}
+
+export function validateOtp(token: string): string | null {
+  if (!token || !token.trim()) {
+    return 'Kode OTP wajib diisi'
+  }
+  const clean = token.trim()
+  if (!/^\d{6,8}$/.test(clean)) {
+    return 'Kode OTP harus berupa 6 hingga 8 digit angka'
+  }
+  return null
 }

@@ -6,6 +6,8 @@ export interface Profile {
   email: string
   role: AppRole
   no_hp: string | null
+  asal_instansi?: string | null
+  jurusan?: string | null
   avatar: string | null
   is_active: boolean
   created_at?: string
@@ -28,6 +30,9 @@ export interface RegisterCredentials {
   email: string
   password: string
   confirmPassword?: string
+  no_hp?: string
+  asal_instansi?: string
+  jurusan?: string
 }
 
 export interface ForgotPasswordCredentials {
@@ -39,6 +44,17 @@ export interface ResetPasswordCredentials {
   confirmPassword: string
 }
 
+export interface VerifyOtpCredentials {
+  email: string
+  token: string
+  type?: 'signup' | 'email'
+}
+
+export interface ResendOtpCredentials {
+  email: string
+  type?: 'signup'
+}
+
 export interface AuthResponse<T = unknown> {
   success: boolean
   data?: T
@@ -47,3 +63,4 @@ export interface AuthResponse<T = unknown> {
     message: string
   }
 }
+

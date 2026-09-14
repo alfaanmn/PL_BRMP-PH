@@ -1,10 +1,72 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { bidangService } from '@/lib/services/bidang.service'
-import { PenggunaHeaderNav } from '@/components/layout/pengguna-header-nav'
+import { Navbar } from '@/components/layout/navbar'
+import type { AppRole } from '@/types/auth.types'
 
 export const dynamic = 'force-dynamic'
+
+function getBidangIcon(nama: string = ''): string {
+  const lower = (nama || '').toLowerCase()
+  if (lower.includes('huma') || lower.includes('tik') || lower.includes('informasi') || lower.includes('komunikasi')) {
+    return '💻'
+  }
+  if (lower.includes('admin') || lower.includes('tata') || lower.includes('kantor') || lower.includes('keuangan')) {
+    return '🏢'
+  }
+  if (lower.includes('pustaka') || lower.includes('dokumen') || lower.includes('literasi') || lower.includes('arsip')) {
+    return '📚'
+  }
+  if (lower.includes('kebijakan') || lower.includes('kerja') || lower.includes('program') || lower.includes('evaluasi') || lower.includes('kerjasama')) {
+    return '🤝'
+  }
+  return '🌱'
+}
+
+function getBidangImage(nama: string = '', id: number | string = ''): string {
+  const lower = (nama || '').toLowerCase()
+  if (lower.includes('huma') || lower.includes('tik') || lower.includes('informasi') || lower.includes('komunikasi')) {
+    return '/card_kehumasan_tik.png'
+  }
+  if (lower.includes('kebijakan') || lower.includes('kerja') || lower.includes('program') || lower.includes('evaluasi')) {
+    return '/card_kebijakan_kerjasama.png'
+  }
+  if (lower.includes('pustaka') || lower.includes('dokumen') || lower.includes('literasi') || lower.includes('arsip')) {
+    return '/card_perpustakaan.png'
+  }
+  if (lower.includes('admin') || lower.includes('tata') || lower.includes('kantor') || lower.includes('keuangan')) {
+    return '/card_administrasi.png'
+  }
+
+  const list = ['/card_kehumasan_tik.png', '/card_kebijakan_kerjasama.png', '/card_administrasi.png', '/card_perpustakaan.png']
+  const idNum = typeof id === 'number' ? id : parseInt(String(id), 10) || 1
+  return list[(idNum - 1) % list.length]
+}
+
+function getBidangShortDesc(nama: string = '', deskripsi: string | null = ''): string {
+  const lower = (nama || '').toLowerCase()
+  if (lower.includes('huma') || lower.includes('tik') || lower.includes('informasi') || lower.includes('komunikasi')) {
+    return 'Teknologi informasi, komunikasi, dan pengelolaan informasi BRMP.'
+  }
+  if (lower.includes('admin') || lower.includes('tata') || lower.includes('kantor') || lower.includes('keuangan')) {
+    return 'Administrasi dan pengelolaan layanan perkantoran BRMP.'
+  }
+  if (lower.includes('pustaka') || lower.includes('dokumen') || lower.includes('literasi') || lower.includes('arsip')) {
+    return 'Pengelolaan koleksi, dokumentasi, dan layanan informasi.'
+  }
+  if (lower.includes('kebijakan') || lower.includes('kerja') || lower.includes('program') || lower.includes('evaluasi')) {
+    return 'Dukungan kebijakan, koordinasi, dan administrasi kerjasama.'
+  }
+  if (deskripsi) {
+    const firstSentence = deskripsi.split('.')[0]
+    if (firstSentence && firstSentence.trim().length > 10) {
+      return firstSentence.trim() + '.'
+    }
+  }
+  return 'Penerapan standar instrumen pertanian dan riset operasional BRMP.'
+}
 
 export default async function PenggunaDashboardPage() {
   const supabase = await createClient()
@@ -39,7 +101,48 @@ export default async function PenggunaDashboardPage() {
   const bidangs = bidangResult.data || []
   const bidangError = bidangResult.error
 
+  const b0 = bidangs[0] || { id: 1, nama: 'Kehumasan, TIK & Komunikasi', kuota: 0 }
+  const b1 = bidangs[1] || { id: 2, nama: 'Administrasi Perkantoran', kuota: 0 }
+  const b2 = bidangs[2] || { id: 3, nama: 'Perpustakaan & Dokumentasi', kuota: 0 }
+  const b3 = bidangs[3] || { id: 4, nama: 'Kebijakan & Kerjasama', kuota: 0 }
+
   const latestPengajuan = pengajuans && pengajuans.length > 0 ? pengajuans[0] : null
+
+  // Alur 5 Tahapan Magang Terstruktur
+  const timelineSteps = [
+    {
+      num: '01',
+      icon: '/step1_topik_pembimbing.png',
+      title: 'Topik & Pembimbing',
+      desc: 'Tentukan bidang fokus riset & kuota pembimbing.'
+    },
+    {
+      num: '02',
+      icon: '/step2_surat_pengantar.png',
+      title: 'Surat Pengantar',
+      desc: 'Siapkan surat pengantar resmi dari kampus / sekolah.'
+    },
+    {
+      num: '03',
+      icon: '/step3_daftar_sip.png',
+      title: 'Daftar di SIM',
+      desc: 'Isi formulir pengajuan online & upload berkas syarat.'
+    },
+    {
+      num: '04',
+      icon: '/step4_verifikasi_admin.png',
+      title: 'Verifikasi Admin',
+      desc: 'Pemeriksaan berkas & validasi oleh sekretariat.'
+    },
+    {
+      num: '05',
+      icon: '/step5_surat_balasan.png',
+      title: 'Surat Balasan',
+      desc: 'Terima surat balasan resmi & mulai magang.'
+    }
+  ]
+
+  const userName = profile?.name || user.email?.split('@')[0] || 'Pemohon'
 
   return (
     <div style={{
@@ -52,496 +155,1003 @@ export default async function PenggunaDashboardPage() {
       margin: 0,
       padding: 0
     }}>
-      {/* Header / Navbar Pengguna */}
-      <header style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(8px)',
-        borderBottom: '1px solid #e2e8f0',
-        padding: '0.875rem 2rem'
+      <style>{`
+        .bidang-card {
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+          will-change: transform, box-shadow;
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .bidang-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 30px -6px rgba(0, 0, 0, 0.09), 0 6px 12px -2px rgba(0, 0, 0, 0.04) !important;
+            border-color: #86efac !important;
+          }
+          .bidang-card:hover .bidang-img {
+            transform: scale(1.06);
+          }
+          .bidang-card:hover .bidang-overlay {
+            opacity: 0.15;
+          }
+        }
+        .bidang-img {
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: transform;
+        }
+        .bidang-overlay {
+          transition: opacity 0.28s ease;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        @keyframes subtle-float-left {
+          0%, 100% { transform: translateX(-32px) translateY(0px); }
+          50% { transform: translateX(-32px) translateY(-5px); }
+        }
+        @keyframes subtle-float-right {
+          0%, 100% { transform: translateX(32px) translateY(0px); }
+          50% { transform: translateX(32px) translateY(-5px); }
+        }
+
+        .floating-bidang-card {
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+          will-change: transform, box-shadow;
+        }
+        .floating-bidang-card.left {
+          animation: subtle-float-left 4.5s ease-in-out infinite;
+        }
+        .floating-bidang-card.right {
+          animation: subtle-float-right 4.5s ease-in-out infinite 1.2s;
+        }
+
+        .floating-icon-box {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+          will-change: transform;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          .floating-bidang-card:hover {
+            animation-play-state: paused;
+            box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.35) !important;
+            border-color: #22c55e !important;
+          }
+          .floating-bidang-card.left:hover {
+            transform: translateX(-36px) translateY(-3px) scale(1.04) !important;
+          }
+          .floating-bidang-card.right:hover {
+            transform: translateX(36px) translateY(-3px) scale(1.04) !important;
+          }
+          .floating-bidang-card:hover .floating-icon-box {
+            transform: scale(1.2) rotate(8deg);
+          }
+        }
+
+        .step-card {
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+          will-change: transform, box-shadow;
+        }
+        .step-icon-box {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+          will-change: transform;
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 22px -4px rgba(21, 128, 61, 0.12) !important;
+            border-color: #86efac !important;
+          }
+          .step-card:hover .step-icon-box {
+            transform: scale(1.15) translateY(-2px);
+          }
+        }
+      `}</style>
+
+      {/* Header & Navbar Resmi BRMP Kementan */}
+      <Navbar user={user} profile={profile} activeKey="beranda" />
+
+      {/* 1. HERO SECTION FULL-BLEED DARK GREEN (Konsisten dengan Homepage) */}
+      <section style={{
+        backgroundColor: '#064e3b',
+        backgroundImage: 'radial-gradient(circle at 75% 40%, #065f46 0%, #064e3b 85%)',
+        color: '#ffffff',
+        padding: '3.5rem 1.5rem 4rem 1.5rem',
+        borderBottom: '1px solid #047857',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
         <div style={{
-          maxWidth: '1200px',
+          maxWidth: '1240px',
           margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gap: '2.5rem',
+          alignItems: 'center'
         }}>
-          {/* Logo Brand */}
-          <Link href="/pengguna/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '10px',
-              backgroundColor: '#2563eb',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '1.125rem'
-            }}>
-              SM
-            </div>
-            <div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em', display: 'block' }}>
-                SIM-MAGANG
-              </span>
-              <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Portal Pemohon
-              </span>
-            </div>
-          </Link>
-
-          {/* Nav Links & Profile Action */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-            <a href="#alur" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 500 }}>
-              Alur Magang
-            </a>
-            <a href="#bidang" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 500 }}>
-              Daftar Bidang
-            </a>
-
-            <PenggunaHeaderNav userName={profile?.name || user.email?.split('@')[0] || ''} userEmail={user.email || ''} />
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero Section Pengguna */}
-      <section style={{
-        padding: '3.5rem 2rem 3rem 2rem',
-        background: 'linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%)',
-        borderBottom: '1px solid #e2e8f0'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
-            <div style={{ maxWidth: '720px' }}>
-              <div style={{
-                display: 'inline-block',
-                backgroundColor: '#dbeafe',
-                color: '#1d4ed8',
-                padding: '0.375rem 0.875rem',
-                borderRadius: '9999px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                marginBottom: '1rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}>
-                Area Pemohon Magang
-              </div>
+          {/* Kolom Kiri: Sambutan Personal, Info Status Pemohon & CTA */}
+          <div style={{ maxWidth: '540px' }}>
+            <div style={{ marginBottom: '1.25rem' }}>
               <h1 style={{
-                fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
-                fontWeight: 800,
-                color: '#0f172a',
-                lineHeight: 1.2,
-                letterSpacing: '-0.025em',
-                margin: '0 0 1rem 0'
+                color: '#ffffff',
+                fontSize: 'clamp(1.85rem, 3.5vw, 2.5rem)',
+                fontWeight: 900,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.15,
+                margin: 0
               }}>
-                Selamat Datang, {profile?.name || user.email?.split('@')[0]}!
+                Selamat Datang, {userName}!
               </h1>
-              <p style={{
-                fontSize: '1rem',
-                color: '#475569',
-                lineHeight: 1.6,
-                margin: '0 0 2rem 0'
+              <div style={{
+                fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                fontWeight: 900,
+                fontStyle: 'italic',
+                color: '#86efac',
+                marginTop: '0.25rem',
+                letterSpacing: '-0.03em',
+                lineHeight: 1.15
               }}>
-                Ajukan permohonan magang baru, lengkapi berkas persyaratan, dan pantau status proses validasi dari instansi secara langsung.
-              </p>
-
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <Link
-                  href="/pengguna/career/step1"
-                  style={{
-                    padding: '0.875rem 1.75rem',
-                    backgroundColor: '#2563eb',
-                    color: '#ffffff',
-                    borderRadius: '10px',
-                    textDecoration: 'none',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.3)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <span>✨ Ajukan Magang Sekarang</span>
-                </Link>
-                <Link
-                  href="/pengguna/riwayat"
-                  style={{
-                    padding: '0.875rem 1.75rem',
-                    backgroundColor: '#ffffff',
-                    color: '#334155',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '10px',
-                    textDecoration: 'none',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  📄 Lihat Riwayat Pengajuan
-                </Link>
+                SIM (Sistem Informasi Magang)
               </div>
             </div>
 
-            {/* Status Summary Card */}
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '16px',
-              padding: '1.75rem',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-              minWidth: '280px',
-              flex: '1 1 300px',
-              maxWidth: '380px'
+            <p style={{
+              fontSize: '0.9375rem',
+              color: '#d1fae5',
+              lineHeight: 1.6,
+              margin: '0 0 1.5rem 0'
             }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
-                Ringkasan Status Anda
-              </h3>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Status Akun</span>
-                  <span style={{
-                    display: 'inline-block',
-                    marginTop: '0.25rem',
-                    padding: '0.25rem 0.5rem',
-                    backgroundColor: profile?.is_active ? '#dcfce7' : '#fee2e2',
-                    color: profile?.is_active ? '#15803d' : '#b91c1c',
-                    borderRadius: '6px',
-                    fontSize: '0.8125rem',
-                    fontWeight: 600
-                  }}>
-                    {profile?.is_active ? '● Akun Aktif' : '● Akun Dinonaktifkan'}
-                  </span>
-                </div>
-
-                <div style={{ paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Pengajuan Terakhir</span>
-                  {latestPengajuan ? (
-                    <div style={{ marginTop: '0.25rem' }}>
-                      <strong style={{ fontSize: '0.9375rem', color: '#0f172a', display: 'block' }}>
-                        {latestPengajuan.status}
-                      </strong>
-                      <Link
-                        href={`/pengguna/pengajuan/${latestPengajuan.public_id}`}
-                        style={{ fontSize: '0.8125rem', color: '#2563eb', textDecoration: 'none', fontWeight: 600, display: 'inline-block', marginTop: '0.25rem' }}
-                      >
-                        Detail Pengajuan &rarr;
-                      </Link>
-                    </div>
-                  ) : (
-                    <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8125rem', color: '#94a3b8' }}>
-                      Belum ada pengajuan aktif.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Alur Pengajuan Section */}
-      <section id="alur" style={{ padding: '4.5rem 2rem', backgroundColor: '#ffffff' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem 0' }}>
-              Tahapan Pengajuan Magang Anda
-            </h2>
-            <p style={{ fontSize: '1rem', color: '#64748b', margin: 0 }}>
-              Ikuti alur terstruktur untuk menyelesaikan proses pendaftaran magang
+              Kelola permohonan magang &amp; PKL Anda, lengkapi berkas persyaratan resmi, dan pantau proses verifikasi secara terintegrasi langsung di portal BRMP Pengelola Hasil.
             </p>
+
+            {/* Kartu Status Pemohon & Pengajuan Terakhir (Translucent Dark Panel) */}
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              borderRadius: '16px',
+              padding: '1.25rem',
+              marginBottom: '1.75rem',
+              backdropFilter: 'blur(8px)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#a7f3d0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Status Akun &amp; Pengajuan
+                </span>
+                <span style={{
+                  padding: '0.2rem 0.5rem',
+                  backgroundColor: profile?.is_active ? 'rgba(34, 197, 94, 0.25)' : 'rgba(239, 68, 68, 0.25)',
+                  color: profile?.is_active ? '#86efac' : '#fca5a5',
+                  borderRadius: '9999px',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  border: profile?.is_active ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)'
+                }}>
+                  {profile?.is_active ? '● Akun Terverifikasi' : '● Akun Nonaktif'}
+                </span>
+              </div>
+
+              {(profile?.asal_instansi || profile?.jurusan) && (
+                <div style={{ fontSize: '0.8125rem', color: '#ecfdf5', marginBottom: '0.625rem', fontWeight: 600 }}>
+                  🏛️ {profile?.asal_instansi || '-'} {profile?.jurusan ? `• ${profile.jurusan}` : ''}
+                </div>
+              )}
+
+              <div style={{ paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                {latestPengajuan ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div>
+                      <div style={{ fontSize: '0.6875rem', color: '#a7f3d0' }}>Pengajuan Terakhir:</div>
+                      <strong style={{ fontSize: '0.9375rem', color: '#ffffff' }}>
+                        {latestPengajuan.status} ({latestPengajuan.public_id})
+                      </strong>
+                    </div>
+                    <Link
+                      href={`/pengguna/pengajuan/${latestPengajuan.public_id}`}
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#064e3b',
+                        backgroundColor: '#86efac',
+                        padding: '0.35rem 0.75rem',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        fontWeight: 700,
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      Detail Status →
+                    </Link>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '0.8125rem', color: '#d1fae5' }}>
+                    Belum ada pengajuan aktif. Silakan pilih bidang di bawah untuk mengajukan.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link
+                href="/pengguna/career/step1"
+                style={{
+                  padding: '0.875rem 2rem',
+                  backgroundColor: '#22c55e',
+                  color: '#064e3b',
+                  borderRadius: '10px',
+                  textDecoration: 'none',
+                  fontWeight: 900,
+                  fontSize: '0.9375rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>✨ Ajukan Magang</span>
+              </Link>
+
+              <Link
+                href="/pengguna/riwayat"
+                style={{
+                  padding: '0.875rem 1.75rem',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                  color: '#ffffff',
+                  borderRadius: '10px',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.9375rem',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>📄 Riwayat Pengajuan</span>
+              </Link>
+            </div>
           </div>
 
+          {/* Kolom Kanan: Karakter Halus di Tengah & 4 Floating Cards di Sisi Luar */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.75rem'
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '520px',
+            width: '100%',
+            maxWidth: '640px',
+            margin: '0 auto'
           }}>
-            {/* Step 1 */}
+            {/* Backdrop Persegi Melengkung Halus */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              padding: '2rem',
-              borderRadius: '14px',
-              border: '1px solid #e2e8f0'
+              position: 'absolute',
+              width: '320px',
+              height: '430px',
+              backgroundColor: '#043c2b',
+              borderRadius: '28px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)',
+              zIndex: 0
+            }} />
+
+            {/* Gambar Karakter Anti-Aliased Halus di Tengah */}
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '380px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-end',
+              zIndex: 1
             }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                marginBottom: '1rem'
-              }}>
-                1
-              </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#0f172a' }}>
-                Pilih Bidang Minat
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
-                Pilih bidang magang yang sesuai dengan kompetensi dan jurusan studi Anda di bawah ini.
-              </p>
+              <Image
+                src="/g1_smooth.png"
+                alt="Peserta Magang BRMP Kementan"
+                width={684}
+                height={684}
+                priority
+                style={{
+                  width: '100%',
+                  maxWidth: '350px',
+                  height: 'auto',
+                  maxHeight: '460px',
+                  objectFit: 'contain',
+                  display: 'block',
+                  filter: 'drop-shadow(0 15px 25px rgba(0, 0, 0, 0.35))'
+                }}
+              />
             </div>
 
-            {/* Step 2 */}
+            {/* 4 Floating Bidang Cards (Melayang di Sisi Luar, Bebas dari Wajah & Badan) */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              padding: '2rem',
-              borderRadius: '14px',
-              border: '1px solid #e2e8f0'
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-around',
+              pointerEvents: 'none',
+              zIndex: 2
             }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                marginBottom: '1rem'
-              }}>
-                2
-              </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#0f172a' }}>
-                Unggah Berkas Persyaratan
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
-                Lengkapi tanggal pelaksanaan dan unggah dokumen proposal/surat pengantar resmi.
-              </p>
-            </div>
+              {/* Baris Atas: Bidang 1 (Kiri Luar) & Bidang 3 (Kanan Luar) */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link
+                  href={`/bidang/${b0.id}`}
+                  className="floating-bidang-card left"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#0f172a',
+                    padding: '0.625rem 0.875rem',
+                    borderRadius: '14px',
+                    boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                    pointerEvents: 'auto',
+                    textDecoration: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
+                    transform: 'translateX(-32px)',
+                    maxWidth: '210px'
+                  }}
+                >
+                  <div className="floating-icon-box" style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '10px',
+                    backgroundColor: '#ecfdf5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.1rem',
+                    flexShrink: 0
+                  }}>
+                    {getBidangIcon(b0.nama)}
+                  </div>
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      color: '#0f172a',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {b0.nama}
+                    </div>
+                    <div style={{
+                      fontSize: '0.625rem',
+                      color: (b0.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      fontWeight: 700,
+                      marginTop: '0.125rem'
+                    }}>
+                      ● {(b0.kuota || 0) > 0 ? `${b0.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                    </div>
+                  </div>
+                </Link>
 
-            {/* Step 3 */}
-            <div style={{
-              backgroundColor: '#f8fafc',
-              padding: '2rem',
-              borderRadius: '14px',
-              border: '1px solid #e2e8f0'
-            }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                marginBottom: '1rem'
-              }}>
-                3
+                <Link
+                  href={`/bidang/${b2.id}`}
+                  className="floating-bidang-card right"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#0f172a',
+                    padding: '0.625rem 0.875rem',
+                    borderRadius: '14px',
+                    boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                    pointerEvents: 'auto',
+                    textDecoration: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
+                    transform: 'translateX(32px)',
+                    maxWidth: '210px'
+                  }}
+                >
+                  <div className="floating-icon-box" style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '10px',
+                    backgroundColor: '#eff6ff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.1rem',
+                    flexShrink: 0
+                  }}>
+                    {getBidangIcon(b2.nama)}
+                  </div>
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      color: '#0f172a',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {b2.nama}
+                    </div>
+                    <div style={{
+                      fontSize: '0.625rem',
+                      color: (b2.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      fontWeight: 700,
+                      marginTop: '0.125rem'
+                    }}>
+                      ● {(b2.kuota || 0) > 0 ? `${b2.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                    </div>
+                  </div>
+                </Link>
               </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#0f172a' }}>
-                Verifikasi & Pembimbing
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
-                Tim Administrator memvalidasi berkas dan menetapkan pembimbing lapangan untuk Anda.
-              </p>
-            </div>
 
-            {/* Step 4 */}
-            <div style={{
-              backgroundColor: '#f8fafc',
-              padding: '2rem',
-              borderRadius: '14px',
-              border: '1px solid #e2e8f0'
-            }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                marginBottom: '1rem'
-              }}>
-                4
+              {/* Baris Bawah: Bidang 2 (Kiri Luar) & Bidang 4 (Kanan Luar) */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link
+                  href={`/bidang/${b1.id}`}
+                  className="floating-bidang-card left"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#0f172a',
+                    padding: '0.625rem 0.875rem',
+                    borderRadius: '14px',
+                    boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                    pointerEvents: 'auto',
+                    textDecoration: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
+                    transform: 'translateX(-32px)',
+                    maxWidth: '210px'
+                  }}
+                >
+                  <div className="floating-icon-box" style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '10px',
+                    backgroundColor: '#fffbeb',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.1rem',
+                    flexShrink: 0
+                  }}>
+                    {getBidangIcon(b1.nama)}
+                  </div>
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      color: '#0f172a',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {b1.nama}
+                    </div>
+                    <div style={{
+                      fontSize: '0.625rem',
+                      color: (b1.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      fontWeight: 700,
+                      marginTop: '0.125rem'
+                    }}>
+                      ● {(b1.kuota || 0) > 0 ? `${b1.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href={`/bidang/${b3.id}`}
+                  className="floating-bidang-card right"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#0f172a',
+                    padding: '0.625rem 0.875rem',
+                    borderRadius: '14px',
+                    boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                    pointerEvents: 'auto',
+                    textDecoration: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
+                    transform: 'translateX(32px)',
+                    maxWidth: '210px'
+                  }}
+                >
+                  <div className="floating-icon-box" style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '10px',
+                    backgroundColor: '#f5f3ff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.1rem',
+                    flexShrink: 0
+                  }}>
+                    {getBidangIcon(b3.nama)}
+                  </div>
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      color: '#0f172a',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {b3.nama}
+                    </div>
+                    <div style={{
+                      fontSize: '0.625rem',
+                      color: (b3.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      fontWeight: 700,
+                      marginTop: '0.125rem'
+                    }}>
+                      ● {(b3.kuota || 0) > 0 ? `${b3.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                    </div>
+                  </div>
+                </Link>
               </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#0f172a' }}>
-                Pelaksanaan & SKM
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
-                Jalani masa magang, isi survei kepuasan (SKM), dan dapatkan penilaian akhir.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Katalog Bidang Magang (Real-Time Database Supabase) */}
-      <section id="bidang" style={{ padding: '4.5rem 2rem', backgroundColor: '#f8fafc' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem 0' }}>
-              Pilihan Bidang Magang yang Tersedia
+      {/* Main Content */}
+      <main style={{
+        maxWidth: '1240px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '3rem 1.5rem 4rem 1.5rem',
+        boxSizing: 'border-box'
+      }}>
+        {/* 2. Section Bidang Magang & Riset */}
+        <section style={{ marginBottom: '4rem' }} id="bidang">
+          <div style={{ marginBottom: '1.75rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+              Pilihan Bidang Magang &amp; Riset
             </h2>
-            <p style={{ fontSize: '1rem', color: '#64748b', margin: 0 }}>
-              Pilih bidang yang diminati dan klik tombol untuk langsung memulai form pengajuan
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
+              Pilih bidang yang sesuai dengan minat dan fokus keahlian Anda untuk mulai mengajukan.
             </p>
           </div>
 
           {/* Error State */}
           {bidangError && (
             <div style={{
-              padding: '1.5rem',
+              padding: '1.25rem',
               backgroundColor: '#fef2f2',
               border: '1px solid #fecaca',
               borderRadius: '12px',
-              color: '#991b1b',
-              textAlign: 'center',
-              maxWidth: '600px',
-              margin: '0 auto'
+              color: '#dc2626',
+              fontSize: '0.875rem',
+              marginBottom: '1.5rem'
             }}>
-              <strong style={{ display: 'block', marginBottom: '0.5rem' }}>Gagal Mengambil Data Bidang</strong>
-              <p style={{ margin: 0, fontSize: '0.875rem' }}>{bidangError}</p>
+              Gagal memuat katalog bidang: {bidangError}
             </div>
           )}
 
           {/* Empty State */}
           {!bidangError && bidangs.length === 0 && (
             <div style={{
-              padding: '2.5rem',
               backgroundColor: '#ffffff',
+              borderRadius: '16px',
               border: '1px dashed #cbd5e1',
-              borderRadius: '12px',
-              color: '#64748b',
-              textAlign: 'center',
-              maxWidth: '600px',
-              margin: '0 auto'
+              padding: '3rem 2rem',
+              textAlign: 'center'
             }}>
-              <strong style={{ display: 'block', fontSize: '1rem', color: '#334155', marginBottom: '0.5rem' }}>
-                Belum Ada Bidang yang Terdaftar
-              </strong>
-              <p style={{ margin: 0, fontSize: '0.875rem' }}>
-                Saat ini belum ada data bidang magang yang aktif di dalam sistem.
+              <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.75rem' }}>🌱</span>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+                Belum Ada Bidang Magang yang Tersedia
+              </h3>
+              <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
+                Silakan periksa kembali nanti atau hubungi sekretariat BRMP untuk informasi gelombang berikutnya.
               </p>
             </div>
           )}
 
-          {/* Grid Bidang Real-Time dari Supabase */}
-          {!bidangError && bidangs.length > 0 && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-              gap: '1.75rem'
-            }}>
-              {bidangs.map((bidang) => (
+          {/* Grid Kartu Bidang Visual */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '1.5rem'
+          }}>
+            {bidangs.map((b) => {
+              const coverImage = getBidangImage(b.nama, b.id)
+              const shortDesc = getBidangShortDesc(b.nama, b.deskripsi)
+              const isAvailable = (b.kuota || 0) > 0
+
+              return (
                 <div
-                  key={bidang.id}
+                  key={b.id}
+                  className="bidang-card"
                   style={{
                     backgroundColor: '#ffffff',
-                    padding: '2rem',
                     borderRadius: '16px',
                     border: '1px solid #e2e8f0',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                    overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
                   }}
                 >
                   <div>
+                    {/* Gambar Banner Visual */}
                     <div style={{
-                      display: 'inline-block',
-                      backgroundColor: '#eff6ff',
-                      color: '#2563eb',
-                      padding: '0.25rem 0.625rem',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      marginBottom: '1rem'
+                      position: 'relative',
+                      width: '100%',
+                      height: '180px',
+                      backgroundColor: '#f1f5f9',
+                      overflow: 'hidden'
                     }}>
-                      Bidang #{bidang.id}
+                      <Image
+                        src={coverImage}
+                        alt={b.nama}
+                        width={400}
+                        height={220}
+                        className="bidang-img"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                      />
+                      {/* Subtle Darkening Overlay on Hover */}
+                      <div
+                        className="bidang-overlay"
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          backgroundColor: '#000000',
+                          zIndex: 1
+                        }}
+                      />
+                      {/* Badge Mahasiswa & SMK */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '0.75rem',
+                        left: '0.75rem',
+                        backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                        color: '#ffffff',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '6px',
+                        fontSize: '0.6875rem',
+                        fontWeight: 600,
+                        zIndex: 2
+                      }}>
+                        Mahasiswa &amp; SMK
+                      </div>
+
+                      {/* Status Kuota: Tersedia / Penuh */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '0.75rem',
+                        right: '0.75rem',
+                        backgroundColor: isAvailable ? '#dcfce7' : '#fee2e2',
+                        color: isAvailable ? '#15803d' : '#dc2626',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '6px',
+                        fontSize: '0.6875rem',
+                        fontWeight: 700,
+                        zIndex: 2
+                      }}>
+                        {isAvailable ? '● Tersedia' : '● Penuh'}
+                      </div>
                     </div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem 0', lineHeight: 1.3 }}>
-                      {bidang.nama}
-                    </h3>
-                    <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
-                      {bidang.deskripsi || 'Fokus pada pengembangan kompetensi teknis, administratif, dan operasional sesuai bidang.'}
-                    </p>
+
+                    {/* Card Content */}
+                    <div style={{ padding: '1rem 1.25rem 0.75rem 1.25rem' }}>
+                      <h3 style={{
+                        fontSize: '1rem',
+                        fontWeight: 800,
+                        color: '#0f172a',
+                        margin: '0 0 0.35rem 0',
+                        lineHeight: 1.3
+                      }}>
+                        {b.nama}
+                      </h3>
+
+                      <p style={{
+                        fontSize: '0.8125rem',
+                        color: '#64748b',
+                        lineHeight: 1.45,
+                        margin: '0 0 0.75rem 0'
+                      }}>
+                        {shortDesc}
+                      </p>
+
+                      <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700 }}>
+                        {b.kuota || 0} Slot tersedia
+                      </div>
+                    </div>
                   </div>
 
-                  <div style={{ paddingTop: '1rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {bidang.kuota !== undefined && bidang.kuota !== null && (
-                      <span style={{ fontSize: '0.8125rem', color: '#64748b' }}>
-                        Kuota: <strong>{bidang.kuota} orang</strong>
-                      </span>
-                    )}
+                  {/* Card Footer */}
+                  <div style={{
+                    padding: '0.75rem 1.25rem 1.25rem 1.25rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
                     <Link
-                      href={`/pengguna/career/step1?bidangId=${bidang.id}`}
+                      href={`/bidang/${b.id}`}
                       style={{
-                        padding: '0.5rem 1rem',
-                        backgroundColor: '#2563eb',
+                        flex: 1,
+                        textAlign: 'center',
+                        fontSize: '0.8125rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                        textDecoration: 'none',
+                        padding: '0.5rem 0.75rem',
+                        borderRadius: '8px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      Detail
+                    </Link>
+
+                    <Link
+                      href={`/pengguna/career/step1?bidangId=${b.id}`}
+                      style={{
+                        flex: 1,
+                        textAlign: 'center',
+                        padding: '0.5rem 0.75rem',
+                        backgroundColor: isAvailable ? '#15803d' : '#94a3b8',
                         color: '#ffffff',
                         borderRadius: '8px',
                         textDecoration: 'none',
+                        fontWeight: 700,
                         fontSize: '0.8125rem',
-                        fontWeight: 600,
-                        marginLeft: 'auto',
-                        boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)'
+                        pointerEvents: isAvailable ? 'auto' : 'none',
+                        boxShadow: isAvailable ? '0 2px 6px rgba(21, 128, 61, 0.2)' : 'none',
+                        transition: 'all 0.2s'
                       }}
                     >
-                      Pilih & Ajukan &rarr;
+                      Ajukan di Sini →
                     </Link>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+              )
+            })}
+          </div>
+        </section>
 
-      {/* Footer */}
+        {/* 3. Section Alur Magang 5 Tahap */}
+        <section style={{ marginBottom: '4rem' }} id="alur">
+          <div style={{ marginBottom: '1.75rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+              Alur Pengajuan &amp; Pelaksanaan Magang
+            </h2>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
+              Tahapan resmi pengajuan hingga penerbitan surat balasan dan sertifikat di BRMP Pengelola Hasil.
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+            gap: '1rem',
+            position: 'relative'
+          }}>
+            {timelineSteps.map((step) => (
+              <div
+                key={step.num}
+                className="step-card"
+                style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: '16px',
+                  border: '1px solid #e2e8f0',
+                  padding: '1.25rem',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.875rem' }}>
+                    <span style={{
+                      fontSize: '1.125rem',
+                      fontWeight: 900,
+                      color: '#15803d',
+                      letterSpacing: '-0.02em'
+                    }}>
+                      {step.num}
+                    </span>
+                    <div className="step-icon-box" style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '10px',
+                      backgroundColor: '#f0fdf4',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '1px solid #bbf7d0'
+                    }}>
+                      <Image
+                        src={step.icon}
+                        alt={step.title}
+                        width={28}
+                        height={28}
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          objectFit: 'contain',
+                          display: 'block'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <h3 style={{ fontSize: '0.9375rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.35rem 0', lineHeight: 1.3 }}>
+                    {step.title}
+                  </h3>
+                  <p style={{ fontSize: '0.75rem', color: '#64748b', lineHeight: 1.45, margin: 0 }}>
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 4. Banner Konsultasi Helpdesk */}
+        <section style={{ marginBottom: '2rem' }}>
+          <div style={{
+            backgroundColor: '#f0fdf4',
+            border: '1px solid #bbf7d0',
+            borderRadius: '16px',
+            padding: '1.5rem 2rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1.25rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '12px',
+                backgroundColor: '#15803d',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.25rem',
+                flexShrink: 0
+              }}>
+                💬
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+                  Butuh Konsultasi Penugasan Riset &amp; Magang?
+                </h3>
+                <p style={{ fontSize: '0.8125rem', color: '#475569', margin: 0 }}>
+                  Hubungi tim administrasi kepegawaian &amp; tata usaha Balai BRMP Pengelola Hasil Kementerian Pertanian.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/kontak"
+              style={{
+                padding: '0.75rem 1.5rem',
+                backgroundColor: '#15803d',
+                color: '#ffffff',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontSize: '0.875rem',
+                fontWeight: 700,
+                boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
+                transition: 'all 0.2s'
+              }}
+            >
+              Hubungi Helpdesk BRMP →
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer Resmi BRMP Kementan */}
       <footer style={{
-        backgroundColor: '#0f172a',
-        color: '#64748b',
-        padding: '2.5rem 2rem',
-        borderTop: '1px solid #1e293b',
+        backgroundColor: '#064e3b',
+        color: '#ecfdf5',
+        borderTop: '1px solid #047857',
+        padding: '3rem 1.5rem 2rem 1.5rem',
         marginTop: 'auto'
       }}>
         <div style={{
-          maxWidth: '1200px',
+          maxWidth: '1240px',
           margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '2.5rem',
+          marginBottom: '2.5rem'
+        }}>
+          {/* Info Institusi */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: '#15803d',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1rem',
+                fontWeight: 800
+              }}>
+                🌿
+              </div>
+              <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff' }}>
+                BRMP Pengelola Hasil
+              </span>
+            </div>
+            <p style={{ fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.6, margin: 0 }}>
+              Sistem Informasi Manajemen Magang &amp; Riset Terpadu Balai Penerapan Standar Instrumen Pertanian (BRMP) Pengelola Hasil Kementerian Pertanian Republik Indonesia.
+            </p>
+          </div>
+
+          {/* Navigasi Cepat */}
+          <div>
+            <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
+              NAVIGASI CEPAT
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.8125rem' }}>
+              <Link href="/pengguna/dashboard" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                Beranda Dashboard
+              </Link>
+              <Link href="/pengguna/career/step1" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                Ajukan Magang Baru
+              </Link>
+              <Link href="/pengguna/riwayat" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                Riwayat Pengajuan
+              </Link>
+              <Link href="/kontak" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                Bantuan &amp; Helpdesk
+              </Link>
+            </div>
+          </div>
+
+          {/* Kontak & Lokasi */}
+          <div>
+            <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
+              SEKRETARIAT BRMP
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.5 }}>
+              <div>Jl. Ragunan No. 29, Pasar Minggu, Jakarta Selatan, DKI Jakarta 12540</div>
+              <div>Email: magang.brmp@pertanian.go.id</div>
+              <div>WhatsApp: +62 811-9284-550</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          maxWidth: '1240px',
+          margin: '0 auto',
+          paddingTop: '1.5rem',
+          borderTop: '1px solid #047857',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1.5rem'
+          gap: '1rem',
+          fontSize: '0.75rem',
+          color: '#86efac'
         }}>
-          <div>
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc', display: 'block', marginBottom: '0.25rem' }}>
-              SIM-MAGANG
-            </span>
-            <span style={{ fontSize: '0.8125rem' }}>
-              Sistem Informasi Manajemen Magang & Praktik Kerja Lapangan
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.875rem' }}>
-            <Link href="/pengguna/career/step1" style={{ color: '#94a3b8', textDecoration: 'none' }}>
-              Ajukan Magang
-            </Link>
-            <Link href="/pengguna/riwayat" style={{ color: '#94a3b8', textDecoration: 'none' }}>
-              Riwayat Pengajuan
-            </Link>
+          <div>© {new Date().getFullYear()} Kementerian Pertanian Republik Indonesia (SIM BRMP Pengelola Hasil). Hak Cipta Dilindungi.</div>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Syarat &amp; Ketentuan</Link>
+            <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Kebijakan Privasi</Link>
           </div>
         </div>
       </footer>

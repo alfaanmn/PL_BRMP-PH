@@ -16,6 +16,8 @@ export type Database = {
           email: string
           role: 'pengguna' | 'administrator'
           no_hp: string | null
+          asal_instansi: string | null
+          jurusan: string | null
           avatar: string | null
           is_active: boolean
           created_at: string | null
@@ -27,6 +29,8 @@ export type Database = {
           email: string
           role?: 'pengguna' | 'administrator'
           no_hp?: string | null
+          asal_instansi?: string | null
+          jurusan?: string | null
           avatar?: string | null
           is_active?: boolean
           created_at?: string | null
@@ -38,6 +42,8 @@ export type Database = {
           email?: string
           role?: 'pengguna' | 'administrator'
           no_hp?: string | null
+          asal_instansi?: string | null
+          jurusan?: string | null
           avatar?: string | null
           is_active?: boolean
           created_at?: string | null

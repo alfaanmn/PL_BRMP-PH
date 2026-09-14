@@ -73,6 +73,26 @@ export default function ResetPasswordPage() {
         border: '1px solid #e2e8f0',
         boxSizing: 'border-box'
       }}>
+        {/* Tombol Kembali ke Beranda */}
+        <Link
+          href="/"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            fontSize: '0.8125rem',
+            color: '#64748b',
+            textDecoration: 'none',
+            fontWeight: 500,
+            marginBottom: '1.25rem'
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Kembali ke Beranda
+        </Link>
+
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
