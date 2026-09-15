@@ -51,7 +51,7 @@ export const authService = {
     // Ambil profile dari public.profiles berdasarkan id = auth.uid()
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, name, email, role, no_hp, avatar, is_active')
+      .select('id, name, email, role, no_hp, asal_instansi, jurusan, jenis_kelamin, avatar, is_active')
       .eq('id', authData.user.id)
       .single()
 
@@ -103,6 +103,7 @@ export const authService = {
           no_hp: credentials.no_hp?.trim() || null,
           asal_instansi: credentials.asal_instansi?.trim() || null,
           jurusan: credentials.jurusan?.trim() || null,
+          jenis_kelamin: credentials.jenis_kelamin?.trim() || null,
         },
         emailRedirectTo: `${origin}/auth/callback`,
       },
@@ -199,7 +200,7 @@ export const authService = {
     // Ambil profile dari public.profiles (yang otomatis dibuat oleh trigger handle_new_user)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, name, email, role, no_hp, avatar, is_active, asal_instansi, jurusan')
+      .select('id, name, email, role, no_hp, avatar, is_active, asal_instansi, jurusan, jenis_kelamin')
       .eq('id', data.user.id)
       .single()
 
@@ -374,10 +375,72 @@ export const authService = {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, name, email, role, no_hp, avatar, is_active, created_at, updated_at')
+      .select('id, name, email, role, no_hp, asal_instansi, jurusan, jenis_kelamin, avatar, is_active, created_at, updated_at')
       .eq('id', user.id)
       .single()
 
     return profile as Profile | null
+  },
+
+  /**
+   * Memperbarui Data Profil Pengguna
+   */
+  async updateProfile(
+    userId: string,
+    data: {
+      name: string
+      no_hp?: string | null
+      jenis_kelamin?: string | null
+      asal_instansi?: string | null
+      jurusan?: string | null
+    }
+  ): Promise<{ success: boolean; data?: Profile; error?: string }> {
+    try {
+      const supabase = createClient()
+
+      const { data: updated, error } = await supabase
+        .from('profiles')
+        .update({
+          name: data.name.trim(),
+          no_hp: data.no_hp ? data.no_hp.trim() : null,
+          jenis_kelamin: data.jenis_kelamin || null,
+          asal_instansi: data.asal_instansi ? data.asal_instansi.trim() : null,
+          jurusan: data.jurusan ? data.jurusan.trim() : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', userId)
+        .select()
+        .single()
+
+      if (error) {
+        return { success: false, error: error.message || 'Gagal memperbarui profil.' }
+      }
+
+      return { success: true, data: updated as Profile }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.'
+      return { success: false, error: msg }
+    }
+  },
+
+  /**
+   * Mengubah Password Pengguna yang sedang login
+   */
+  async updatePassword(newPassword: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      })
+
+      if (error) {
+        return { success: false, error: error.message || 'Gagal mengubah password.' }
+      }
+
+      return { success: true }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat mengubah password.'
+      return { success: false, error: msg }
+    }
   },
 }

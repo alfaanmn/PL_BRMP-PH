@@ -37,6 +37,7 @@ export function validateRegister(data: {
   no_hp?: string
   asal_instansi?: string
   jurusan?: string
+  jenis_kelamin?: string
 }): { isValid: boolean; errors: Record<string, string> } {
   const errors: Record<string, string> = {}
 

@@ -18,6 +18,7 @@ export type Database = {
           no_hp: string | null
           asal_instansi: string | null
           jurusan: string | null
+          jenis_kelamin: string | null
           avatar: string | null
           is_active: boolean
           created_at: string | null
@@ -31,6 +32,7 @@ export type Database = {
           no_hp?: string | null
           asal_instansi?: string | null
           jurusan?: string | null
+          jenis_kelamin?: string | null
           avatar?: string | null
           is_active?: boolean
           created_at?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           no_hp?: string | null
           asal_instansi?: string | null
           jurusan?: string | null
+          jenis_kelamin?: string | null
           avatar?: string | null
           is_active?: boolean
           created_at?: string | null

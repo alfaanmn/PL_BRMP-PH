@@ -76,6 +76,26 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
     paddingBottom: '0.25rem'
   }
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, target: 'beranda' | 'alur' | 'bidang') => {
+    const isTargetOnCurrentPage =
+      (pathname === '/' || pathname === '/pengguna/dashboard')
+
+    if (isTargetOnCurrentPage) {
+      if (target === 'beranda') {
+        e.preventDefault()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.history.pushState(null, '', berandaUrl)
+      } else {
+        const el = document.getElementById(target)
+        if (el) {
+          e.preventDefault()
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          window.history.pushState(null, '', `#${target}`)
+        }
+      }
+    }
+  }
+
   return (
     <>
       {/* 1. Bar Pengumuman Resmi Kementan */}
@@ -138,7 +158,11 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
           flexWrap: 'wrap'
         }}>
           {/* Logo & Institusi */}
-          <Link href={berandaUrl} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Link
+            href={berandaUrl}
+            onClick={(e) => handleNavClick(e, 'beranda')}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <div style={{
               width: '42px',
               height: '42px',
@@ -182,18 +206,21 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
           <nav style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
             <Link
               href={berandaUrl}
+              onClick={(e) => handleNavClick(e, 'beranda')}
               style={isBerandaActive ? linkActiveStyle : linkInactiveStyle}
             >
               Beranda
             </Link>
             <a
               href={alurUrl}
+              onClick={(e) => handleNavClick(e, 'alur')}
               style={isAlurActive ? linkActiveStyle : linkInactiveStyle}
             >
               Alur Magang
             </a>
             <a
               href={bidangUrl}
+              onClick={(e) => handleNavClick(e, 'bidang')}
               style={isBidangActive ? linkActiveStyle : linkInactiveStyle}
             >
               Bidang Magang
@@ -255,8 +282,8 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
 
                 {/* Profile Pill (Interactive User Badge) */}
                 <Link
-                  href={berandaUrl}
-                  title="Buka Profil & Dashboard"
+                  href={isPengguna ? '/pengguna/profil' : berandaUrl}
+                  title="Buka Profil & Pengaturan Akun"
                   style={{
                     display: 'flex',
                     alignItems: 'center',

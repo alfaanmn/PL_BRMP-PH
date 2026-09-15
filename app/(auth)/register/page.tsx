@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [noHp, setNoHp] = useState('')
+  const [jenisKelamin, setJenisKelamin] = useState('Laki-laki')
   const [asalInstansi, setAsalInstansi] = useState('')
   const [jurusan, setJurusan] = useState('')
   const [password, setPassword] = useState('')
@@ -36,6 +37,7 @@ export default function RegisterPage() {
       no_hp: noHp,
       asal_instansi: asalInstansi,
       jurusan,
+      jenis_kelamin: jenisKelamin,
     })
 
     if (!validation.isValid) {
@@ -54,6 +56,7 @@ export default function RegisterPage() {
         no_hp: noHp || undefined,
         asal_instansi: asalInstansi || undefined,
         jurusan: jurusan || undefined,
+        jenis_kelamin: jenisKelamin || undefined,
       })
 
       if (!response.success) {
@@ -419,29 +422,56 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                {/* Nomor HP/WA */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
-                    Nomor HP / WhatsApp
-                  </label>
-                  <input
-                    type="tel"
-                    value={noHp}
-                    onChange={(e) => setNoHp(e.target.value)}
-                    placeholder="Contoh: 081234567890"
-                    disabled={loading}
-                    style={{
-                      width: '100%',
-                      padding: '0.6875rem 0.875rem',
-                      borderRadius: '10px',
-                      border: '1px solid #cbd5e1',
-                      fontSize: '0.875rem',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                      backgroundColor: loading ? '#f8fafc' : '#ffffff',
-                      transition: 'border-color 0.2s, box-shadow 0.2s'
-                    }}
-                  />
+                {/* 2 Kolom: Nomor HP/WA & Jenis Kelamin */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
+                      Nomor HP / WhatsApp
+                    </label>
+                    <input
+                      type="tel"
+                      value={noHp}
+                      onChange={(e) => setNoHp(e.target.value)}
+                      placeholder="Contoh: 081234567890"
+                      disabled={loading}
+                      style={{
+                        width: '100%',
+                        padding: '0.6875rem 0.875rem',
+                        borderRadius: '10px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.875rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                        backgroundColor: loading ? '#f8fafc' : '#ffffff',
+                        transition: 'border-color 0.2s, box-shadow 0.2s'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
+                      Jenis Kelamin
+                    </label>
+                    <select
+                      value={jenisKelamin}
+                      onChange={(e) => setJenisKelamin(e.target.value)}
+                      disabled={loading}
+                      style={{
+                        width: '100%',
+                        padding: '0.6875rem 0.875rem',
+                        borderRadius: '10px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.875rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                        backgroundColor: loading ? '#f8fafc' : '#ffffff',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="Laki-laki">Laki-laki</option>
+                      <option value="Perempuan">Perempuan</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* 2 Kolom: Asal Instansi & Program Studi */}

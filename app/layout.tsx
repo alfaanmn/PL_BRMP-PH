@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'SIM-Magang',
@@ -11,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="id">
+    <html lang="id" style={{ scrollBehavior: 'smooth' }}>
       <body style={{ margin: 0, padding: 0 }}>{children}</body>
     </html>
   )

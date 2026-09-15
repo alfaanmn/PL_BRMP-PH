@@ -61,12 +61,11 @@ function LoginForm() {
       let targetUrl = '/pengguna/dashboard'
       if (role === 'administrator') {
         targetUrl = '/admin/dashboard'
-      }
-
-      if (redirectParam && redirectParam.startsWith('/')) {
-        if (role === 'administrator' && !redirectParam.startsWith('/pengguna')) {
+        if (redirectParam && redirectParam.startsWith('/admin')) {
           targetUrl = redirectParam
-        } else if (role === 'pengguna' && !redirectParam.startsWith('/admin')) {
+        }
+      } else {
+        if (redirectParam && redirectParam.startsWith('/') && redirectParam !== '/' && !redirectParam.startsWith('/admin')) {
           targetUrl = redirectParam
         }
       }

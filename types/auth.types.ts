@@ -8,6 +8,7 @@ export interface Profile {
   no_hp: string | null
   asal_instansi?: string | null
   jurusan?: string | null
+  jenis_kelamin?: string | null
   avatar: string | null
   is_active: boolean
   created_at?: string
@@ -33,6 +34,7 @@ export interface RegisterCredentials {
   no_hp?: string
   asal_instansi?: string
   jurusan?: string
+  jenis_kelamin?: string
 }
 
 export interface ForgotPasswordCredentials {
@@ -63,4 +65,3 @@ export interface AuthResponse<T = unknown> {
     message: string
   }
 }
-
