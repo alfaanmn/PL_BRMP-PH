@@ -1,10 +1,61 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { DEV_SERVER_BOOT_ID, DEV_BOOT_COOKIE_NAME } from '@/lib/utils/dev-session'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
+
+  const pathname = request.nextUrl.pathname
+
+  const isAuthPage =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/forgot-password' ||
+    pathname === '/verify-otp'
+  const isResetPasswordPage = pathname === '/reset-password'
+  const isCallbackPage = pathname.startsWith('/auth/callback') || pathname.startsWith('/callback')
+  const isAdminRoute = pathname.startsWith('/admin')
+  const isPenggunaRoute = pathname.startsWith('/pengguna')
+
+  // KHUSUS DEVELOPMENT: Deteksi apakah dev server baru saja di-restart (Ctrl+C -> npm run dev)
+  if (process.env.NODE_ENV === 'development') {
+    const bootCookie = request.cookies.get(DEV_BOOT_COOKIE_NAME)?.value
+
+    if (bootCookie !== DEV_SERVER_BOOT_ID) {
+      // Server dev telah di-restart! Hapus semua cookie auth Supabase dari sesi dev sebelumnya
+      const allCookies = request.cookies.getAll()
+      allCookies.forEach((c) => {
+        if (c.name.startsWith('sb-') || c.name.includes('auth-token')) {
+          supabaseResponse.cookies.set(c.name, '', {
+            maxAge: 0,
+            path: '/',
+          })
+        }
+      })
+
+      // Set cookie boot ID sesi dev yang baru
+      supabaseResponse.cookies.set(DEV_BOOT_COOKIE_NAME, DEV_SERVER_BOOT_ID, {
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+      })
+
+      // Jika mencoba mengakses rute terproteksi setelah restart server, arahkan kembali ke /login
+      if (isAdminRoute || isPenggunaRoute) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('redirect', pathname)
+        return NextResponse.redirect(url, {
+          headers: supabaseResponse.headers,
+        })
+      }
+
+      // Untuk halaman publik / auth setelah restart server, langsung kembalikan response dengan cookie yang sudah di-reset
+      return supabaseResponse
+    }
+  }
 
   const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '')
@@ -34,18 +85,6 @@ export async function updateSession(request: NextRequest) {
   // Refresh token session Supabase
   const { data: { user } } = await supabase.auth.getUser()
 
-  const pathname = request.nextUrl.pathname
-
-  // Path pengecualian / publik
-  const isAuthPage =
-    pathname === '/login' ||
-    pathname === '/register' ||
-    pathname === '/forgot-password' ||
-    pathname === '/verify-otp'
-  const isResetPasswordPage = pathname === '/reset-password'
-  const isCallbackPage = pathname.startsWith('/auth/callback') || pathname.startsWith('/callback')
-  const isAdminRoute = pathname.startsWith('/admin')
-  const isPenggunaRoute = pathname.startsWith('/pengguna')
 
   // 1. JIKA BELUM LOGIN
   if (!user) {

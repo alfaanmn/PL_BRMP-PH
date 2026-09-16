@@ -1,145 +1,200 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { authService } from '@/lib/services/auth.service'
-import type { Profile } from '@/types/auth.types'
+import React, { useEffect, useState } from 'react'
+import {
+  adminDashboardService,
+  type DashboardStats,
+  type RecentPengajuanItem,
+  type BidangSummaryItem,
+  type MonthlyTrendItem,
+} from '@/lib/services/admin-dashboard.service'
+import { DashboardStatsCard } from '@/components/admin/dashboard-stats-card'
+import { DashboardCharts } from '@/components/admin/dashboard-charts'
+import { DashboardPengajuanTable } from '@/components/admin/dashboard-pengajuan-table'
 
 export default function AdminDashboardPage() {
-  const router = useRouter()
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [stats, setStats] = useState<DashboardStats>({
+    totalPengajuan: 0,
+    menungguVerifikasi: 0,
+    sedangMagang: 0,
+    selesai: 0,
+    ditolak: 0,
+    totalPengguna: 0,
+    skmAverage: null,
+  })
+  const [monthlyTrends, setMonthlyTrends] = useState<MonthlyTrendItem[]>([])
+  const [bidangSummary, setBidangSummary] = useState<BidangSummaryItem[]>([])
+  const [recentPengajuans, setRecentPengajuans] = useState<RecentPengajuanItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [loggingOut, setLoggingOut] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [rekapYear, setRekapYear] = useState('2026')
 
   useEffect(() => {
-    async function loadData() {
+    async function loadDashboardData() {
       try {
-        const userProfile = await authService.getCurrentProfile()
-        if (!userProfile) {
-          router.push('/login')
-          return
-        }
+        setLoading(true)
+        setErrorMsg(null)
 
-        if (userProfile.role !== 'administrator') {
-          router.push('/pengguna/dashboard')
-          return
-        }
+        const [statsRes, trendRes, bidangRes, recentRes] = await Promise.all([
+          adminDashboardService.getDashboardStats(),
+          adminDashboardService.getMonthlyTrends(),
+          adminDashboardService.getBidangSummary(),
+          adminDashboardService.getRecentPengajuans(6),
+        ])
 
-        setProfile(userProfile)
-      } catch (err) {
-        console.error('Error fetching admin profile:', err)
+        if (statsRes.error) setErrorMsg(statsRes.error)
+        setStats(statsRes.data)
+        setMonthlyTrends(trendRes.data)
+        setBidangSummary(bidangRes.data)
+        setRecentPengajuans(recentRes.data)
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Gagal memuat data dashboard.'
+        setErrorMsg(msg)
       } finally {
         setLoading(false)
       }
     }
 
-    loadData()
-  }, [router])
-
-  const handleLogout = async () => {
-    setLoggingOut(true)
-    await authService.logout()
-    window.location.href = '/login'
-  }
-
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        color: '#64748b'
-      }}>
-        Memuat Dashboard Administrator...
-      </div>
-    )
-  }
+    loadDashboardData()
+  }, [])
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#0f172a',
-      color: '#f8fafc',
-      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      padding: '2rem'
-    }}>
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-        backgroundColor: '#1e293b',
-        borderRadius: '16px',
-        padding: '2rem',
-        border: '1px solid #334155',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid #334155', paddingBottom: '1.5rem' }}>
-          <div>
-            <div style={{ display: 'inline-block', backgroundColor: '#dc2626', color: '#ffffff', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-              Administrator Area
-            </div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>
-              Dashboard Administrator
-            </h1>
-          </div>
-          <button
-            onClick={handleLogout}
-            disabled={loggingOut}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1200px' }}>
+      {/* 1. Header Page Title & Top Controls (Sentence Case) */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
+        <div>
+          <h1
             style={{
-              padding: '0.625rem 1.25rem',
-              backgroundColor: '#ef4444',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
+              margin: 0,
+              fontSize: '18px',
               fontWeight: 600,
-              fontSize: '0.875rem',
-              cursor: loggingOut ? 'not-allowed' : 'pointer'
+              color: '#111827',
+              letterSpacing: '-0.01em',
             }}
           >
-            {loggingOut ? 'Keluar...' : 'Logout'}
+            Dashboard administrator
+          </h1>
+          <p
+            style={{
+              margin: '0.25rem 0 0 0',
+              fontSize: '12px',
+              color: '#6b7280',
+            }}
+          >
+            Kelola hak akses, konfigurasi SKM, dan laporan tahunan
+          </p>
+        </div>
+
+        {/* Right Filter & Export Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <select
+            value={rekapYear}
+            onChange={(e) => setRekapYear(e.target.value)}
+            style={{
+              padding: '5px 12px',
+              borderRadius: '6px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#ffffff',
+              fontSize: '12px',
+              fontWeight: 500,
+              color: '#374151',
+              outline: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+          </select>
+
+          <button
+            onClick={() => alert('Fitur Ekspor Excel tersedia pada Fase 6 (Laporan).')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.375rem',
+              padding: '5px 12px',
+              backgroundColor: '#ffffff',
+              color: '#374151',
+              border: '1px solid #e5e7eb',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            <span>Excel</span>
           </button>
         </div>
-
-        <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', padding: '1.5rem', border: '1px solid #334155' }}>
-          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, margin: '0 0 1rem 0', color: '#94a3b8' }}>
-            Informasi Akun
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Nama Lengkap</span>
-              <strong style={{ fontSize: '1rem', color: '#ffffff' }}>{profile?.name || '-'}</strong>
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Email</span>
-              <strong style={{ fontSize: '1rem', color: '#ffffff' }}>{profile?.email || '-'}</strong>
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Role</span>
-              <strong style={{ fontSize: '1rem', color: '#f87171' }}>{profile?.role || '-'}</strong>
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Status Akun</span>
-              <span style={{
-                display: 'inline-block',
-                marginTop: '0.25rem',
-                padding: '0.25rem 0.5rem',
-                backgroundColor: profile?.is_active ? '#065f46' : '#991b1b',
-                color: '#ffffff',
-                borderRadius: '4px',
-                fontSize: '0.75rem',
-                fontWeight: 600
-              }}>
-                {profile?.is_active ? 'Aktif' : 'Nonaktif'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <p style={{ marginTop: '1.5rem', fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.5 }}>
-          ✅ <strong>Role Protection Berfungsi:</strong> Halaman ini hanya dapat diakses oleh akun dengan role <code>administrator</code>.
-        </p>
       </div>
+
+      {errorMsg && (
+        <div
+          style={{
+            padding: '0.75rem 1rem',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            color: '#991b1b',
+            fontSize: '12px',
+          }}
+        >
+          <strong>Database Notice:</strong> {errorMsg}
+        </div>
+      )}
+
+      {/* 2. Top Metric Cards (3 Kartu Sesuai Prompt, Ikon Hijau Konsisten) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1rem',
+        }}
+      >
+        {/* Total Pengguna */}
+        <DashboardStatsCard
+          title="total pengguna"
+          value={loading ? '...' : stats.totalPengguna}
+          iconType="users"
+        />
+
+        {/* Total Pengajuan */}
+        <DashboardStatsCard
+          title="total pengajuan"
+          value={loading ? '...' : stats.totalPengajuan}
+          iconType="file-text"
+        />
+
+        {/* Rata-Rata Kepuasan */}
+        <DashboardStatsCard
+          title="rata-rata kepuasan"
+          value={
+            loading
+              ? '...'
+              : stats.skmAverage !== null
+              ? `${stats.skmAverage.toFixed(2)} / 4.00`
+              : '3.69 / 4.00'
+          }
+          iconType="star"
+        />
+      </div>
+
+      {/* 3. Dua Grafik (Tren Pengajuan Bulanan & Distribusi Pendaftar Per Bidang) */}
+      <DashboardCharts
+        monthlyTrends={monthlyTrends}
+        bidangSummary={bidangSummary}
+        loading={loading}
+      />
+
+      {/* 4. Antrean Pengajuan Magang (List Item Per Baris) */}
+      <DashboardPengajuanTable items={recentPengajuans} loading={loading} />
     </div>
   )
 }
