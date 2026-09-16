@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/auth.service'
 import { validateResetPassword } from '@/lib/validations/auth.validation'
+import { AppLogo } from '@/components/shared/app-logo'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -95,20 +96,8 @@ export default function ResetPasswordPage() {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            backgroundColor: '#eff6ff',
-            color: '#2563eb',
-            fontWeight: 700,
-            fontSize: '1.25rem',
-            marginBottom: '0.75rem'
-          }}>
-            SM
+          <div style={{ display: 'inline-flex', marginBottom: '0.75rem' }}>
+            <AppLogo size={48} priority />
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.5rem 0' }}>
             Atur Password Baru

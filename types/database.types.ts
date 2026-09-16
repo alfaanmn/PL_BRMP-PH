@@ -53,6 +53,58 @@ export type Database = {
           updated_at?: string | null
         }
       }
+      skm_pertanyaan: {
+        Row: {
+          id: number
+          pertanyaan: string
+          unsur: string | null
+          urutan: number
+          tipe: string | null
+          is_active: boolean
+          created_at: string | null
+        }
+        Insert: {
+          id?: number
+          pertanyaan: string
+          unsur?: string | null
+          urutan: number
+          tipe?: string | null
+          is_active?: boolean
+          created_at?: string | null
+        }
+        Update: {
+          id?: number
+          pertanyaan?: string
+          unsur?: string | null
+          urutan?: number
+          tipe?: string | null
+          is_active?: boolean
+          created_at?: string | null
+        }
+      }
+      skm_jawaban: {
+        Row: {
+          id: number
+          pengajuan_id: number | null
+          skm_pertanyaan_id: number
+          jawaban: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: number
+          pengajuan_id?: number | null
+          skm_pertanyaan_id: number
+          jawaban: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: number
+          pengajuan_id?: number | null
+          skm_pertanyaan_id?: number
+          jawaban?: string
+          created_at?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never

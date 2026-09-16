@@ -5,6 +5,7 @@ export interface PembimbingItem {
   nama: string
   nip?: string | null
   jabatan?: string | null
+  kuota_default?: number | null
   kuota?: number | null
   is_active?: boolean | null
 }
@@ -68,7 +69,7 @@ export const bidangService = {
       try {
         const { data: bpData } = await supabase
           .from('bidang_pembimbing')
-          .select('pembimbing_id, pembimbings(id, nama, nip, jabatan, kuota, is_active)')
+          .select('pembimbing_id, pembimbings(id, nama, nip, jabatan, kuota_default, is_active)')
           .eq('bidang_id', id)
 
         if (bpData && bpData.length > 0) {

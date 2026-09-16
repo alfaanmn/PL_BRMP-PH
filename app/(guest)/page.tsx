@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { bidangService } from '@/lib/services/bidang.service'
 import { createClient } from '@/lib/supabase/server'
 import { Navbar } from '@/components/layout/navbar'
+import { AppLogo } from '@/components/shared/app-logo'
 import type { AppRole } from '@/types/auth.types'
 
 export const dynamic = 'force-dynamic'
@@ -1003,20 +1004,7 @@ export default async function HomePage() {
           {/* Info Institusi */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                backgroundColor: '#15803d',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1rem',
-                fontWeight: 800
-              }}>
-                🌿
-              </div>
+              <AppLogo size={36} />
               <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff' }}>
                 SIM-Magang BRMP
               </span>

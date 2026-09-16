@@ -8,7 +8,10 @@ interface AdminHeaderProps {
   onOpenMobileSidebar: () => void
 }
 
-export function AdminHeader({ profile, onOpenMobileSidebar }: AdminHeaderProps) {
+export function AdminHeader({
+  profile,
+  onOpenMobileSidebar,
+}: AdminHeaderProps) {
   const adminName = profile?.name || 'Administrator'
 
   const todayDate = new Date().toLocaleDateString('id-ID', {
@@ -34,12 +37,13 @@ export function AdminHeader({ profile, onOpenMobileSidebar }: AdminHeaderProps) 
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
       }}
     >
-      {/* Left: Greeting & Date dengan tone hijau selaras sidebar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        {/* Mobile Toggle Button */}
+      {/* Left: Mobile Toggle Button & Greeting */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+        {/* Mobile Toggle Button (< 1024px) */}
         <button
           onClick={onOpenMobileSidebar}
           aria-label="Buka Menu"
+          title="Buka Menu"
           style={{
             display: 'none',
             background: '#013723',

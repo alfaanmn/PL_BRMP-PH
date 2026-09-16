@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/auth.service'
 import { validateOtp } from '@/lib/validations/auth.validation'
+import { AppLogo } from '@/components/shared/app-logo'
 
 function VerifyOtpForm() {
   const router = useRouter()
@@ -229,21 +230,7 @@ function VerifyOtpForm() {
         {/* Top Header Institusi */}
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.875rem' }}>
-            <div style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.25)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.35)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.25rem'
-            }}>
-              🌿
-            </div>
+            <AppLogo size={42} priority />
             <div>
               <span style={{
                 fontSize: '1.125rem',

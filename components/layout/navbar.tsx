@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { authService } from '@/lib/services/auth.service'
+import { AppLogo } from '@/components/shared/app-logo'
 import type { AppRole } from '@/types/auth.types'
 
 export interface NavbarProps {
@@ -166,17 +167,18 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
             <div style={{
               width: '42px',
               height: '42px',
-              borderRadius: '50%',
-              backgroundColor: '#15803d',
-              color: '#ffffff',
+              borderRadius: '10px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #bbf7d0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '1.125rem',
-              boxShadow: '0 2px 6px rgba(21, 128, 61, 0.3)'
+              padding: '2px',
+              boxShadow: '0 2px 6px rgba(21, 128, 61, 0.15)',
+              flexShrink: 0,
+              overflow: 'hidden'
             }}>
-              🌿
+              <AppLogo size={38} alt="Logo SIM-Magang" priority />
             </div>
             <div>
               <span style={{

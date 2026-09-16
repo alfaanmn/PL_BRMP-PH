@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/auth.service'
+import { AppLogo } from '@/components/shared/app-logo'
 import { validateEmail, validatePassword } from '@/lib/validations/auth.validation'
 
 function LoginForm() {
@@ -126,17 +127,16 @@ function LoginForm() {
             <div style={{
               width: '46px',
               height: '46px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.25)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.35)',
-              color: '#ffffff',
+              borderRadius: '12px',
+              backgroundColor: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.25rem'
+              padding: '3px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              overflow: 'hidden'
             }}>
-              🌿
+              <AppLogo size={40} alt="Logo BRMP" priority />
             </div>
             <div>
               <span style={{

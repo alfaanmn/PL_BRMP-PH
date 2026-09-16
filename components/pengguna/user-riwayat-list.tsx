@@ -520,27 +520,51 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                     )}
                   </div>
 
-                  {/* Tombol Lihat Rincian */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPengajuan(item)}
-                    className="btn-rincian"
-                    style={{
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#16a34a',
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #bbf7d0',
-                      borderRadius: '6px',
-                      padding: '0.3rem 0.75rem',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.25rem'
-                    }}
-                  >
-                    <span>Lihat rincian</span>
-                  </button>
+                  {/* Tombol Aksi: Isi SKM & Lihat Rincian */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                    <Link
+                      href={`/pengguna/skm?pengajuan_id=${item.id}`}
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#02482e',
+                        backgroundColor: '#f0fdf4',
+                        border: '1px solid #bbf7d0',
+                        borderRadius: '6px',
+                        padding: '0.3rem 0.65rem',
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                      title="Isi Survei Kepuasan Masyarakat untuk pengajuan ini"
+                    >
+                      <span>⭐</span>
+                      <span>Isi SKM</span>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPengajuan(item)}
+                      className="btn-rincian"
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#16a34a',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #bbf7d0',
+                        borderRadius: '6px',
+                        padding: '0.3rem 0.75rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem'
+                      }}
+                    >
+                      <span>Lihat rincian</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )

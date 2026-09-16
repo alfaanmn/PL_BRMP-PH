@@ -16,6 +16,7 @@ export default function AdminLayout({
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [isOpenMobile, setIsOpenMobile] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -105,8 +106,8 @@ export default function AdminLayout({
     return null
   }
 
-  // Desktop sidebar rail is 68px, main content margin stays static so page doesn't shift on hover
-  const sidebarRailWidth = '68px'
+  // Single source of truth for desktop sidebar width: 240px (expanded) <-> 70px (collapsed)
+  const desktopSidebarWidth = isCollapsed ? '70px' : '240px'
 
   return (
     <div
@@ -118,11 +119,13 @@ export default function AdminLayout({
         display: 'flex',
       }}
     >
-      {/* 1. Admin Sidebar Navigation (Hover-Expand: 68px -> 250px) */}
+      {/* 1. Admin Sidebar Navigation */}
       <AdminSidebar
         profile={profile}
         isOpenMobile={isOpenMobile}
+        isCollapsedDesktop={isCollapsed}
         onCloseMobile={() => setIsOpenMobile(false)}
+        onToggleCollapseDesktop={() => setIsCollapsed((prev) => !prev)}
       />
 
       {/* 2. Main Area (Header + Scrollable Content) */}
@@ -132,7 +135,8 @@ export default function AdminLayout({
           display: 'flex',
           flexDirection: 'column',
           minWidth: 0,
-          marginLeft: sidebarRailWidth,
+          marginLeft: desktopSidebarWidth,
+          transition: 'margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         className="admin-main-wrapper"
       >

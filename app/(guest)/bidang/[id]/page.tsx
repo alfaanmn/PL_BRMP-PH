@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { bidangService } from '@/lib/services/bidang.service'
 import { Navbar } from '@/components/layout/navbar'
+import { AppLogo } from '@/components/shared/app-logo'
 import type { AppRole } from '@/types/auth.types'
 
 export const dynamic = 'force-dynamic'
@@ -773,7 +774,7 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                           fontSize: '0.6875rem',
                           fontWeight: 700
                         }}>
-                          Kuota: {p.kuota || 2} mahasiswa
+                          Kuota: {p.kuota_default ?? p.kuota ?? 2} mahasiswa
                         </span>
                       </div>
                     </div>
@@ -1037,8 +1038,8 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
         }}>
           {/* Kolom 1: Profil Lembaga */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>🌿</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.75rem' }}>
+              <AppLogo size={32} />
               <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
                 SIM-Magang BRMP
               </span>
