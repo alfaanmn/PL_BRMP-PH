@@ -426,13 +426,14 @@ export default function RegisterPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
-                      Nomor HP / WhatsApp
+                      Nomor HP / WhatsApp <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input
                       type="tel"
                       value={noHp}
                       onChange={(e) => setNoHp(e.target.value)}
                       placeholder="Contoh: 081234567890"
+                      required
                       disabled={loading}
                       style={{
                         width: '100%',
@@ -450,11 +451,12 @@ export default function RegisterPage() {
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
-                      Jenis Kelamin
+                      Jenis Kelamin <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <select
                       value={jenisKelamin}
                       onChange={(e) => setJenisKelamin(e.target.value)}
+                      required
                       disabled={loading}
                       style={{
                         width: '100%',
@@ -478,13 +480,14 @@ export default function RegisterPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
-                      Asal Instansi
+                      Asal Instansi <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input
                       type="text"
                       value={asalInstansi}
                       onChange={(e) => setAsalInstansi(e.target.value)}
                       placeholder="Universitas / SMK / Sekolah"
+                      required
                       disabled={loading}
                       style={{
                         width: '100%',
@@ -502,13 +505,14 @@ export default function RegisterPage() {
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
-                      Program Studi / Jurusan
+                      Program Studi / Jurusan <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input
                       type="text"
                       value={jurusan}
                       onChange={(e) => setJurusan(e.target.value)}
                       placeholder="Contoh: Agroteknologi"
+                      required
                       disabled={loading}
                       style={{
                         width: '100%',

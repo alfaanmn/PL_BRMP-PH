@@ -41,24 +41,52 @@ export function validateRegister(data: {
 }): { isValid: boolean; errors: Record<string, string> } {
   const errors: Record<string, string> = {}
 
+  // 1. Nama Lengkap (Wajib)
   const nameError = validateName(data.name)
   if (nameError) errors.name = nameError
 
+  // 2. Email Aktif (Wajib)
   const emailError = validateEmail(data.email)
   if (emailError) errors.email = emailError
 
-  const passwordError = validatePassword(data.password)
-  if (passwordError) errors.password = passwordError
-
-  if (data.confirmPassword !== undefined && data.password !== data.confirmPassword) {
-    errors.confirmPassword = 'Konfirmasi password tidak cocok'
-  }
-
-  if (data.no_hp && data.no_hp.trim()) {
+  // 3. Nomor HP / WhatsApp (Wajib)
+  if (!data.no_hp || !data.no_hp.trim()) {
+    errors.no_hp = 'Nomor HP / WhatsApp wajib diisi'
+  } else {
     const phoneRegex = /^[0-9+() -]{8,20}$/
     if (!phoneRegex.test(data.no_hp.trim())) {
       errors.no_hp = 'Format nomor HP/WA tidak valid'
     }
+  }
+
+  // 4. Jenis Kelamin (Wajib)
+  if (!data.jenis_kelamin || !data.jenis_kelamin.trim()) {
+    errors.jenis_kelamin = 'Jenis kelamin wajib dipilih'
+  }
+
+  // 5. Asal Instansi (Wajib)
+  if (!data.asal_instansi || !data.asal_instansi.trim()) {
+    errors.asal_instansi = 'Asal instansi / sekolah / kampus wajib diisi'
+  } else if (data.asal_instansi.trim().length < 2) {
+    errors.asal_instansi = 'Asal instansi minimal 2 karakter'
+  }
+
+  // 6. Program Studi / Jurusan (Wajib)
+  if (!data.jurusan || !data.jurusan.trim()) {
+    errors.jurusan = 'Program studi / jurusan wajib diisi'
+  } else if (data.jurusan.trim().length < 2) {
+    errors.jurusan = 'Program studi / jurusan minimal 2 karakter'
+  }
+
+  // 7. Password (Wajib, Min. 6 Karakter)
+  const passwordError = validatePassword(data.password)
+  if (passwordError) errors.password = passwordError
+
+  // 8. Konfirmasi Password (Wajib & Cocok)
+  if (!data.confirmPassword) {
+    errors.confirmPassword = 'Konfirmasi password wajib diisi'
+  } else if (data.password !== data.confirmPassword) {
+    errors.confirmPassword = 'Konfirmasi password tidak cocok'
   }
 
   return {
