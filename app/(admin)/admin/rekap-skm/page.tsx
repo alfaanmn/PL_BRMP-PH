@@ -652,7 +652,7 @@ export default function AdminRekapSKMPage() {
           </div>
 
           {/* Search Bar Responden */}
-          <div style={{ position: 'relative', width: '280px' }}>
+          <div style={{ position: 'relative', flex: '1 1 200px', maxWidth: '320px', minWidth: '180px' }}>
             <input
               type="text"
               placeholder="Cari pemohon / instansi..."

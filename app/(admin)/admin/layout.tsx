@@ -148,6 +148,7 @@ export default function AdminLayout({
 
         {/* Page Content Body */}
         <main
+          className="admin-main-content"
           style={{
             flex: 1,
             padding: '1.5rem',
@@ -164,6 +165,11 @@ export default function AdminLayout({
         @media (max-width: 1023px) {
           .admin-main-wrapper {
             margin-left: 0 !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .admin-main-content {
+            padding: 1rem !important;
           }
         }
       `}</style>

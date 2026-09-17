@@ -6,6 +6,8 @@ import { usePengajuanWizard } from '@/hooks/use-pengajuan'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { BidangItem } from '@/lib/services/bidang.service'
 import { AnggotaMagang, PengajuanInsertPayload } from '@/types/pengajuan.types'
+import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
+import { EyeIcon } from '@/components/ui/admin-icons'
 
 interface CareerStep3ReviewProps {
   bidangList: BidangItem[]
@@ -27,6 +29,7 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
+  const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
 
   const selectedBidang = bidangList.find(
     (b) => String(b.id) === String(state.step1.bidang_id)
@@ -623,14 +626,29 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
               <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>(Wajib)</span>
             </div>
             {state.step2.surat_pengantar_url ? (
-              <a
-                href={state.step2.surat_pengantar_url}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: '#16a34a', textDecoration: 'underline', fontSize: '0.75rem' }}
+              <button
+                type="button"
+                onClick={() =>
+                  setPreviewDoc({
+                    url: state.step2.surat_pengantar_url,
+                    title: 'Surat Pengantar Magang',
+                  })
+                }
+                style={{
+                  color: '#16a34a',
+                  background: 'transparent',
+                  border: 'none',
+                  textDecoration: 'underline',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
               >
-                {state.step2.surat_pengantar_name || 'Lihat berkas'}
-              </a>
+                <EyeIcon width={12} height={12} />
+                <span>{state.step2.surat_pengantar_name || 'Lihat berkas'}</span>
+              </button>
             ) : (
               <span style={{ color: '#dc2626', fontSize: '0.75rem' }}>Belum diunggah</span>
             )}
@@ -653,14 +671,29 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
                 <span style={{ fontWeight: 600, color: '#0f172a' }}>Proposal kegiatan</span>
                 <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>(Opsional)</span>
               </div>
-              <a
-                href={state.step2.proposal_url}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: '#16a34a', textDecoration: 'underline', fontSize: '0.75rem' }}
+              <button
+                type="button"
+                onClick={() =>
+                  setPreviewDoc({
+                    url: state.step2.proposal_url,
+                    title: 'Proposal Kegiatan Magang',
+                  })
+                }
+                style={{
+                  color: '#16a34a',
+                  background: 'transparent',
+                  border: 'none',
+                  textDecoration: 'underline',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
               >
-                {state.step2.proposal_name || 'Lihat berkas'}
-              </a>
+                <EyeIcon width={12} height={12} />
+                <span>{state.step2.proposal_name || 'Lihat berkas'}</span>
+              </button>
             </div>
           )}
 
@@ -678,17 +711,32 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ color: '#16a34a', fontWeight: 700 }}>✓</span>
-                <span style={{ fontWeight: 600, color: '#0f172a' }}>Dokumen tambahan / CV</span>
+                <span style={{ fontWeight: 600, color: '#0f172a' }}>Dokumen tambahan</span>
                 <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>(Opsional)</span>
               </div>
-              <a
-                href={state.step2.dokumen_tambahan_url}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: '#16a34a', textDecoration: 'underline', fontSize: '0.75rem' }}
+              <button
+                type="button"
+                onClick={() =>
+                  setPreviewDoc({
+                    url: state.step2.dokumen_tambahan_url,
+                    title: 'Dokumen Tambahan',
+                  })
+                }
+                style={{
+                  color: '#16a34a',
+                  background: 'transparent',
+                  border: 'none',
+                  textDecoration: 'underline',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
               >
-                {state.step2.dokumen_tambahan_name || 'Lihat berkas'}
-              </a>
+                <EyeIcon width={12} height={12} />
+                <span>{state.step2.dokumen_tambahan_name || 'Lihat berkas'}</span>
+              </button>
             </div>
           )}
         </div>
@@ -796,6 +844,15 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
           )}
         </button>
       </div>
+
+      {/* Modal Pratinjau Dokumen */}
+      <DocumentPreviewModal
+        isOpen={previewDoc !== null}
+        url={previewDoc?.url}
+        title={previewDoc?.title || 'Pratinjau Dokumen'}
+        subtitle="Verifikasi Berkas Sebelum Dikirim"
+        onClose={() => setPreviewDoc(null)}
+      />
     </div>
   )
 }

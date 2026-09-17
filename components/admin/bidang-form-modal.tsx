@@ -23,7 +23,7 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
     nama: '',
     deskripsi: '',
     kuota: 10,
-    jenjang: '',
+    jenjang: 'Mahasiswa',
     persyaratan: '',
     tugas: '',
     is_active: true,
@@ -38,7 +38,7 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
         nama: bidangToEdit.nama || '',
         deskripsi: bidangToEdit.deskripsi || '',
         kuota: bidangToEdit.kuota || 10,
-        jenjang: bidangToEdit.jenjang || '',
+        jenjang: bidangToEdit.jenjang === 'Siswa' ? 'Siswa' : 'Mahasiswa',
         persyaratan: bidangToEdit.persyaratan || '',
         tugas: bidangToEdit.tugas || '',
         is_active: bidangToEdit.is_active ?? true,
@@ -48,7 +48,7 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
         nama: '',
         deskripsi: '',
         kuota: 10,
-        jenjang: '',
+        jenjang: 'Mahasiswa',
         persyaratan: '',
         tugas: '',
         is_active: true,
@@ -276,23 +276,61 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
 
             <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                Jenjang Pendidikan
+                Jenjang Pendidikan <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <input
-                type="text"
-                value={formData.jenjang}
-                onChange={(e) => setFormData({ ...formData, jenjang: e.target.value })}
-                placeholder="SMK / D3 / S1"
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 0.75rem',
-                  fontSize: '13px',
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.5rem' }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.45rem 0.65rem',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  outline: 'none',
+                  border: formData.jenjang === 'Mahasiswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: formData.jenjang === 'Mahasiswa' ? '#f0fdf4' : '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: formData.jenjang === 'Mahasiswa' ? 600 : 500,
+                  color: formData.jenjang === 'Mahasiswa' ? '#166534' : '#334155',
+                  userSelect: 'none',
                   boxSizing: 'border-box',
-                }}
-              />
+                }}>
+                  <input
+                    type="radio"
+                    name="admin_bidang_jenjang"
+                    value="Mahasiswa"
+                    checked={formData.jenjang === 'Mahasiswa'}
+                    onChange={() => setFormData({ ...formData, jenjang: 'Mahasiswa' })}
+                    style={{ accentColor: '#16a34a', width: '15px', height: '15px', cursor: 'pointer', margin: 0 }}
+                  />
+                  <span>Mahasiswa</span>
+                </label>
+
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.45rem 0.65rem',
+                  borderRadius: '8px',
+                  border: formData.jenjang === 'Siswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: formData.jenjang === 'Siswa' ? '#f0fdf4' : '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: formData.jenjang === 'Siswa' ? 600 : 500,
+                  color: formData.jenjang === 'Siswa' ? '#166534' : '#334155',
+                  userSelect: 'none',
+                  boxSizing: 'border-box',
+                }}>
+                  <input
+                    type="radio"
+                    name="admin_bidang_jenjang"
+                    value="Siswa"
+                    checked={formData.jenjang === 'Siswa'}
+                    onChange={() => setFormData({ ...formData, jenjang: 'Siswa' })}
+                    style={{ accentColor: '#16a34a', width: '15px', height: '15px', cursor: 'pointer', margin: 0 }}
+                  />
+                  <span>Siswa</span>
+                </label>
+              </div>
             </div>
           </div>
 

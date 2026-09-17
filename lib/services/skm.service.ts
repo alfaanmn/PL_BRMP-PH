@@ -81,6 +81,7 @@ export const skmService = {
           id,
           public_id,
           status,
+          sertifikat_url,
           created_at,
           bidangs (
             id,
@@ -117,6 +118,7 @@ export const skmService = {
         id: p.id,
         public_id: p.public_id,
         status: p.status,
+        sertifikat_url: p.sertifikat_url || null,
         bidang_nama: p.bidangs?.nama || 'Bidang Magang BRMP',
         created_at: p.created_at,
         hasSubmittedSKM: submittedSet.has(p.id),

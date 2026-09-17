@@ -7,6 +7,8 @@ import { validatePengajuanStep2 } from '@/lib/validations/pengajuan.schema'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { BidangItem } from '@/lib/services/bidang.service'
 import { PengajuanStep2State } from '@/types/pengajuan.types'
+import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
+import { EyeIcon } from '@/components/ui/admin-icons'
 
 interface CareerStep2FormProps {
   bidangList: BidangItem[]
@@ -44,8 +46,8 @@ const DOCUMENTS_CONFIG: DocumentItemConfig[] = [
   },
   {
     key: 'dokumen_tambahan',
-    label: 'Dokumen tambahan / CV / KTM',
-    sublabel: 'Berkas pendukung seperti Curriculum Vitae, portofolio, atau scan identitas pelajar',
+    label: 'Dokumen tambahan',
+    sublabel: 'Berkas dokumen pendukung kegiatan magang (opsional)',
     required: false,
     urlField: 'dokumen_tambahan_url',
     nameField: 'dokumen_tambahan_name',
@@ -61,6 +63,7 @@ export function CareerStep2Form({ bidangList, userId = 'guest' }: CareerStep2For
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [uploadingKeys, setUploadingKeys] = useState<Record<string, boolean>>({})
   const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({})
+  const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
 
   const fileInputRefs = {
     surat_pengantar: useRef<HTMLInputElement | null>(null),
@@ -346,19 +349,30 @@ export function CareerStep2Form({ bidangList, userId = 'guest' }: CareerStep2For
                           <span>{fileName || 'Dokumen.pdf'}</span>
                         </span>
 
-                        <a
-                          href={fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPreviewDoc({
+                              url: fileUrl,
+                              title: doc.label,
+                            })
+                          }
                           style={{
                             fontSize: '0.75rem',
                             color: '#16a34a',
+                            background: 'transparent',
+                            border: 'none',
                             textDecoration: 'underline',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            padding: 0,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.2rem',
                           }}
                         >
-                          Lihat file
-                        </a>
+                          <EyeIcon width={12} height={12} />
+                          <span>Lihat file</span>
+                        </button>
                       </div>
                     ) : (
                       <span style={{
@@ -505,6 +519,15 @@ export function CareerStep2Form({ bidangList, userId = 'guest' }: CareerStep2For
           </svg>
         </button>
       </div>
+
+      {/* Modal Pratinjau Dokumen */}
+      <DocumentPreviewModal
+        isOpen={previewDoc !== null}
+        url={previewDoc?.url}
+        title={previewDoc?.title || 'Pratinjau Dokumen'}
+        subtitle="Dokumen Pendaftaran Magang"
+        onClose={() => setPreviewDoc(null)}
+      />
     </form>
   )
 }

@@ -185,6 +185,8 @@ export const pengajuanService = {
           surat_pengantar_url,
           proposal_url,
           dokumen_tambahan_url,
+          surat_balasan_url,
+          sertifikat_url,
           status,
           created_at,
           updated_at,

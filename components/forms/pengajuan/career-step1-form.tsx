@@ -382,17 +382,99 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
         }}>
           {/* Jenjang */}
           <div>
-            <label className="form-label">
+            <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>
               Jenjang pendidikan <span style={{ color: '#ef4444' }}>*</span>
             </label>
-            <select
-              value={formData.jenjang === 'Siswa' ? 'Siswa' : 'Mahasiswa'}
-              onChange={(e) => setFormData({ ...formData, jenjang: e.target.value })}
-              className="form-input-control"
-            >
-              <option value="Mahasiswa">Mahasiswa (D3 / D4 / S1 / S2)</option>
-              <option value="Siswa">Siswa (SMK / SMA Kejuruan)</option>
-            </select>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+              gap: '0.5rem',
+            }}>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '8px',
+                  border: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? '#f0fdf4' : '#ffffff',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  minHeight: '42px',
+                  boxSizing: 'border-box',
+                  userSelect: 'none',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="jenjang_pendidikan"
+                  value="Mahasiswa"
+                  checked={formData.jenjang === 'Mahasiswa' || !formData.jenjang}
+                  onChange={() => {
+                    setFormData({ ...formData, jenjang: 'Mahasiswa' })
+                    if (errors.jenjang) setErrors({ ...errors, jenjang: '' })
+                  }}
+                  style={{
+                    accentColor: '#16a34a',
+                    width: '16px',
+                    height: '16px',
+                    cursor: 'pointer',
+                    margin: 0,
+                  }}
+                />
+                <span style={{
+                  fontSize: '13px',
+                  fontWeight: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? 600 : 500,
+                  color: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? '#166534' : '#334155',
+                }}>
+                  Mahasiswa
+                </span>
+              </label>
+
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '8px',
+                  border: formData.jenjang === 'Siswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: formData.jenjang === 'Siswa' ? '#f0fdf4' : '#ffffff',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  minHeight: '42px',
+                  boxSizing: 'border-box',
+                  userSelect: 'none',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="jenjang_pendidikan"
+                  value="Siswa"
+                  checked={formData.jenjang === 'Siswa'}
+                  onChange={() => {
+                    setFormData({ ...formData, jenjang: 'Siswa' })
+                    if (errors.jenjang) setErrors({ ...errors, jenjang: '' })
+                  }}
+                  style={{
+                    accentColor: '#16a34a',
+                    width: '16px',
+                    height: '16px',
+                    cursor: 'pointer',
+                    margin: 0,
+                  }}
+                />
+                <span style={{
+                  fontSize: '13px',
+                  fontWeight: formData.jenjang === 'Siswa' ? 600 : 500,
+                  color: formData.jenjang === 'Siswa' ? '#166534' : '#334155',
+                }}>
+                  Siswa
+                </span>
+              </label>
+            </div>
+            {errors.jenjang && <div className="form-error">{errors.jenjang}</div>}
           </div>
 
           {/* NIM / NIS */}

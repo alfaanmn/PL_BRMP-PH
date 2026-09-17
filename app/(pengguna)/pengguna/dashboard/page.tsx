@@ -244,13 +244,37 @@ export default async function PenggunaDashboardPage() {
             transform: scale(1.15) translateY(-2px);
           }
         }
+
+        @media (max-width: 640px) {
+          .hero-section {
+            padding: 2.25rem 1rem 2.75rem 1rem !important;
+          }
+          .floating-bidang-card {
+            animation: none !important;
+            max-width: 135px !important;
+            padding: 0.4rem 0.5rem !important;
+            border-radius: 10px !important;
+          }
+          .floating-bidang-card.left {
+            transform: none !important;
+          }
+          .floating-bidang-card.right {
+            transform: none !important;
+          }
+          .floating-icon-box {
+            width: 26px !important;
+            height: 26px !important;
+            font-size: 0.85rem !important;
+            border-radius: 6px !important;
+          }
+        }
       `}</style>
 
       {/* Header & Navbar Resmi BRMP Kementan */}
       <Navbar user={user} profile={profile} activeKey="beranda" />
 
       {/* 1. HERO SECTION FULL-BLEED DARK GREEN (Konsisten dengan Homepage) */}
-      <section style={{
+      <section className="hero-section" style={{
         backgroundColor: '#064e3b',
         backgroundImage: 'radial-gradient(circle at 75% 40%, #065f46 0%, #064e3b 85%)',
         color: '#ffffff',
@@ -263,7 +287,7 @@ export default async function PenggunaDashboardPage() {
           maxWidth: '1240px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
           gap: '2.5rem',
           alignItems: 'center'
         }}>

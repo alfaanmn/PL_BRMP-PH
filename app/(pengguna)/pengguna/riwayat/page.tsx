@@ -30,7 +30,7 @@ export default async function UserRiwayatPage() {
   }
 
   // Ambil seluruh pengajuan milik user yang login menggunakan server Supabase client berotentikasi
-  const { data: pengajuans, error: pengajuanError } = await supabase
+  const { data: rawPengajuans, error: pengajuanError } = await supabase
     .from('pengajuans')
     .select(`
       id,
@@ -57,6 +57,8 @@ export default async function UserRiwayatPage() {
       surat_pengantar_url,
       proposal_url,
       dokumen_tambahan_url,
+      surat_balasan_url,
+      sertifikat_url,
       status,
       created_at,
       updated_at,
@@ -72,6 +74,31 @@ export default async function UserRiwayatPage() {
   if (pengajuanError) {
     console.error('Error loading pengajuans:', pengajuanError)
   }
+
+  // Cek status pengisian SKM untuk masing-masing pengajuan
+  const pengajuanList = rawPengajuans || []
+  const pengajuanIds = pengajuanList.map((p) => p.id)
+  const submittedSKMSet = new Set<number>()
+
+  if (pengajuanIds.length > 0) {
+    const { data: answeredRows } = await supabase
+      .from('skm_jawaban')
+      .select('pengajuan_id')
+      .in('pengajuan_id', pengajuanIds)
+
+    if (answeredRows) {
+      answeredRows.forEach((row) => {
+        if (row.pengajuan_id) {
+          submittedSKMSet.add(row.pengajuan_id)
+        }
+      })
+    }
+  }
+
+  const pengajuans = pengajuanList.map((p) => ({
+    ...p,
+    hasSubmittedSKM: submittedSKMSet.has(p.id),
+  }))
 
   return (
     <div style={{

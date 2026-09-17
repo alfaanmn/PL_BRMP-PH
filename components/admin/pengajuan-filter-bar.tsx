@@ -95,7 +95,7 @@ export function PengajuanFilterBar({
         }}
       >
         {/* Search Input */}
-        <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: '420px' }}>
+        <div style={{ position: 'relative', flex: '1 1 200px', maxWidth: '420px', minWidth: '160px' }}>
           <div
             style={{
               position: 'absolute',
@@ -132,7 +132,7 @@ export function PengajuanFilterBar({
         </div>
 
         {/* Dropdown Filter Bidang */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '12px', color: '#6b7280', whiteSpace: 'nowrap' }}>
             Filter bidang:
           </span>
@@ -149,7 +149,7 @@ export function PengajuanFilterBar({
               backgroundColor: '#ffffff',
               outline: 'none',
               cursor: 'pointer',
-              maxWidth: '240px',
+              maxWidth: '100%',
             }}
           >
             <option value="semua">Semua bidang magang</option>

@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { PengajuanDetailModal } from './pengajuan-detail-modal'
+import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
+import { FileTextIcon } from '@/components/ui/admin-icons'
 
 interface UserRiwayatListProps {
   initialPengajuans: any[]
@@ -13,6 +15,7 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
   const [selectedPengajuan, setSelectedPengajuan] = useState<any | null>(null)
   const [activeTab, setActiveTab] = useState<string>('semua')
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
 
   useEffect(() => {
     setPengajuans(initialPengajuans || [])
@@ -294,7 +297,7 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
         </div>
 
         {/* Search Box Compact */}
-        <div style={{ position: 'relative', width: '220px' }}>
+        <div style={{ position: 'relative', flex: '1 1 180px', maxWidth: '320px', minWidth: '160px' }}>
           <input
             type="text"
             placeholder="Cari bidang / no surat"
@@ -302,7 +305,7 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              padding: '0.35rem 0.625rem 0.35rem 1.85rem',
+              padding: '0.4rem 0.625rem 0.4rem 1.85rem',
               fontSize: '12px',
               borderRadius: '6px',
               border: '1px solid #e2e8f0',
@@ -403,6 +406,9 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
             const durasiStr = `${item.durasi_bulan || 1} bulan`
             const pemohonStr = item.nama_lengkap || 'Pemohon'
             const anggotaStr = `${item.jumlah_anggota || 1} orang`
+            const isSelesai = item.status === 'Selesai'
+            const hasSubmittedSKM = Boolean(item.hasSubmittedSKM)
+            const hasSertifikat = Boolean(item.sertifikat_url)
 
             return (
               <div
@@ -411,15 +417,16 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                 style={{
                   backgroundColor: '#ffffff',
                   borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
+                  border: isSelesai && !hasSubmittedSKM ? '1px solid #fde68a' : '1px solid #e2e8f0',
                   padding: '1rem 1.25rem',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.625rem',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                  boxShadow: isSelesai && !hasSubmittedSKM ? '0 2px 8px -2px rgba(217, 119, 6, 0.08)' : '0 1px 2px rgba(0,0,0,0.02)',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                {/* Baris Atas: ID & Tanggal di kiri, Status Badge di kanan */}
+                {/* Baris Atas: ID & Tanggal di kiri, Status & SKM Badge di kanan */}
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -431,17 +438,55 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                     ID #{item.id} • Diajukan {formatDate(item.created_at)}
                   </div>
 
-                  <span style={{
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    backgroundColor: badge.bg,
-                    color: badge.color,
-                    border: `1px solid ${badge.border}`,
-                    padding: '2px 8px',
-                    borderRadius: '4px'
-                  }}>
-                    {badge.label}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                    {isSelesai && !hasSubmittedSKM && (
+                      <span style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        backgroundColor: '#fef3c7',
+                        color: '#92400e',
+                        border: '1px solid #fde68a',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        <span>⚠️</span>
+                        <span>Wajib Isi SKM</span>
+                      </span>
+                    )}
+
+                    {isSelesai && hasSubmittedSKM && (
+                      <span style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        backgroundColor: '#ecfdf5',
+                        color: '#16a34a',
+                        border: '1px solid #bbf7d0',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        <span>✓</span>
+                        <span>SKM Lengkap</span>
+                      </span>
+                    )}
+
+                    <span style={{
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      backgroundColor: badge.bg,
+                      color: badge.color,
+                      border: `1px solid ${badge.border}`,
+                      padding: '2px 8px',
+                      borderRadius: '4px'
+                    }}>
+                      {badge.label}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Judul Bidang */}
@@ -460,7 +505,7 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                   {durasiStr} - {pemohonStr} ({anggotaStr})
                 </div>
 
-                {/* Baris Bawah: Berkas Tag di kiri, Tombol Lihat Rincian di kanan */}
+                {/* Baris Bawah: Berkas Tag di kiri, Tombol Aksi di kanan */}
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -472,77 +517,198 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                   {/* Berkas Tags */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
                     {item.surat_pengantar_url && (
-                      <a
-                        href={item.surat_pengantar_url}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewDoc({
+                            url: item.surat_pengantar_url,
+                            title: 'Surat Pengantar Magang',
+                          })
+                        }
                         style={{
                           fontSize: '11px',
-                          color: '#16a34a',
+                          color: '#15803d',
                           backgroundColor: '#ecfdf5',
                           border: '1px solid #bbf7d0',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          textDecoration: 'none',
-                          fontWeight: 500,
+                          padding: '4px 9px',
+                          borderRadius: '6px',
+                          fontWeight: 600,
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '3px'
+                          gap: '5px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          minHeight: '28px',
                         }}
+                        title="Klik untuk melihat Surat Pengantar"
                       >
-                        <span>📄</span>
+                        <FileTextIcon width={13} height={13} />
                         <span>Surat pengantar</span>
-                      </a>
+                      </button>
                     )}
 
                     {item.proposal_url && (
-                      <a
-                        href={item.proposal_url}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewDoc({
+                            url: item.proposal_url,
+                            title: 'Proposal Kegiatan Magang',
+                          })
+                        }
                         style={{
                           fontSize: '11px',
-                          color: '#16a34a',
+                          color: '#15803d',
                           backgroundColor: '#ecfdf5',
                           border: '1px solid #bbf7d0',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          textDecoration: 'none',
-                          fontWeight: 500,
+                          padding: '4px 9px',
+                          borderRadius: '6px',
+                          fontWeight: 600,
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '3px'
+                          gap: '5px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          minHeight: '28px',
                         }}
+                        title="Klik untuk melihat Proposal Magang"
                       >
-                        <span>📄</span>
+                        <FileTextIcon width={13} height={13} />
                         <span>Proposal</span>
-                      </a>
+                      </button>
+                    )}
+
+                    {item.dokumen_tambahan_url && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewDoc({
+                            url: item.dokumen_tambahan_url,
+                            title: 'Dokumen Tambahan',
+                          })
+                        }
+                        style={{
+                          fontSize: '11px',
+                          color: '#15803d',
+                          backgroundColor: '#ecfdf5',
+                          border: '1px solid #bbf7d0',
+                          padding: '4px 9px',
+                          borderRadius: '6px',
+                          fontWeight: 600,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          minHeight: '28px',
+                        }}
+                        title="Klik untuk melihat Dokumen Tambahan"
+                      >
+                        <FileTextIcon width={13} height={13} />
+                        <span>Dokumen tambahan</span>
+                      </button>
                     )}
                   </div>
 
-                  {/* Tombol Aksi: Isi SKM & Lihat Rincian */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                    <Link
-                      href={`/pengguna/skm?pengajuan_id=${item.id}`}
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: '#02482e',
-                        backgroundColor: '#f0fdf4',
-                        border: '1px solid #bbf7d0',
-                        borderRadius: '6px',
-                        padding: '0.3rem 0.65rem',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        transition: 'all 0.15s ease'
-                      }}
-                      title="Isi Survei Kepuasan Masyarakat untuk pengajuan ini"
-                    >
-                      <span>⭐</span>
-                      <span>Isi SKM</span>
-                    </Link>
+                  {/* Tombol Aksi: SKM, Sertifikat, & Lihat Rincian */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                    {/* Alur SKM & Sertifikat untuk status Selesai */}
+                    {isSelesai && (
+                      <>
+                        {!hasSubmittedSKM ? (
+                          <>
+                            <Link
+                              href={`/pengguna/skm?pengajuan_id=${item.id}`}
+                              style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#ffffff',
+                                backgroundColor: '#d97706',
+                                border: '1px solid #b45309',
+                                borderRadius: '6px',
+                                padding: '0.3rem 0.65rem',
+                                textDecoration: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                transition: 'all 0.15s ease',
+                                boxShadow: '0 1px 2px rgba(217, 119, 6, 0.2)'
+                              }}
+                              title="Wajib mengisi SKM untuk membuka akses sertifikat magang"
+                            >
+                              <span>⭐</span>
+                              <span>Isi SKM</span>
+                            </Link>
+
+                            <span
+                              style={{
+                                fontSize: '11px',
+                                color: '#94a3b8',
+                                backgroundColor: '#f8fafc',
+                                border: '1px dashed #cbd5e1',
+                                borderRadius: '6px',
+                                padding: '0.3rem 0.5rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                cursor: 'not-allowed'
+                              }}
+                              title="Sertifikat terkunci sampai kuesioner SKM selesai diisi"
+                            >
+                              <span>🔒</span>
+                              <span>Sertifikat Terkunci</span>
+                            </span>
+                          </>
+                        ) : hasSertifikat ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewDoc({
+                                url: item.sertifikat_url,
+                                title: `Sertifikat Magang - ${item.bidangs?.nama || 'BRMP PH'}`,
+                              })
+                            }
+                            style={{
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              color: '#ffffff',
+                              backgroundColor: '#16a34a',
+                              border: '1px solid #15803d',
+                              borderRadius: '6px',
+                              padding: '0.3rem 0.65rem',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                              boxShadow: '0 1px 2px rgba(22, 163, 74, 0.2)',
+                              transition: 'all 0.15s ease'
+                            }}
+                            title="Klik untuk melihat dan mengunduh sertifikat magang Anda"
+                          >
+                            <span>🎓</span>
+                            <span>Lihat Sertifikat</span>
+                          </button>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              color: '#64748b',
+                              backgroundColor: '#f1f5f9',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '6px',
+                              padding: '0.3rem 0.5rem',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.25rem'
+                            }}
+                            title="Sertifikat sedang dalam proses penerbitan oleh administrator BRMP"
+                          >
+                            <span>⏳</span>
+                            <span>Sertifikat Proses Terbit</span>
+                          </span>
+                        )}
+                      </>
+                    )}
 
                     <button
                       type="button"
@@ -580,6 +746,15 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
           pengajuan={selectedPengajuan}
         />
       )}
+
+      {/* Modal Pratinjau Dokumen */}
+      <DocumentPreviewModal
+        isOpen={previewDoc !== null}
+        url={previewDoc?.url}
+        title={previewDoc?.title || 'Pratinjau Dokumen'}
+        subtitle="Dokumen Riwayat Pengajuan"
+        onClose={() => setPreviewDoc(null)}
+      />
     </div>
   )
 }

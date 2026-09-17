@@ -381,6 +381,36 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
       margin: 0,
       padding: 0
     }}>
+      <style>{`
+        .bidang-detail-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 340px;
+          gap: 2rem;
+          align-items: start;
+        }
+        .bidang-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.875rem;
+          margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) {
+          .bidang-detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+        }
+        @media (max-width: 540px) {
+          .bidang-stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.625rem !important;
+          }
+          .bidang-detail-main-card {
+            padding: 1.25rem 1rem !important;
+          }
+        }
+      `}</style>
+
       {/* Header / Navbar Resmi BRMP Kementan */}
       <Navbar user={user} profile={profileData} activeKey="bidang" />
 
@@ -431,14 +461,9 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
         </nav>
 
         {/* Grid Utama 2 Kolom (Konten Kiri + Sidebar Kanan) */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) 340px',
-          gap: '2rem',
-          alignItems: 'start'
-        }}>
+        <div className="bidang-detail-grid">
           {/* KOLOM KIRI (KONTEN UTAMA) */}
-          <div style={{
+          <div className="bidang-detail-main-card" style={{
             backgroundColor: '#ffffff',
             borderRadius: '16px',
             border: '1px solid #e2e8f0',
@@ -527,12 +552,7 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
             </div>
 
             {/* 3. KARTU STATISTIK (GRID 3 KOLOM DENGAN IKON HIJAU DI ATAS ANGKA) */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '0.875rem',
-              marginBottom: '2rem'
-            }}>
+            <div className="bidang-stats-grid">
               {/* Card 1: Kapasitas kuota */}
               <div style={{
                 backgroundColor: '#ffffff',

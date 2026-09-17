@@ -13,6 +13,7 @@ interface UserPengajuanItem {
   bidang_nama: string
   created_at: string
   hasSubmittedSKM: boolean
+  sertifikat_url?: string | null
 }
 
 interface SKMFormProps {
@@ -156,6 +157,9 @@ export function SKMForm({
 
   // JIKA SUDAH PERNAH DIISI ATAU BARU SAJA SUKSES SUBMIT
   if (submittedSuccess || isAlreadySubmitted) {
+    const isSelesai = currentPengajuan?.status === 'Selesai'
+    const hasSertifikat = Boolean(currentPengajuan?.sertifikat_url)
+
     return (
       <div style={{
         backgroundColor: '#ffffff',
@@ -202,7 +206,7 @@ export function SKMForm({
             borderRadius: '10px',
             padding: '1rem',
             textAlign: 'left',
-            marginBottom: '1.75rem',
+            marginBottom: '1.5rem',
             fontSize: '0.8125rem'
           }}>
             <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '0.375rem' }}>
@@ -211,7 +215,36 @@ export function SKMForm({
             <div style={{ color: '#475569', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <div>• ID Pengajuan: <strong>#{currentPengajuan.id}</strong> {currentPengajuan.public_id ? `(${currentPengajuan.public_id})` : ''}</div>
               <div>• Bidang: <strong>{currentPengajuan.bidang_nama}</strong></div>
-              <div>• Status: <span style={{ color: '#16a34a', fontWeight: 600 }}>{currentPengajuan.status}</span></div>
+              <div>• Status Magang: <span style={{ color: '#16a34a', fontWeight: 600 }}>{currentPengajuan.status}</span></div>
+              <div>• Status SKM: <span style={{ color: '#16a34a', fontWeight: 600 }}>✓ Selesai / Lengkap</span></div>
+            </div>
+          </div>
+        )}
+
+        {/* Info Sertifikat Status */}
+        {isSelesai && (
+          <div style={{
+            backgroundColor: hasSertifikat ? '#f0fdf4' : '#fffbeb',
+            border: hasSertifikat ? '1px solid #bbf7d0' : '1px solid #fde68a',
+            borderRadius: '10px',
+            padding: '0.875rem 1rem',
+            textAlign: 'left',
+            marginBottom: '1.75rem',
+            fontSize: '0.8125rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.625rem'
+          }}>
+            <span style={{ fontSize: '1.25rem' }}>{hasSertifikat ? '🎓' : '⏳'}</span>
+            <div>
+              <div style={{ fontWeight: 700, color: hasSertifikat ? '#166534' : '#92400e' }}>
+                {hasSertifikat ? 'Sertifikat Magang Siap Diambil' : 'Sertifikat Sedang Dalam Proses Penerbitan'}
+              </div>
+              <div style={{ color: hasSertifikat ? '#15803d' : '#b45309', fontSize: '0.75rem', marginTop: '2px' }}>
+                {hasSertifikat
+                  ? 'Kuesioner SKM telah lengkap dan sertifikat magang resmi Anda telah diterbitkan.'
+                  : 'Kuesioner SKM telah lengkap. Sertifikat magang resmi akan segera diunggah oleh administrator BRMP.'}
+              </div>
             </div>
           </div>
         )}
@@ -231,7 +264,7 @@ export function SKMForm({
               boxShadow: '0 2px 4px rgba(22, 163, 74, 0.2)'
             }}
           >
-            Lihat Riwayat Pengajuan
+            {isSelesai && hasSertifikat ? 'Lihat & Ambil Sertifikat' : 'Lihat Riwayat Pengajuan'}
           </Link>
 
           <Link

@@ -11,6 +11,8 @@ import {
 import { authService } from '@/lib/services/auth.service'
 import { PengajuanTimelineLog } from '@/components/admin/pengajuan-timeline-log'
 import { PengajuanVerifikasiModal } from '@/components/admin/pengajuan-verifikasi-modal'
+import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
+import { EyeIcon, ExternalLinkIcon, DownloadIcon, FileTextIcon } from '@/components/ui/admin-icons'
 
 interface PageProps {
   params: Promise<{
@@ -30,9 +32,12 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
-  // Modal State
+  // Modal State Verifikasi
   const [modalAction, setModalAction] = useState<'terima' | 'tolak' | 'selesai' | null>(null)
   const [loadingSubmit, setLoadingSubmit] = useState(false)
+
+  // Modal State Preview Dokumen
+  const [previewDoc, setPreviewDoc] = useState<{ url?: string | null; title: string } | null>(null)
 
   // Load detail data
   const loadDetail = useCallback(async () => {
@@ -488,17 +493,13 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  gap: '0.5rem',
+                  flexWrap: 'wrap',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                   <div style={{ color: '#15803d', display: 'flex' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="16" y1="13" x2="8" y2="13" />
-                      <line x1="16" y1="17" x2="8" y2="17" />
-                      <polyline points="10 9 9 9 8 9" />
-                    </svg>
+                    <FileTextIcon width={16} height={16} />
                   </div>
                   <span style={{ fontSize: '12px', fontWeight: 500, color: '#111827' }}>
                     Surat pengantar instansi
@@ -506,23 +507,82 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
                 </div>
 
                 {detail.surat_pengantar_url ? (
-                  <a
-                    href={detail.surat_pengantar_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      padding: '4px 12px',
-                      borderRadius: '6px',
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e2e8f0',
-                      color: '#15803d',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Buka
-                  </a>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewDoc({
+                          url: detail.surat_pengantar_url,
+                          title: 'Surat Pengantar Instansi',
+                        })
+                      }
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#ecfdf5',
+                        border: '1px solid #bbf7d0',
+                        color: '#15803d',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        minHeight: '30px',
+                      }}
+                    >
+                      <EyeIcon width={13} height={13} />
+                      <span>Lihat</span>
+                    </button>
+                    <a
+                      href={detail.surat_pengantar_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                        color: '#475569',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        minHeight: '30px',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <ExternalLinkIcon width={13} height={13} />
+                      <span>Tab Baru</span>
+                    </a>
+                    <a
+                      href={detail.surat_pengantar_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#15803d',
+                        border: 'none',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        minHeight: '30px',
+                        boxSizing: 'border-box',
+                        boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
+                      }}
+                    >
+                      <DownloadIcon width={13} height={13} />
+                      <span>Unduh</span>
+                    </a>
+                  </div>
                 ) : (
                   <span style={{ fontSize: '11px', color: '#9ca3af' }}>Tidak ada</span>
                 )}
@@ -538,16 +598,13 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  gap: '0.5rem',
+                  flexWrap: 'wrap',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                   <div style={{ color: '#15803d', display: 'flex' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="16" y1="13" x2="8" y2="13" />
-                      <line x1="16" y1="17" x2="8" y2="17" />
-                    </svg>
+                    <FileTextIcon width={16} height={16} />
                   </div>
                   <span style={{ fontSize: '12px', fontWeight: 500, color: '#111827' }}>
                     Proposal magang
@@ -555,29 +612,88 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
                 </div>
 
                 {detail.proposal_url ? (
-                  <a
-                    href={detail.proposal_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      padding: '4px 12px',
-                      borderRadius: '6px',
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e2e8f0',
-                      color: '#15803d',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Buka
-                  </a>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewDoc({
+                          url: detail.proposal_url,
+                          title: 'Proposal Kegiatan Magang',
+                        })
+                      }
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#ecfdf5',
+                        border: '1px solid #bbf7d0',
+                        color: '#15803d',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        minHeight: '30px',
+                      }}
+                    >
+                      <EyeIcon width={13} height={13} />
+                      <span>Lihat</span>
+                    </button>
+                    <a
+                      href={detail.proposal_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                        color: '#475569',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        minHeight: '30px',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <ExternalLinkIcon width={13} height={13} />
+                      <span>Tab Baru</span>
+                    </a>
+                    <a
+                      href={detail.proposal_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#15803d',
+                        border: 'none',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        minHeight: '30px',
+                        boxSizing: 'border-box',
+                        boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
+                      }}
+                    >
+                      <DownloadIcon width={13} height={13} />
+                      <span>Unduh</span>
+                    </a>
+                  </div>
                 ) : (
                   <span style={{ fontSize: '11px', color: '#9ca3af' }}>Tidak ada</span>
                 )}
               </div>
 
-              {/* Dokumen Tambahan jika ada */}
+              {/* Dokumen Tambahan */}
               {detail.dokumen_tambahan_url && (
                 <div
                   style={{
@@ -588,36 +704,95 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    gap: '0.5rem',
+                    flexWrap: 'wrap',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                     <div style={{ color: '#15803d', display: 'flex' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                      </svg>
+                      <FileTextIcon width={16} height={16} />
                     </div>
                     <span style={{ fontSize: '12px', fontWeight: 500, color: '#111827' }}>
                       Dokumen tambahan
                     </span>
                   </div>
 
-                  <a
-                    href={detail.dokumen_tambahan_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      padding: '4px 12px',
-                      borderRadius: '6px',
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e2e8f0',
-                      color: '#15803d',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Buka
-                  </a>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewDoc({
+                          url: detail.dokumen_tambahan_url,
+                          title: 'Dokumen Tambahan',
+                        })
+                      }
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#ecfdf5',
+                        border: '1px solid #bbf7d0',
+                        color: '#15803d',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        minHeight: '30px',
+                      }}
+                    >
+                      <EyeIcon width={13} height={13} />
+                      <span>Lihat</span>
+                    </button>
+                    <a
+                      href={detail.dokumen_tambahan_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                        color: '#475569',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        minHeight: '30px',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <ExternalLinkIcon width={13} height={13} />
+                      <span>Tab Baru</span>
+                    </a>
+                    <a
+                      href={detail.dokumen_tambahan_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: '#15803d',
+                        border: 'none',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        minHeight: '30px',
+                        boxSizing: 'border-box',
+                        boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
+                      }}
+                    >
+                      <DownloadIcon width={13} height={13} />
+                      <span>Unduh</span>
+                    </a>
+                  </div>
                 </div>
               )}
             </div>
@@ -638,6 +813,15 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
         loadingSubmit={loadingSubmit}
         onClose={() => setModalAction(null)}
         onSubmit={handleVerifikasiSubmit}
+      />
+
+      {/* 4. Modal Pratinjau Dokumen */}
+      <DocumentPreviewModal
+        isOpen={previewDoc !== null}
+        url={previewDoc?.url}
+        title={previewDoc?.title || 'Pratinjau Dokumen'}
+        subtitle={`Pengajuan: ${detail.nama_lengkap} (${detail.asal_instansi})`}
+        onClose={() => setPreviewDoc(null)}
       />
     </div>
   )
