@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import {
   AdminPembimbingListItem,
+  AdminPembimbingStats,
   adminPembimbingService,
 } from '@/lib/services/admin-pembimbing.service'
 import { PembimbingFormModal } from '@/components/admin/pembimbing-form-modal'
@@ -14,6 +15,7 @@ import {
   LayersIcon,
   EditIcon,
   PowerIcon,
+  TrashIcon,
   RefreshIcon,
   AlertCircleIcon,
   LoaderIcon,
@@ -28,6 +30,12 @@ import {
 
 export default function AdminPembimbingPage() {
   const [pembimbings, setPembimbings] = useState<AdminPembimbingListItem[]>([])
+  const [stats, setStats] = useState<AdminPembimbingStats>({
+    totalPembimbing: 0,
+    activePembimbing: 0,
+    totalKapasitas: 0,
+    totalBimbinganAktif: 0,
+  })
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -40,6 +48,10 @@ export default function AdminPembimbingPage() {
   const [isBidangModalOpen, setIsBidangModalOpen] = useState(false)
   const [selectedPembimbingForBidang, setSelectedPembimbingForBidang] = useState<AdminPembimbingListItem | null>(null)
 
+  // Delete state
+  const [selectedPembimbingForDelete, setSelectedPembimbingForDelete] = useState<AdminPembimbingListItem | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const [actionLoadingId, setActionLoadingId] = useState<number | string | null>(null)
   const [feedbackToast, setFeedbackToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
@@ -49,6 +61,17 @@ export default function AdminPembimbingPage() {
       setFeedbackToast(null)
     }, 4000)
   }
+
+  const loadStats = useCallback(async () => {
+    try {
+      const res = await adminPembimbingService.getPembimbingStats()
+      if (res.data) {
+        setStats(res.data)
+      }
+    } catch (err) {
+      console.warn('Gagal memuat statistik pembimbing:', err)
+    }
+  }, [])
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -69,6 +92,10 @@ export default function AdminPembimbingPage() {
       setLoading(false)
     }
   }, [search, statusFilter])
+
+  useEffect(() => {
+    loadStats()
+  }, [loadStats])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -96,6 +123,7 @@ export default function AdminPembimbingPage() {
           `Pembimbing "${pembimbing.nama}" berhasil ${targetStatus ? 'diaktifkan' : 'dinonaktifkan'}.`
         )
         loadData()
+        loadStats()
       }
     } catch {
       showToast('error', 'Gagal memperbarui status pembimbing.')
@@ -104,11 +132,28 @@ export default function AdminPembimbingPage() {
     }
   }
 
-  // Stats
-  const totalPembimbing = pembimbings.length
-  const activePembimbing = pembimbings.filter((p) => p.is_active).length
-  const totalKapasitas = pembimbings.reduce((acc, p) => acc + (p.kuota_default || 0), 0)
-  const totalBimbinganAktif = pembimbings.reduce((acc, p) => acc + (p.peserta_aktif_count || 0), 0)
+  const handleDeletePembimbing = async () => {
+    if (!selectedPembimbingForDelete) return
+    setIsDeleting(true)
+    try {
+      const res = await adminPembimbingService.deletePembimbing(selectedPembimbingForDelete.id)
+      if (res.error) {
+        showToast('error', res.error)
+      } else {
+        showToast('success', `Pembimbing "${selectedPembimbingForDelete.nama}" berhasil dihapus.`)
+        setSelectedPembimbingForDelete(null)
+        loadData()
+        loadStats()
+      }
+    } catch {
+      showToast('error', 'Gagal menghapus pembimbing.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  // Global Dynamic Stats (Independent from search/tab filter)
+  const { totalPembimbing, activePembimbing, totalKapasitas, totalBimbinganAktif } = stats
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '1200px' }}>
@@ -711,6 +756,29 @@ export default function AdminPembimbingPage() {
                       )}
                       <span>{pembimbing.is_active ? 'Nonaktifkan' : 'Aktifkan'}</span>
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPembimbingForDelete(pembimbing)}
+                      disabled={isLoadingAction}
+                      style={{
+                        padding: '0.4rem 0.75rem',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        backgroundColor: '#fef2f2',
+                        color: '#b91c1c',
+                        border: '1px solid #fecaca',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                      }}
+                      title="Hapus Pembimbing"
+                    >
+                      <TrashIcon width={13} height={13} />
+                      <span>Hapus</span>
+                    </button>
                   </div>
                 </div>
               )
@@ -735,6 +803,7 @@ export default function AdminPembimbingPage() {
               : 'Pembimbing baru berhasil ditambahkan.'
           )
           loadData()
+          loadStats()
         }}
       />
 
@@ -748,8 +817,127 @@ export default function AdminPembimbingPage() {
         }}
         onSuccess={() => {
           loadData()
+          loadStats()
         }}
       />
+
+      {/* Modal Konfirmasi Hapus Pembimbing */}
+      {selectedPembimbingForDelete && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => !isDeleting && setSelectedPembimbingForDelete(null)}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              maxWidth: '440px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              border: '1px solid #fee2e2',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: '#fef2f2',
+                  color: '#dc2626',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <TrashIcon width={20} height={20} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
+                  Hapus Pembimbing Lapangan
+                </h3>
+                <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>
+                  Konfirmasi tindakan penghapusan master data
+                </p>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#334155', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+              Apakah Anda yakin ingin menghapus pembimbing{' '}
+              <strong style={{ color: '#0f172a' }}>&ldquo;{selectedPembimbingForDelete.nama}&rdquo;</strong>?
+              <br />
+              <span style={{ fontSize: '12px', color: '#dc2626', display: 'block', marginTop: '0.5rem' }}>
+                *Catatan: Pembimbing yang masih tercatat membimbing data pengajuan magang peserta tidak dapat dihapus dan harus dinonaktifkan.
+              </span>
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedPembimbingForDelete(null)}
+                disabled={isDeleting}
+                style={{
+                  padding: '0.5rem 1rem',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  backgroundColor: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleDeletePembimbing}
+                disabled={isDeleting}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  backgroundColor: '#dc2626',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: '0 2px 4px rgba(220, 38, 38, 0.2)',
+                }}
+              >
+                {isDeleting ? (
+                  <>
+                    <LoaderIcon width={14} height={14} />
+                    <span>Menghapus...</span>
+                  </>
+                ) : (
+                  <>
+                    <TrashIcon width={14} height={14} />
+                    <span>Ya, Hapus Pembimbing</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+

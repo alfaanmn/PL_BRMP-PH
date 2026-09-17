@@ -45,6 +45,13 @@ export interface UpdatePembimbingPayload {
   is_active?: boolean
 }
 
+export interface AdminPembimbingStats {
+  totalPembimbing: number
+  activePembimbing: number
+  totalKapasitas: number
+  totalBimbinganAktif: number
+}
+
 export const adminPembimbingService = {
   /**
    * Mengambil daftar master pembimbing lapangan beserta bidang terkait dan jumlah bimbingan aktif
@@ -379,4 +386,116 @@ export const adminPembimbingService = {
       return { success: false, error: msg }
     }
   },
+
+  /**
+   * Menghapus pembimbing dengan proteksi foreign key pengajuan magang
+   */
+  async deletePembimbing(id: number | string): Promise<{ success: boolean; error: string | null }> {
+    try {
+      const supabase = createClient()
+
+      // 1. Pre-check apakah pembimbing terikat pada data pengajuan magang
+      const { data: pengajuans, error: checkPengajuanError } = await supabase
+        .from('pengajuans')
+        .select('id')
+        .eq('pembimbing_id', id)
+        .limit(1)
+
+      if (checkPengajuanError) {
+        return { success: false, error: 'Gagal memverifikasi relasi bimbingan: ' + checkPengajuanError.message }
+      }
+
+      if (pengajuans && pengajuans.length > 0) {
+        return {
+          success: false,
+          error: 'Pembimbing ini tidak dapat dihapus karena masih tercatat membimbing data pengajuan magang peserta. Silakan gunakan opsi "Nonaktifkan" jika pembimbing sedang tidak aktif.',
+        }
+      }
+
+      // 2. Hapus relasi penugasan di bidang_pembimbing
+      const { error: relError } = await supabase
+        .from('bidang_pembimbing')
+        .delete()
+        .eq('pembimbing_id', id)
+
+      if (relError) {
+        console.warn('Gagal membersihkan relasi bidang_pembimbing:', relError.message)
+      }
+
+      // 3. Eksekusi DELETE pada master pembimbings (proteksi FK database sebagai lapisan terakhir)
+      const { error: deleteError } = await supabase
+        .from('pembimbings')
+        .delete()
+        .eq('id', id)
+
+      if (deleteError) {
+        if (deleteError.code === '23503' || deleteError.message?.toLowerCase().includes('foreign key')) {
+          return {
+            success: false,
+            error: 'Tidak dapat menghapus pembimbing karena masih terdapat data yang terhubung di sistem (Foreign Key constraint). Silakan gunakan opsi "Nonaktifkan".',
+          }
+        }
+        return { success: false, error: deleteError.message }
+      }
+
+      return { success: true, error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menghapus pembimbing.'
+      return { success: false, error: msg }
+    }
+  },
+
+  /**
+   * Mengambil statistik global pembimbing secara terpisah dan dinamis (tidak terpengaruh search/filter)
+   */
+  async getPembimbingStats(): Promise<{ data: AdminPembimbingStats | null; error: string | null }> {
+    try {
+      const supabase = createClient()
+
+      // Ambil seluruh master pembimbing
+      const { data: allPembimbings, error: pembimbingError } = await supabase
+        .from('pembimbings')
+        .select('id, kuota_default, is_active')
+
+      if (pembimbingError) {
+        return { data: null, error: pembimbingError.message }
+      }
+
+      // Ambil pengajuan aktif yang sudah memiliki pembimbing
+      const { data: activePengajuans, error: pengajuanError } = await supabase
+        .from('pengajuans')
+        .select('jumlah_anggota')
+        .in('status', ['Sedang Magang', 'Disetujui'])
+        .not('pembimbing_id', 'is', null)
+
+      if (pengajuanError) {
+        console.warn('Gagal menghitung bimbingan aktif:', pengajuanError.message)
+      }
+
+      const totalPembimbing = (allPembimbings || []).length
+      const activePembimbing = (allPembimbings || []).filter((p) => p.is_active).length
+      const totalKapasitas = (allPembimbings || []).reduce(
+        (acc, p) => acc + (Number(p.kuota_default) || 0),
+        0
+      )
+      const totalBimbinganAktif = (activePengajuans || []).reduce(
+        (acc, p) => acc + (Number(p.jumlah_anggota) || 1),
+        0
+      )
+
+      return {
+        data: {
+          totalPembimbing,
+          activePembimbing,
+          totalKapasitas,
+          totalBimbinganAktif,
+        },
+        error: null,
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memuat statistik pembimbing.'
+      return { data: null, error: msg }
+    }
+  },
 }
+

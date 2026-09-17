@@ -64,6 +64,13 @@ export interface UpdateBidangPayload {
   is_active?: boolean
 }
 
+export interface AdminBidangStats {
+  totalBidang: number
+  activeBidang: number
+  totalKuota: number
+  pesertaTerisi: number
+}
+
 export const adminBidangService = {
   /**
    * Mengambil daftar master bidang dengan relasi pembimbing dan hitungan peserta aktif
@@ -419,4 +426,112 @@ export const adminBidangService = {
       return { success: false, error: msg }
     }
   },
+
+  /**
+   * Menghapus bidang dengan proteksi foreign key pengajuan magang
+   */
+  async deleteBidang(id: number | string): Promise<{ success: boolean; error: string | null }> {
+    try {
+      const supabase = createClient()
+
+      // 1. Pre-check apakah bidang sudah terikat dengan pengajuan magang
+      const { data: pengajuans, error: checkPengajuanError } = await supabase
+        .from('pengajuans')
+        .select('id')
+        .eq('bidang_id', id)
+        .limit(1)
+
+      if (checkPengajuanError) {
+        return { success: false, error: 'Gagal memverifikasi relasi pengajuan: ' + checkPengajuanError.message }
+      }
+
+      if (pengajuans && pengajuans.length > 0) {
+        return {
+          success: false,
+          error: 'Bidang ini tidak dapat dihapus karena sudah memiliki riwayat atau data pengajuan magang. Anda dapat menggunakan opsi "Nonaktifkan" untuk menutup pendaftaran baru.',
+        }
+      }
+
+      // 2. Hapus relasi penugasan pembimbing di bidang_pembimbing
+      const { error: relError } = await supabase
+        .from('bidang_pembimbing')
+        .delete()
+        .eq('bidang_id', id)
+
+      if (relError) {
+        console.warn('Gagal membersihkan relasi bidang_pembimbing:', relError.message)
+      }
+
+      // 3. Eksekusi DELETE pada master bidangs (dengan proteksi FK database sebagai lapisan terakhir)
+      const { error: deleteError } = await supabase
+        .from('bidangs')
+        .delete()
+        .eq('id', id)
+
+      if (deleteError) {
+        if (deleteError.code === '23503' || deleteError.message?.toLowerCase().includes('foreign key')) {
+          return {
+            success: false,
+            error: 'Tidak dapat menghapus bidang karena masih terdapat data yang terhubung di sistem (Foreign Key constraint). Silakan gunakan opsi "Nonaktifkan".',
+          }
+        }
+        return { success: false, error: deleteError.message }
+      }
+
+      return { success: true, error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menghapus bidang.'
+      return { success: false, error: msg }
+    }
+  },
+
+  /**
+   * Mengambil statistik global bidang secara terpisah dan dinamis (tidak terpengaruh search/filter)
+   */
+  async getBidangStats(): Promise<{ data: AdminBidangStats | null; error: string | null }> {
+    try {
+      const supabase = createClient()
+
+      // Ambil seluruh data master bidang
+      const { data: allBidangs, error: bidangError } = await supabase
+        .from('bidangs')
+        .select('id, kuota, is_active')
+
+      if (bidangError) {
+        return { data: null, error: bidangError.message }
+      }
+
+      // Ambil pengajuan aktif untuk menghitung peserta terisi secara global
+      const { data: activePengajuans, error: pengajuanError } = await supabase
+        .from('pengajuans')
+        .select('jumlah_anggota')
+        .in('status', ['Sedang Magang', 'Disetujui'])
+
+      if (pengajuanError) {
+        console.warn('Gagal menghitung peserta aktif:', pengajuanError.message)
+      }
+
+      const totalBidang = (allBidangs || []).length
+      const activeBidang = (allBidangs || []).filter((b) => b.is_active).length
+      const totalKuota = (allBidangs || []).reduce((acc, b) => acc + (Number(b.kuota) || 0), 0)
+      const pesertaTerisi = (activePengajuans || []).reduce(
+        (acc, p) => acc + (Number(p.jumlah_anggota) || 1),
+        0
+      )
+
+      return {
+        data: {
+          totalBidang,
+          activeBidang,
+          totalKuota,
+          pesertaTerisi,
+        },
+        error: null,
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memuat statistik bidang.'
+      return { data: null, error: msg }
+    }
+  },
 }
+
