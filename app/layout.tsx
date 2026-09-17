@@ -4,7 +4,11 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'SIM-Magang',
   description: 'Sistem Informasi Manajemen Magang',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
+
 
 export default function RootLayout({
   children,
