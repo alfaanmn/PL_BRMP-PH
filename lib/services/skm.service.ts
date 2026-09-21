@@ -132,30 +132,12 @@ export const skmService = {
   },
 
   /**
-   * Menyimpan jawaban kuesioner SKM pengguna ke tabel skm_jawaban
+   * Menyimpan jawaban kuesioner SKM pengguna ke tabel skm_jawaban melalui Server Route resmi
    * Melakukan validasi autentikasi, kepemilikan pengajuan, pencegahan double submission,
-   * dan batch insert seluruh butir jawaban.
+   * dan batch insert seluruh butir jawaban di boundary server.
    */
   async submitSKMJawaban(payload: SKMSubmissionPayload): Promise<SKMResponse> {
     try {
-      const supabase = createClient()
-
-      // 1. Verifikasi Sesi Pengguna
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser()
-
-      if (authError || !user) {
-        return {
-          success: false,
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'Sesi Anda telah berakhir. Silakan login kembali.',
-          },
-        }
-      }
-
       if (!payload.pengajuanId) {
         return {
           success: false,
@@ -166,37 +148,6 @@ export const skmService = {
         }
       }
 
-      // 2. Verifikasi Kepemilikan Pengajuan
-      const { data: pengajuan, error: pengajuanErr } = await supabase
-        .from('pengajuans')
-        .select('id, user_id, status')
-        .eq('id', payload.pengajuanId)
-        .eq('user_id', user.id)
-        .single()
-
-      if (pengajuanErr || !pengajuan) {
-        return {
-          success: false,
-          error: {
-            code: 'FORBIDDEN',
-            message: 'Anda tidak memiliki hak akses terhadap permohonan pengajuan ini.',
-          },
-        }
-      }
-
-      // 3. Verifikasi Pencegahan Double Submission
-      const { hasSubmitted } = await this.checkHasSubmittedSKM(payload.pengajuanId)
-      if (hasSubmitted) {
-        return {
-          success: false,
-          error: {
-            code: 'ALREADY_SUBMITTED',
-            message: 'Survei Kepuasan Masyarakat untuk pengajuan ini sudah pernah dikirim sebelumnya.',
-          },
-        }
-      }
-
-      // 4. Validasi Format & Kelengkapan Jawaban
       if (!payload.answers || payload.answers.length === 0) {
         return {
           success: false,
@@ -207,40 +158,45 @@ export const skmService = {
         }
       }
 
-      // Susun data untuk batch insert ke skm_jawaban
-      const rowsToInsert = payload.answers.map((ans) => ({
-        pengajuan_id: payload.pengajuanId,
-        skm_pertanyaan_id: ans.skmPertanyaanId,
-        jawaban: String(ans.jawaban ?? '').trim(),
-      }))
+      // Panggil Server Route Handler resmi untuk memproses mutasi dengan aman
+      const res = await fetch('/api/skm/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
 
-      // 5. Simpan ke database Supabase
-      const { data, error: insertError } = await supabase
-        .from('skm_jawaban')
-        .insert(rowsToInsert)
-        .select()
+      const result = await res.json()
 
-      if (insertError) {
-        console.error('Database error on insert skm_jawaban:', insertError)
+      if (!res.ok || !result.success) {
+        console.error('[SKM Service] Submission failed from server route:', {
+          status: res.status,
+          success: result?.success,
+          code: result?.error?.code,
+          message: result?.error?.message,
+          rawError: result?.error,
+        })
         return {
           success: false,
           error: {
-            code: 'DATABASE_ERROR',
-            message: insertError.message || 'Gagal menyimpan jawaban survei ke database.',
+            code: result?.error?.code || 'SUBMISSION_FAILED',
+            message: result?.error?.message || 'Gagal mengirim survei kepuasan. Silakan coba kembali.',
           },
         }
       }
 
       return {
         success: true,
-        data,
+        data: result.data,
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem saat mengirim survei.'
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem saat menghubungi server.'
+      console.error('[SKM Service] Network/Unhandled error on submitSKMJawaban:', err)
       return {
         success: false,
         error: {
-          code: 'SYSTEM_ERROR',
+          code: 'NETWORK_ERROR',
           message: msg,
         },
       }

@@ -1026,62 +1026,7 @@ export default async function PenggunaDashboardPage() {
           </div>
         </section>
 
-        {/* 4. Banner Konsultasi Helpdesk */}
-        <section style={{ marginBottom: '2rem' }}>
-          <div style={{
-            backgroundColor: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-            borderRadius: '16px',
-            padding: '1.5rem 2rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1.25rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '12px',
-                backgroundColor: '#15803d',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.25rem',
-                flexShrink: 0
-              }}>
-                💬
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
-                  Butuh Konsultasi Penugasan Riset &amp; Magang?
-                </h3>
-                <p style={{ fontSize: '0.8125rem', color: '#475569', margin: 0 }}>
-                  Hubungi tim administrasi kepegawaian &amp; tata usaha Balai BRMP Pengelola Hasil Kementerian Pertanian.
-                </p>
-              </div>
-            </div>
 
-            <Link
-              href="/kontak"
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#15803d',
-                color: '#ffffff',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
-                transition: 'all 0.2s'
-              }}
-            >
-              Hubungi Helpdesk BRMP →
-            </Link>
-          </div>
-        </section>
       </main>
 
       {/* Footer Resmi BRMP Kementan */}
@@ -1102,15 +1047,12 @@ export default async function PenggunaDashboardPage() {
         }}>
           {/* Info Institusi */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <AppLogo size={36} />
               <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff' }}>
                 BRMP Pengelola Hasil
               </span>
             </div>
-            <p style={{ fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.6, margin: 0 }}>
-              Sistem Informasi Manajemen Magang &amp; Riset Terpadu Balai Penerapan Standar Instrumen Pertanian (BRMP) Pengelola Hasil Kementerian Pertanian Republik Indonesia.
-            </p>
           </div>
 
           {/* Navigasi Cepat */}
@@ -1140,7 +1082,16 @@ export default async function PenggunaDashboardPage() {
               SEKRETARIAT BRMP
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.5 }}>
-              <div>Jl. Ragunan No. 29, Pasar Minggu, Jakarta Selatan, DKI Jakarta 12540</div>
+              <div>
+                <a
+                  href="https://www.google.com/maps/place/Balai+Pengelola+Hasil+Perakitan+dan+Modernisasi+Pertanian/@-6.5893588,106.7998551,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c5ccf0c9dc05:0xd84bcc2b4c0158c9!8m2!3d-6.5893641!4d106.80243!16s%2Fg%2F1tcwc2r_?entry=ttu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#a7f3d0', textDecoration: 'none' }}
+                >
+                  Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian ↗
+                </a>
+              </div>
               <div>Email: magang.brmp@pertanian.go.id</div>
               <div>WhatsApp: +62 811-9284-550</div>
             </div>

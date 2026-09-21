@@ -703,10 +703,16 @@ export default function AdminRekapSKMPage() {
                 {submissions.map((row) => (
                   <tr key={row.pengajuanId} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '0.875rem 1rem', fontWeight: 600, color: '#0f172a' }}>
-                      #{row.pengajuanId}
+                      {row.isAnonim ? (
+                        <span style={{ color: '#64748b', fontSize: '0.8125rem', fontWeight: 500 }}>
+                          🔒 Anonim
+                        </span>
+                      ) : (
+                        `#${row.pengajuanId}`
+                      )}
                     </td>
                     <td style={{ padding: '0.875rem 1rem' }}>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>{row.namaPemohon}</div>
+                      <div style={{ fontWeight: 600, color: row.isAnonim ? '#02482e' : '#0f172a' }}>{row.namaPemohon}</div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.asalInstansi || '-'}</div>
                     </td>
                     <td style={{ padding: '0.875rem 1rem', color: '#334155' }}>
@@ -840,7 +846,7 @@ export default function AdminRekapSKMPage() {
             }}>
               <div>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.125rem 0' }}>
-                  Rincian Jawaban SKM Responden #{selectedSubmissionId}
+                  {detailData?.isAnonim ? 'Rincian Jawaban SKM (Responden Anonim)' : `Rincian Jawaban SKM Responden #${selectedSubmissionId}`}
                 </h3>
                 <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>
                   Evaluasi kuesioner lengkap 15 butir pertanyaan.

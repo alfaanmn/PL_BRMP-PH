@@ -597,15 +597,14 @@ export const adminSKMService = {
 
       if (!qData) {
         return { data: [], totalCount: 0, error: null }
-      }
-
-      // Query jawaban teks yang tidak kosong
+      }      // Query jawaban teks yang tidak kosong
       let query = supabase
         .from('skm_jawaban')
         .select(`
           id,
           pengajuan_id,
           jawaban,
+          is_anonim,
           created_at,
           pengajuans (
             id,
@@ -646,15 +645,19 @@ export const adminSKMService = {
 
       const formatted: AdminSKMTextItem[] = (data || [])
         .filter((row: any) => row.jawaban !== null && String(row.jawaban).trim() !== '')
-        .map((row: any) => ({
-          id: row.id,
-          pengajuanId: row.pengajuan_id,
-          namaPemohon: row.pengajuans?.nama_lengkap || 'Peserta Magang',
-          asalInstansi: row.pengajuans?.asal_instansi || '-',
-          bidangNama: row.pengajuans?.bidangs?.nama || 'Bidang Magang BRMP',
-          teks: String(row.jawaban),
-          createdAt: row.created_at,
-        }))
+        .map((row: any) => {
+          const isAnon = row.is_anonim !== false
+          return {
+            id: row.id,
+            pengajuanId: row.pengajuan_id,
+            namaPemohon: isAnon ? '🔒 Responden Anonim' : (row.pengajuans?.nama_lengkap || 'Peserta Magang'),
+            asalInstansi: isAnon ? 'Peserta Magang' : (row.pengajuans?.asal_instansi || '-'),
+            bidangNama: row.pengajuans?.bidangs?.nama || 'Bidang Magang BRMP',
+            teks: String(row.jawaban),
+            isAnonim: isAnon,
+            createdAt: row.created_at,
+          }
+        })
 
       return {
         data: formatted,
@@ -686,6 +689,7 @@ export const adminSKMService = {
           pengajuan_id,
           skm_pertanyaan_id,
           jawaban,
+          is_anonim,
           created_at,
           skm_pertanyaan (
             urutan,
@@ -717,6 +721,7 @@ export const adminSKMService = {
           submittedAt: string
           choiceScores: number[]
           totalAnswers: number
+          isAnonim: boolean
         }
       >()
 
@@ -730,6 +735,7 @@ export const adminSKMService = {
             submittedAt: row.created_at,
             choiceScores: [],
             totalAnswers: 0,
+            isAnonim: row.is_anonim !== false,
           })
         }
 
@@ -749,6 +755,7 @@ export const adminSKMService = {
       let list: AdminSKMSubmissionItem[] = []
       groupedMap.forEach((val, pId) => {
         const p = val.pengajuan
+        const isAnon = val.isAnonim !== false
         const avg =
           val.choiceScores.length > 0
             ? Number(
@@ -761,14 +768,15 @@ export const adminSKMService = {
 
         list.push({
           pengajuanId: pId,
-          publicId: p?.public_id || null,
-          namaPemohon: p?.nama_lengkap || 'Pemohon',
-          nimNis: p?.nim_nis || null,
-          asalInstansi: p?.asal_instansi || null,
+          publicId: isAnon ? null : (p?.public_id || null),
+          namaPemohon: isAnon ? '🔒 Responden Anonim' : (p?.nama_lengkap || 'Pemohon'),
+          nimNis: isAnon ? null : (p?.nim_nis || null),
+          asalInstansi: isAnon ? 'Peserta Magang' : (p?.asal_instansi || null),
           bidangNama: p?.bidangs?.nama || 'Bidang Magang BRMP',
           tanggalPengisian: val.submittedAt,
           rataRataSkor: avg,
           totalJawaban: val.totalAnswers,
+          isAnonim: isAnon,
         })
       })
 
@@ -801,18 +809,17 @@ export const adminSKMService = {
       }
 
       const totalCount = list.length
-
-      // 6. Pagination
       const from = (params.page - 1) * params.limit
-      const pagedList = list.slice(from, from + params.limit)
+      const to = from + params.limit
+      const paginatedList = list.slice(from, to)
 
       return {
-        data: pagedList,
+        data: paginatedList,
         totalCount,
         error: null,
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Gagal memproses daftar submission.'
+      const msg = err instanceof Error ? err.message : 'Gagal memuat daftar submission.'
       return { data: [], totalCount: 0, error: msg }
     }
   },
@@ -859,13 +866,14 @@ export const adminSKMService = {
       // Ambil jawaban untuk pengajuan ini
       const { data: answers, error: aErr } = await supabase
         .from('skm_jawaban')
-        .select('id, skm_pertanyaan_id, jawaban, created_at')
+        .select('id, skm_pertanyaan_id, jawaban, is_anonim, created_at')
         .eq('pengajuan_id', pengajuanId)
 
       if (aErr || !answers) {
         return { data: null, error: aErr?.message || 'Gagal memuat jawaban responden.' }
       }
 
+      const isAnon = answers.length > 0 ? answers[0].is_anonim !== false : true
       const answerMap = new Map<number, string>()
       let submittedAt = answers[0]?.created_at || new Date().toISOString()
       answers.forEach((ans) => {
@@ -909,17 +917,18 @@ export const adminSKMService = {
         data: {
           pengajuan: {
             id: pengajuan.id,
-            publicId: pengajuan.public_id,
-            namaPemohon: pengajuan.nama_lengkap || 'Pemohon',
-            nimNis: pengajuan.nim_nis,
-            asalInstansi: pengajuan.asal_instansi,
-            jurusan: pengajuan.jurusan,
+            publicId: isAnon ? null : pengajuan.public_id,
+            namaPemohon: isAnon ? '🔒 Responden Anonim' : (pengajuan.nama_lengkap || 'Pemohon'),
+            nimNis: isAnon ? null : pengajuan.nim_nis,
+            asalInstansi: isAnon ? 'Peserta Magang' : (pengajuan.asal_instansi || null),
+            jurusan: isAnon ? null : (pengajuan.jurusan || null),
             bidangNama: (pengajuan.bidangs as any)?.nama || 'Bidang Magang BRMP',
             status: pengajuan.status,
           },
           answers: detailedAnswers,
           rataRataSkor,
           submittedAt,
+          isAnonim: isAnon,
         },
         error: null,
       }

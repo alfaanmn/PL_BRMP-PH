@@ -48,6 +48,7 @@ export interface AdminSKMTextItem {
   asalInstansi: string
   bidangNama: string
   teks: string
+  isAnonim?: boolean
   createdAt: string
 }
 
@@ -61,6 +62,7 @@ export interface AdminSKMSubmissionItem {
   tanggalPengisian: string
   rataRataSkor: number | null
   totalJawaban: number
+  isAnonim?: boolean
 }
 
 export interface AdminSKMSubmissionDetail {
@@ -86,4 +88,5 @@ export interface AdminSKMSubmissionDetail {
   }>
   rataRataSkor: number | null
   submittedAt: string
+  isAnonim?: boolean
 }

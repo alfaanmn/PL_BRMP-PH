@@ -951,147 +951,97 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 4. Banner Konsultasi Helpdesk */}
-        <section style={{ marginBottom: '2rem' }}>
-          <div style={{
-            backgroundColor: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-            borderRadius: '16px',
-            padding: '1.5rem 2rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1.25rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '12px',
-                backgroundColor: '#15803d',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.25rem',
-                flexShrink: 0
-              }}>
-                💬
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
-                  Butuh Konsultasi Penugasan Riset &amp; Magang?
-                </h3>
-                <p style={{ fontSize: '0.8125rem', color: '#475569', margin: 0 }}>
-                  Hubungi tim administrasi kepegawaian &amp; tata usaha Balai BRMP Kementerian Pertanian.
-                </p>
-              </div>
-            </div>
-
-            <Link
-              href="/kontak"
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#15803d',
-                color: '#ffffff',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
-                transition: 'all 0.2s'
-              }}
-            >
-              Hubungi Helpdesk BRMP →
-            </Link>
-          </div>
-        </section>
       </main>
 
-      {/* Footer Resmi BRMP Kementan */}
-      <footer style={{
-        backgroundColor: '#064e3b',
-        color: '#ecfdf5',
-        borderTop: '1px solid #047857',
-        padding: '3rem 1.5rem 2rem 1.5rem',
-        marginTop: 'auto'
-      }}>
-        <div style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '2.5rem',
-          marginBottom: '2.5rem'
-        }}>
-          {/* Info Institusi */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <AppLogo size={36} />
-              <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff' }}>
-                SIM-Magang BRMP
-              </span>
-            </div>
-            <p style={{ fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.6, margin: 0 }}>
-              Sistem Informasi Manajemen Magang &amp; Riset Terpadu Balai Penerapan Standar Instrumen Pertanian (BRMP) Kementerian Pertanian Republik Indonesia.
-            </p>
-          </div>
+          {/* Footer Resmi BRMP Kementan */}
+          <footer style={{
+            backgroundColor: '#064e3b',
+            color: '#ecfdf5',
+            borderTop: '1px solid #047857',
+            padding: '3rem 1.5rem 2rem 1.5rem',
+            marginTop: 'auto'
+          }}>
+            <div style={{
+              maxWidth: '1240px',
+              margin: '0 auto',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '2.5rem',
+              marginBottom: '2.5rem'
+            }}>
+              {/* Info Institusi */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <AppLogo size={36} />
+                  <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff' }}>
+                    SIM-Magang BRMP
+                  </span>
+                </div>
+              </div>
 
-          {/* Navigasi Cepat */}
-          <div>
-            <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
-              NAVIGASI CEPAT
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.8125rem' }}>
-              <Link href={dashboardUrl} style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Beranda Utama
-              </Link>
-              <a href="#bidang" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Katalog Bidang &amp; Riset
-              </a>
-              <a href="#alur" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Alur Magang
-              </a>
-              <Link href="/kontak" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Bantuan &amp; Helpdesk
-              </Link>
-            </div>
-          </div>
+              {/* Navigasi Cepat */}
+              <div>
+                <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
+                  NAVIGASI CEPAT
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.8125rem' }}>
+                  <Link href={dashboardUrl} style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                    Beranda Utama
+                  </Link>
+                  <a href="#bidang" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                    Katalog Bidang &amp; Riset
+                  </a>
+                  <a href="#alur" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                    Alur Magang
+                  </a>
+                  <Link href="/kontak" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+                    Bantuan &amp; Helpdesk
+                  </Link>
+                </div>
+              </div>
 
-          {/* Kontak & Lokasi */}
-          <div>
-            <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
-              SEKRETARIAT BRMP
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.5 }}>
-              <div>Jl. Ragunan No. 29, Pasar Minggu, Jakarta Selatan, DKI Jakarta 12540</div>
-              <div>Email: magang.brmp@pertanian.go.id</div>
-              <div>WhatsApp: +62 811-9284-550</div>
+              {/* Kontak & Lokasi */}
+              <div>
+                <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
+                  SEKRETARIAT BRMP
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.5 }}>
+                  <div>
+                    <a
+                      href="https://www.google.com/maps/place/Balai+Pengelola+Hasil+Perakitan+dan+Modernisasi+Pertanian/@-6.5893588,106.7998551,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c5ccf0c9dc05:0xd84bcc2b4c0158c9!8m2!3d-6.5893641!4d106.80243!16s%2Fg%2F1tcwc2r_?entry=ttu"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#a7f3d0', textDecoration: 'none' }}
+                    >
+                      Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian ↗
+                    </a>
+                  </div>
+                  <div>Email: magang.brmp@pertanian.go.id</div>
+                  <div>WhatsApp: +62 811-9284-550</div>
+                </div>
+              </div>
             </div>
-          </div>
+
+            <div style={{
+              maxWidth: '1240px',
+              margin: '0 auto',
+              paddingTop: '1.5rem',
+              borderTop: '1px solid #047857',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              fontSize: '0.75rem',
+              color: '#86efac'
+            }}>
+              <div>© {new Date().getFullYear()} Kementerian Pertanian Republik Indonesia (SIM-Magang BRMP). Hak Cipta Dilindungi.</div>
+              <div style={{ display: 'flex', gap: '1.5rem' }}>
+                <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Syarat &amp; Ketentuan</Link>
+                <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Kebijakan Privasi</Link>
+              </div>
+            </div>
+          </footer>
         </div>
-
-        <div style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid #047857',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          color: '#86efac'
-        }}>
-          <div>© {new Date().getFullYear()} Kementerian Pertanian Republik Indonesia (SIM-Magang BRMP). Hak Cipta Dilindungi.</div>
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
-            <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Syarat &amp; Ketentuan</Link>
-            <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Kebijakan Privasi</Link>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
+        )
 }

@@ -41,6 +41,7 @@ export function SKMForm({
 
   // State Form Jawaban: Record<skmPertanyaanId, string>
   const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [isAnonim, setIsAnonim] = useState<boolean>(true)
   const [submitting, setSubmitting] = useState(false)
   const [submittedSuccess, setSubmittedSuccess] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -138,6 +139,7 @@ export function SKMForm({
 
       const response = await skmService.submitSKMJawaban({
         pengajuanId: selectedPengajuanId,
+        isAnonim,
         answers: formattedAnswers,
       })
 
@@ -353,88 +355,126 @@ export function SKMForm({
           border-color: #16a34a;
           box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
         }
+        .skm-bidang-banner {
+          background-color: #0F6E56;
+          border-radius: 12px;
+          padding: 16px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 480px) {
+          .skm-bidang-banner {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.75rem !important;
+          }
+        }
       `}</style>
 
-      {/* 1. Header Banner & Selector Pengajuan */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0',
-        padding: '1.25rem 1.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-      }}>
-        {/* Banner Identitas Kuesioner */}
-        <div style={{
-          borderLeft: '4px solid #16a34a',
-          paddingLeft: '1rem',
-          marginBottom: '1rem'
-        }}>
-          <h2 style={{
-            fontSize: '1.125rem',
-            fontWeight: 700,
-            color: '#0f172a',
-            margin: '0 0 0.25rem 0',
-            letterSpacing: '0.01em'
-          }}>
-            PENDAPAT RESPONDEN TENTANG PELAYANAN BRMP
-          </h2>
-          <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
-            (Pilih salah satu jawaban yang paling mencerminkan pengalaman Anda)
-          </p>
-        </div>
-
-        {/* Pemilihan Pengajuan Magang (Jika user memiliki lebih dari 1 permohonan) */}
-        {userPengajuans.length > 0 && (
-          <div style={{
-            paddingTop: '0.75rem',
-            borderTop: '1px solid #f1f5f9',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '0.75rem'
-          }}>
-            <div>
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#334155' }}>
-                Pelayanan Pengajuan Magang:
-              </span>
+      {/* 1. Standalone Banner Hijau Info Bidang Magang */}
+      {currentPengajuan && (
+        <div className="skm-bidang-banner">
+          {/* Sisi Kiri: Label Uppercase & Nama Bidang */}
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              color: 'rgba(255, 255, 255, 0.7)',
+              letterSpacing: '0.04em',
+              marginBottom: '4px'
+            }}>
+              Sedang menilai pelayanan pengajuan magang
             </div>
+            <div style={{
+              fontSize: '16px',
+              fontWeight: 500,
+              color: '#ffffff',
+              lineHeight: 1.4
+            }}>
+              {currentPengajuan.bidang_nama}
+            </div>
+          </div>
 
-            {userPengajuans.length === 1 ? (
-              <div style={{
-                fontSize: '0.8125rem',
-                color: '#0f172a',
-                backgroundColor: '#f8fafc',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
-                border: '1px solid #e2e8f0'
-              }}>
-                <strong>#{userPengajuans[0].id}</strong> — {userPengajuans[0].bidang_nama}
-              </div>
-            ) : (
+          {/* Sisi Kanan: Badge Pill Nomor Pengajuan / Selector */}
+          <div>
+            {userPengajuans.length > 1 ? (
               <select
                 value={selectedPengajuanId || ''}
                 onChange={(e) => setSelectedPengajuanId(Number(e.target.value))}
                 style={{
-                  padding: '0.4rem 0.75rem',
-                  borderRadius: '6px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '0.8125rem',
-                  color: '#0f172a',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'rgba(255, 255, 255, 0.18)',
+                  color: '#ffffff',
+                  borderRadius: '9999px',
+                  padding: '6px 14px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
                   outline: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  WebkitAppearance: 'none'
                 }}
               >
                 {userPengajuans.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    #{p.id} — {p.bidang_nama} {p.hasSubmittedSKM ? '(Sudah Mengisi)' : ''}
+                  <option key={p.id} value={p.id} style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>
+                    Pengajuan #{p.id} — {p.bidang_nama}
                   </option>
                 ))}
               </select>
+            ) : (
+              <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                borderRadius: '9999px',
+                padding: '6px 14px',
+                fontSize: '13px',
+                fontWeight: 500,
+                display: 'inline-flex',
+                alignItems: 'center',
+                whiteSpace: 'nowrap'
+              }}>
+                Pengajuan #{currentPengajuan.id}
+              </div>
             )}
           </div>
-        )}
+        </div>
+      )}
+
+      {/* 2. Box Info Kecil Terpisah Instruksi Pengisian */}
+      <div style={{
+        backgroundColor: '#f8fafc',
+        borderRadius: '10px',
+        padding: '12px 16px',
+        border: '1px solid #f1f5f9',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.625rem',
+        color: '#64748b',
+        fontSize: '12px',
+        lineHeight: 1.5
+      }}>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0, color: '#64748b' }}
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 16v-4" />
+          <path d="M12 8h.01" />
+        </svg>
+        <span>
+          Pilih salah satu jawaban yang paling mencerminkan pengalaman Anda pada tiap pertanyaan di bawah.
+        </span>
       </div>
 
       {/* 2. Floating Sticky Progress Bar */}
@@ -742,29 +782,32 @@ export function SKMForm({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
           {/* Opsi 1: Anonim (Default) */}
           <label
+            onClick={() => setIsAnonim(true)}
             style={{
               display: 'flex',
               alignItems: 'flex-start',
               gap: '0.625rem',
               padding: '0.75rem 1rem',
               borderRadius: '8px',
-              border: '1px solid #bbf7d0',
-              backgroundColor: '#f0fdf4',
-              cursor: 'pointer'
+              border: isAnonim ? '1px solid #16a34a' : '1px solid #e2e8f0',
+              backgroundColor: isAnonim ? '#f0fdf4' : '#ffffff',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
             }}
           >
             <input
               type="radio"
               name="identitas_responden"
               value="anonim"
-              defaultChecked
+              checked={isAnonim}
+              onChange={() => setIsAnonim(true)}
               style={{ marginTop: '3px', accentColor: '#16a34a' }}
             />
             <div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#02482e' }}>
+              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: isAnonim ? '#02482e' : '#334155' }}>
                 🔒 Anonim (Direkomendasikan)
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#15803d' }}>
+              <div style={{ fontSize: '0.75rem', color: isAnonim ? '#15803d' : '#64748b' }}>
                 Nama dan identitas pribadi Anda dirahasiakan pada rekapitulasi penilaian.
               </div>
             </div>
@@ -772,28 +815,32 @@ export function SKMForm({
 
           {/* Opsi 2: Tampilkan Nama */}
           <label
+            onClick={() => setIsAnonim(false)}
             style={{
               display: 'flex',
               alignItems: 'flex-start',
               gap: '0.625rem',
               padding: '0.75rem 1rem',
               borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              backgroundColor: '#ffffff',
-              cursor: 'pointer'
+              border: !isAnonim ? '1px solid #16a34a' : '1px solid #e2e8f0',
+              backgroundColor: !isAnonim ? '#f0fdf4' : '#ffffff',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
             }}
           >
             <input
               type="radio"
               name="identitas_responden"
               value="tampilkan"
+              checked={!isAnonim}
+              onChange={() => setIsAnonim(false)}
               style={{ marginTop: '3px', accentColor: '#16a34a' }}
             />
             <div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#334155' }}>
+              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: !isAnonim ? '#02482e' : '#334155' }}>
                 👤 Tampilkan Nama
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+              <div style={{ fontSize: '0.75rem', color: !isAnonim ? '#15803d' : '#64748b' }}>
                 Nama pemohon magang Anda akan ditampilkan kepada administrator BRMP.
               </div>
             </div>

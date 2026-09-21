@@ -88,6 +88,7 @@ export type Database = {
           pengajuan_id: number | null
           skm_pertanyaan_id: number
           jawaban: string
+          is_anonim: boolean
           created_at: string | null
         }
         Insert: {
@@ -95,6 +96,7 @@ export type Database = {
           pengajuan_id?: number | null
           skm_pertanyaan_id: number
           jawaban: string
+          is_anonim?: boolean
           created_at?: string | null
         }
         Update: {
@@ -102,6 +104,7 @@ export type Database = {
           pengajuan_id?: number | null
           skm_pertanyaan_id?: number
           jawaban?: string
+          is_anonim?: boolean
           created_at?: string | null
         }
       }

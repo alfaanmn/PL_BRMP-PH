@@ -1071,7 +1071,14 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
               Badan kerja pemerintah yang bergerak di bidang riset dan standardisasi instrumen pertanian Republik Indonesia secara terpadu dan modern.
             </p>
             <p style={{ fontSize: '0.75rem', color: '#6ee7b7', lineHeight: 1.4, margin: 0 }}>
-              🏢 Gedung E Lantai 2, Jl. Ragunan No. 29, Pasar Minggu, Jakarta Selatan 12540
+              <a
+                href="https://www.google.com/maps/place/Balai+Pengelola+Hasil+Perakitan+dan+Modernisasi+Pertanian/@-6.5893588,106.7998551,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c5ccf0c9dc05:0xd84bcc2b4c0158c9!8m2!3d-6.5893641!4d106.80243!16s%2Fg%2F1tcwc2r_?entry=ttu"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#6ee7b7', textDecoration: 'none' }}
+              >
+                📍 Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian ↗
+              </a>
             </p>
           </div>
 
