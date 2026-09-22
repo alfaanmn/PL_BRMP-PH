@@ -247,25 +247,41 @@ export default async function PenggunaDashboardPage() {
 
         @media (max-width: 640px) {
           .hero-section {
-            padding: 2.25rem 1rem 2.75rem 1rem !important;
+            padding: 2rem 1rem 2.5rem 1rem !important;
+            overflow: hidden !important;
           }
           .floating-bidang-card {
             animation: none !important;
-            max-width: 135px !important;
-            padding: 0.4rem 0.5rem !important;
-            border-radius: 10px !important;
+            max-width: 125px !important;
+            padding: 0.35rem 0.5rem !important;
+            border-radius: 8px !important;
           }
           .floating-bidang-card.left {
-            transform: none !important;
+            transform: translateX(-6px) !important;
           }
           .floating-bidang-card.right {
-            transform: none !important;
+            transform: translateX(6px) !important;
           }
           .floating-icon-box {
-            width: 26px !important;
-            height: 26px !important;
-            font-size: 0.85rem !important;
+            width: 24px !important;
+            height: 24px !important;
+            font-size: 0.75rem !important;
             border-radius: 6px !important;
+          }
+          .bidang-cover-container {
+            height: 140px !important;
+          }
+          .bidang-body-content {
+            padding: 0.75rem 1rem 0.5rem 1rem !important;
+          }
+          .bidang-footer-actions {
+            padding: 0.5rem 1rem 1rem 1rem !important;
+          }
+          .bidang-action-btn {
+            min-height: 44px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
           }
         }
       `}</style>
@@ -805,7 +821,7 @@ export default async function PenggunaDashboardPage() {
                 >
                   <div>
                     {/* Gambar Banner Visual */}
-                    <div style={{
+                    <div className="bidang-cover-container" style={{
                       position: 'relative',
                       width: '100%',
                       height: '180px',
@@ -869,7 +885,7 @@ export default async function PenggunaDashboardPage() {
                     </div>
 
                     {/* Card Content */}
-                    <div style={{ padding: '1rem 1.25rem 0.75rem 1.25rem' }}>
+                    <div className="bidang-body-content" style={{ padding: '1rem 1.25rem 0.75rem 1.25rem' }}>
                       <h3 style={{
                         fontSize: '1rem',
                         fontWeight: 800,
@@ -896,7 +912,7 @@ export default async function PenggunaDashboardPage() {
                   </div>
 
                   {/* Card Footer */}
-                  <div style={{
+                  <div className="bidang-footer-actions" style={{
                     padding: '0.75rem 1.25rem 1.25rem 1.25rem',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -905,6 +921,7 @@ export default async function PenggunaDashboardPage() {
                   }}>
                     <Link
                       href={`/bidang/${b.id}`}
+                      className="bidang-action-btn"
                       style={{
                         flex: 1,
                         textAlign: 'center',
@@ -924,6 +941,7 @@ export default async function PenggunaDashboardPage() {
 
                     <Link
                       href={`/pengguna/career/step1?bidangId=${b.id}`}
+                      className="bidang-action-btn"
                       style={{
                         flex: 1,
                         textAlign: 'center',

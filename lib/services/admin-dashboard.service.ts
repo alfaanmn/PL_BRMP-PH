@@ -83,16 +83,37 @@ export const adminDashboardService = {
         console.warn('Gagal menghitung profil pengguna:', userError.message)
       }
 
-      // 3. Ambil rata-rata SKM dari skm_jawaban jika tabel tersedia
+      // 3. Ambil rata-rata SKM dari skm_jawaban secara akurat (hanya butir tipe pilihan)
       let skmAverage: number | null = null
       try {
+        // Ambil ID butir pertanyaan yang bertipe 'pilihan'
+        const { data: qData } = await supabase
+          .from('skm_pertanyaan')
+          .select('id')
+          .eq('tipe', 'pilihan')
+
+        const pilihanIdSet = new Set((qData || []).map((q: any) => q.id))
+
         const { data: skmData } = await supabase
           .from('skm_jawaban')
-          .select('skor')
+          .select('skm_pertanyaan_id, jawaban')
 
         if (skmData && skmData.length > 0) {
-          const totalSkor = skmData.reduce((acc: number, curr: any) => acc + (Number(curr.skor) || 0), 0)
-          skmAverage = Number((totalSkor / skmData.length).toFixed(2))
+          const validScores: number[] = []
+          for (const item of skmData) {
+            // Saring hanya butir pilihan (atau jika data id cocok) dan konversi jawaban secara aman
+            if (!pilihanIdSet.size || pilihanIdSet.has(item.skm_pertanyaan_id)) {
+              const num = Number(item.jawaban)
+              if (!isNaN(num) && num >= 1 && num <= 4) {
+                validScores.push(num)
+              }
+            }
+          }
+
+          if (validScores.length > 0) {
+            const totalSkor = validScores.reduce((acc: number, curr: number) => acc + curr, 0)
+            skmAverage = Number((totalSkor / validScores.length).toFixed(2))
+          }
         }
       } catch {
         skmAverage = null

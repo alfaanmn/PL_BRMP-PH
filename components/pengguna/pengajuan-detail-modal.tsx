@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
+import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
-import { EyeIcon, ExternalLinkIcon, FileTextIcon, DownloadIcon } from '@/components/ui/admin-icons'
+import { EyeIcon, ExternalLinkIcon, FileTextIcon, DownloadIcon, LoaderIcon } from '@/components/ui/admin-icons'
 
 interface PengajuanDetailModalProps {
   isOpen: boolean
@@ -16,6 +17,56 @@ export function PengajuanDetailModal({
   pengajuan,
 }: PengajuanDetailModalProps) {
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
+  const [openingDocKey, setOpeningDocKey] = useState<string | null>(null)
+
+  const handleOpenDoc = async (
+    rawPath: string | null | undefined,
+    title: string,
+    mode: 'preview' | 'tab' | 'download' = 'preview',
+    actionKey?: string
+  ) => {
+    if (!rawPath) return
+    if (mode === 'preview') {
+      setPreviewDoc({ url: rawPath, title })
+      return
+    }
+
+    if (actionKey) setOpeningDocKey(actionKey)
+    try {
+      if (mode === 'download') {
+        const res = await pengajuanService.getSignedDocumentUrl(rawPath, 3600, { download: true })
+        if (res.url) {
+          const response = await fetch(res.url)
+          if (response.ok) {
+            const blob = await response.blob()
+            const blobUrl = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = blobUrl
+            link.download = `${title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.pdf`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(blobUrl)
+          } else {
+            window.open(res.url, '_blank')
+          }
+        } else {
+          alert(res.error || 'Gagal memuat berkas dokumen.')
+        }
+      } else {
+        const res = await pengajuanService.getSignedDocumentUrl(rawPath, 3600)
+        if (res.url) {
+          window.open(res.url, '_blank')
+        } else {
+          alert(res.error || 'Gagal memuat berkas dokumen.')
+        }
+      }
+    } catch {
+      alert('Terjadi kesalahan saat memproses berkas dokumen.')
+    } finally {
+      if (actionKey) setOpeningDocKey(null)
+    }
+  }
 
   if (!isOpen || !pengajuan) return null
 
@@ -305,18 +356,13 @@ export function PengajuanDetailModal({
                   <div style={{ color: '#15803d', display: 'flex' }}>
                     <FileTextIcon width={16} height={16} />
                   </div>
-                  <span style={{ fontWeight: 600, color: '#0f172a' }}>Surat Pengantar Magang</span>
-                  <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>(Wajib)</span>
                 </div>
                 {pengajuan.surat_pengantar_url ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       onClick={() =>
-                        setPreviewDoc({
-                          url: pengajuan.surat_pengantar_url,
-                          title: 'Surat Pengantar Magang',
-                        })
+                        handleOpenDoc(pengajuan.surat_pengantar_url, 'Surat Pengantar Magang', 'preview')
                       }
                       style={{
                         display: 'inline-flex',
@@ -336,54 +382,65 @@ export function PengajuanDetailModal({
                       <EyeIcon width={12} height={12} />
                       <span>Lihat</span>
                     </button>
-                    <a
-                      href={pengajuan.surat_pengantar_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenDoc(pengajuan.surat_pengantar_url, 'Surat Pengantar Magang', 'tab', 'sp_tab')
+                      }
+                      disabled={openingDocKey === 'sp_tab'}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: '#475569',
                         fontWeight: 600,
-                        textDecoration: 'none',
                         fontSize: '0.75rem',
                         backgroundColor: '#ffffff',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         border: '1px solid #cbd5e1',
                         minHeight: '32px',
+                        cursor: 'pointer',
                         boxSizing: 'border-box',
                       }}
                     >
-                      <ExternalLinkIcon width={12} height={12} />
+                      {openingDocKey === 'sp_tab' ? (
+                        <LoaderIcon width={12} height={12} className="animate-spin" />
+                      ) : (
+                        <ExternalLinkIcon width={12} height={12} />
+                      )}
                       <span>Tab Baru</span>
-                    </a>
-                    <a
-                      href={pengajuan.surat_pengantar_url}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenDoc(pengajuan.surat_pengantar_url, 'Surat Pengantar Instansi', 'download', 'sp_dl')
+                      }
+                      disabled={openingDocKey === 'sp_dl'}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: '#ffffff',
                         fontWeight: 600,
-                        textDecoration: 'none',
                         fontSize: '0.75rem',
                         backgroundColor: '#15803d',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         border: 'none',
                         minHeight: '32px',
+                        cursor: 'pointer',
                         boxSizing: 'border-box',
                         boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
                       }}
                     >
-                      <DownloadIcon width={12} height={12} />
+                      {openingDocKey === 'sp_dl' ? (
+                        <LoaderIcon width={12} height={12} className="animate-spin" />
+                      ) : (
+                        <DownloadIcon width={12} height={12} />
+                      )}
                       <span>Unduh</span>
-                    </a>
+                    </button>
                   </div>
                 ) : (
                   <span style={{ color: '#dc2626', fontSize: '0.75rem' }}>Tidak ada berkas</span>
@@ -415,10 +472,7 @@ export function PengajuanDetailModal({
                     <button
                       type="button"
                       onClick={() =>
-                        setPreviewDoc({
-                          url: pengajuan.proposal_url,
-                          title: 'Proposal Kegiatan Magang',
-                        })
+                        handleOpenDoc(pengajuan.proposal_url, 'Proposal Kegiatan Magang', 'preview')
                       }
                       style={{
                         display: 'inline-flex',
@@ -438,54 +492,65 @@ export function PengajuanDetailModal({
                       <EyeIcon width={12} height={12} />
                       <span>Lihat</span>
                     </button>
-                    <a
-                      href={pengajuan.proposal_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenDoc(pengajuan.proposal_url, 'Proposal Kegiatan Magang', 'tab', 'prop_tab')
+                      }
+                      disabled={openingDocKey === 'prop_tab'}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: '#475569',
                         fontWeight: 600,
-                        textDecoration: 'none',
                         fontSize: '0.75rem',
                         backgroundColor: '#ffffff',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         border: '1px solid #cbd5e1',
                         minHeight: '32px',
+                        cursor: 'pointer',
                         boxSizing: 'border-box',
                       }}
                     >
-                      <ExternalLinkIcon width={12} height={12} />
+                      {openingDocKey === 'prop_tab' ? (
+                        <LoaderIcon width={12} height={12} className="animate-spin" />
+                      ) : (
+                        <ExternalLinkIcon width={12} height={12} />
+                      )}
                       <span>Tab Baru</span>
-                    </a>
-                    <a
-                      href={pengajuan.proposal_url}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenDoc(pengajuan.proposal_url, 'Proposal Kegiatan Magang', 'download', 'prop_dl')
+                      }
+                      disabled={openingDocKey === 'prop_dl'}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: '#ffffff',
                         fontWeight: 600,
-                        textDecoration: 'none',
                         fontSize: '0.75rem',
                         backgroundColor: '#15803d',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         border: 'none',
                         minHeight: '32px',
+                        cursor: 'pointer',
                         boxSizing: 'border-box',
                         boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
                       }}
                     >
-                      <DownloadIcon width={12} height={12} />
+                      {openingDocKey === 'prop_dl' ? (
+                        <LoaderIcon width={12} height={12} className="animate-spin" />
+                      ) : (
+                        <DownloadIcon width={12} height={12} />
+                      )}
                       <span>Unduh</span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}
@@ -515,10 +580,7 @@ export function PengajuanDetailModal({
                     <button
                       type="button"
                       onClick={() =>
-                        setPreviewDoc({
-                          url: pengajuan.dokumen_tambahan_url,
-                          title: 'Dokumen Tambahan',
-                        })
+                        handleOpenDoc(pengajuan.dokumen_tambahan_url, 'Dokumen Tambahan', 'preview')
                       }
                       style={{
                         display: 'inline-flex',
@@ -538,54 +600,65 @@ export function PengajuanDetailModal({
                       <EyeIcon width={12} height={12} />
                       <span>Lihat</span>
                     </button>
-                    <a
-                      href={pengajuan.dokumen_tambahan_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenDoc(pengajuan.dokumen_tambahan_url, 'Dokumen Tambahan', 'tab', 'dok_tab')
+                      }
+                      disabled={openingDocKey === 'dok_tab'}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: '#475569',
                         fontWeight: 600,
-                        textDecoration: 'none',
                         fontSize: '0.75rem',
                         backgroundColor: '#ffffff',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         border: '1px solid #cbd5e1',
                         minHeight: '32px',
+                        cursor: 'pointer',
                         boxSizing: 'border-box',
                       }}
                     >
-                      <ExternalLinkIcon width={12} height={12} />
+                      {openingDocKey === 'dok_tab' ? (
+                        <LoaderIcon width={12} height={12} className="animate-spin" />
+                      ) : (
+                        <ExternalLinkIcon width={12} height={12} />
+                      )}
                       <span>Tab Baru</span>
-                    </a>
-                    <a
-                      href={pengajuan.dokumen_tambahan_url}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenDoc(pengajuan.dokumen_tambahan_url, 'Dokumen Tambahan', 'download', 'dok_dl')
+                      }
+                      disabled={openingDocKey === 'dok_dl'}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: '#ffffff',
                         fontWeight: 600,
-                        textDecoration: 'none',
                         fontSize: '0.75rem',
                         backgroundColor: '#15803d',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         border: 'none',
                         minHeight: '32px',
+                        cursor: 'pointer',
                         boxSizing: 'border-box',
                         boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
                       }}
                     >
-                      <DownloadIcon width={12} height={12} />
+                      {openingDocKey === 'dok_dl' ? (
+                        <LoaderIcon width={12} height={12} className="animate-spin" />
+                      ) : (
+                        <DownloadIcon width={12} height={12} />
+                      )}
                       <span>Unduh</span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}

@@ -80,32 +80,118 @@ function LoginForm() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexWrap: 'wrap',
-      backgroundColor: '#ffffff',
-      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      margin: 0,
-      padding: 0
-    }}>
-      {/* SISI KIRI: HERO BANNER INSTITUSI BRMP PENGELOLA HASIL DENGAN FOTO BACKGROUND BRMP_PH.png */}
-      <div style={{
-        flex: '1 1 500px',
-        minHeight: '100vh',
-        backgroundImage: "linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(21, 128, 61, 0.55) 50%, rgba(6, 95, 70, 0.70) 100%), url('/BRMP_PH.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        color: '#ffffff',
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '3rem 3.5rem',
-        boxSizing: 'border-box',
-        overflow: 'hidden'
-      }}>
+    <div className="auth-main-container">
+      <style>{`
+        .auth-main-container {
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          background-color: #ffffff;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+        .auth-hero-banner {
+          display: flex;
+          flex: 1 1 500px;
+          min-height: 100vh;
+          background-image: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(21, 128, 61, 0.55) 50%, rgba(6, 95, 70, 0.70) 100%), url('/BRMP_PH.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          color: #ffffff;
+          position: relative;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 3rem 3.5rem;
+          box-sizing: border-box;
+          overflow: hidden;
+        }
+        .auth-form-container {
+          flex: 1 1 440px;
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 3rem 2rem;
+          box-sizing: border-box;
+          background-color: #ffffff;
+        }
+        .auth-form-card {
+          width: 100%;
+          max-width: 400px;
+          box-sizing: border-box;
+        }
+        .auth-mobile-header {
+          display: none;
+        }
+        .auth-back-link-desktop {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.375rem;
+          font-size: 0.8125rem;
+          color: #64748b;
+          text-decoration: none;
+          font-weight: 600;
+          margin-bottom: 2rem;
+          transition: color 0.2s;
+        }
+        .auth-heading-wrapper {
+          margin-bottom: 2rem;
+        }
+        .auth-footer-link {
+          text-align: center;
+          margin-top: 2rem;
+          font-size: 0.8125rem;
+          color: #64748b;
+        }
+
+        @media (max-width: 1023px) {
+          .auth-hero-banner {
+            display: none !important;
+          }
+          .auth-main-container {
+            background-color: #f8fafc;
+            flex-direction: column;
+          }
+          .auth-form-container {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 1.25rem 1rem !important;
+            justify-content: center !important;
+          }
+          .auth-form-card {
+            background-color: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem 1.25rem !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            max-width: 390px;
+          }
+          .auth-mobile-header {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+          }
+          .auth-back-link-desktop {
+            display: none !important;
+          }
+          .auth-heading-wrapper {
+            margin-bottom: 1.125rem !important;
+          }
+          .auth-footer-link {
+            margin-top: 1.25rem !important;
+          }
+        }
+      `}</style>
+
+      {/* SISI KIRI: HERO BANNER INSTITUSI BRMP PENGELOLA HASIL (Hanya Desktop >=1024px) */}
+      <div className="auth-hero-banner">
         {/* Top Header Institusi */}
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.875rem' }}>
@@ -151,7 +237,6 @@ function LoginForm() {
 
         {/* Middle Content: Headline & Desc */}
         <div style={{ position: 'relative', zIndex: 2, margin: '4rem 0' }}>
-          {/* Badge Pill */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -219,32 +304,60 @@ function LoginForm() {
       </div>
 
       {/* SISI KANAN: FORM LOGIN INTERAKTIF */}
-      <div style={{
-        flex: '1 1 440px',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '3rem 2rem',
-        boxSizing: 'border-box',
-        backgroundColor: '#ffffff'
-      }}>
-        <div style={{ width: '100%', maxWidth: '400px' }}>
-          {/* Tombol Navigasi Kembali ke Beranda */}
+      <div className="auth-form-container">
+        <div className="auth-form-card">
+          {/* Mobile Header Branding (Tampil di Mobile) */}
+          <div className="auth-mobile-header">
+            <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                backgroundColor: '#ffffff',
+                border: '1px solid #bbf7d0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2px',
+                boxShadow: '0 2px 4px rgba(21, 128, 61, 0.12)',
+                flexShrink: 0
+              }}>
+                <AppLogo size={30} alt="Logo BRMP" priority />
+              </div>
+              <div>
+                <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#15803d', display: 'block', lineHeight: 1.2 }}>
+                  SIM-Magang
+                </span>
+                <span style={{ fontSize: '0.625rem', color: '#64748b', fontWeight: 600, display: 'block', lineHeight: 1.1 }}>
+                  BRMP Kementan RI
+                </span>
+              </div>
+            </Link>
+
+            <Link
+              href="/"
+              style={{
+                fontSize: '0.75rem',
+                color: '#64748b',
+                textDecoration: 'none',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.375rem 0.625rem',
+                borderRadius: '6px',
+                backgroundColor: '#f1f5f9'
+              }}
+            >
+              <span>Beranda</span>
+              <span>→</span>
+            </Link>
+          </div>
+
+          {/* Tombol Navigasi Kembali ke Beranda (Desktop only) */}
           <Link
             href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              fontSize: '0.8125rem',
-              color: '#64748b',
-              textDecoration: 'none',
-              fontWeight: 600,
-              marginBottom: '2rem',
-              transition: 'color 0.2s'
-            }}
+            className="auth-back-link-desktop"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
@@ -253,37 +366,37 @@ function LoginForm() {
           </Link>
 
           {/* Heading */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div className="auth-heading-wrapper">
             <h2 style={{
-              fontSize: '1.75rem',
+              fontSize: '1.5rem',
               fontWeight: 800,
               color: '#0f172a',
               letterSpacing: '-0.025em',
-              margin: '0 0 0.375rem 0'
+              margin: '0 0 0.25rem 0'
             }}>
               Masuk ke Portal
             </h2>
-            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
-              Selamat datang kembali! Masukkan akun Anda.
+            <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
+              Selamat datang! Masukkan email &amp; password akun Anda.
             </p>
           </div>
 
           {/* Alert Error */}
           {errorMessage && (
             <div style={{
-              padding: '0.875rem 1rem',
+              padding: '0.625rem 0.875rem',
               backgroundColor: '#fef2f2',
               border: '1px solid #fecaca',
-              borderRadius: '10px',
+              borderRadius: '8px',
               color: '#dc2626',
               fontSize: '0.8125rem',
-              marginBottom: '1.25rem',
+              marginBottom: '1rem',
               display: 'flex',
               alignItems: 'flex-start',
               gap: '0.5rem',
               lineHeight: 1.4
             }}>
-              <span style={{ fontSize: '1rem', flexShrink: 0 }}>⚠️</span>
+              <span style={{ fontSize: '0.875rem', flexShrink: 0 }}>⚠️</span>
               <span>{errorMessage}</span>
             </div>
           )}
@@ -291,25 +404,25 @@ function LoginForm() {
           {/* Alert Success */}
           {successMessage && (
             <div style={{
-              padding: '0.875rem 1rem',
+              padding: '0.625rem 0.875rem',
               backgroundColor: '#f0fdf4',
               border: '1px solid #bbf7d0',
-              borderRadius: '10px',
+              borderRadius: '8px',
               color: '#166534',
               fontSize: '0.8125rem',
-              marginBottom: '1.25rem',
+              marginBottom: '1rem',
               display: 'flex',
               alignItems: 'flex-start',
               gap: '0.5rem',
               lineHeight: 1.4
             }}>
-              <span style={{ fontSize: '1rem', flexShrink: 0 }}>✓</span>
+              <span style={{ fontSize: '0.875rem', flexShrink: 0 }}>✓</span>
               <span>{successMessage}</span>
             </div>
           )}
 
           {/* Form Login */}
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* Input Email */}
             <div>
               <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
@@ -324,8 +437,9 @@ function LoginForm() {
                 disabled={loading}
                 style={{
                   width: '100%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '10px',
+                  minHeight: '44px',
+                  padding: '0.625rem 0.875rem',
+                  borderRadius: '8px',
                   border: '1px solid #cbd5e1',
                   fontSize: '0.875rem',
                   outline: 'none',
@@ -360,8 +474,9 @@ function LoginForm() {
                   disabled={loading}
                   style={{
                     width: '100%',
-                    padding: '0.75rem 2.75rem 0.75rem 1rem',
-                    borderRadius: '10px',
+                    minHeight: '44px',
+                    padding: '0.625rem 2.75rem 0.625rem 0.875rem',
+                    borderRadius: '8px',
                     border: '1px solid #cbd5e1',
                     fontSize: '0.875rem',
                     outline: 'none',
@@ -375,7 +490,7 @@ function LoginForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: 'absolute',
-                    right: '0.75rem',
+                    right: '0.5rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: 'none',
@@ -383,7 +498,9 @@ function LoginForm() {
                     color: '#64748b',
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    padding: '0.25rem',
+                    padding: '0.375rem',
+                    minWidth: '36px',
+                    minHeight: '36px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -420,26 +537,27 @@ function LoginForm() {
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '0.8125rem',
+                minHeight: '44px',
+                padding: '0.625rem',
                 backgroundColor: '#15803d',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '10px',
+                borderRadius: '8px',
                 fontWeight: 700,
                 fontSize: '0.875rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.7 : 1,
-                boxShadow: '0 4px 10px rgba(21, 128, 61, 0.3)',
+                boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
                 transition: 'all 0.2s',
                 marginTop: '0.25rem'
               }}
             >
-              {loading ? 'Memproses...' : 'Masuk'}
+              {loading ? 'Memproses...' : 'Masuk ke Akun'}
             </button>
           </form>
 
           {/* Footer Register Link */}
-          <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.8125rem', color: '#64748b' }}>
+          <div className="auth-footer-link">
             Belum punya akun?{' '}
             <Link href="/register" style={{ color: '#15803d', fontWeight: 700, textDecoration: 'none' }}>
               Daftar sekarang

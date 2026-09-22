@@ -91,19 +91,25 @@ export function PengajuanVerifikasiModal({
           borderRadius: '16px',
           width: '100%',
           maxWidth: '480px',
+          maxHeight: '90dvh',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
           border: '1px solid #e2e8f0',
-          overflow: 'hidden',
+          overflowY: 'auto',
+          boxSizing: 'border-box',
         }}
       >
         {/* Modal Header */}
         <div
           style={{
-            padding: '1.25rem 1.5rem',
+            padding: '1rem 1.25rem',
             borderBottom: '1px solid #f1f5f9',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            position: 'sticky',
+            top: 0,
+            backgroundColor: '#ffffff',
+            zIndex: 5,
           }}
         >
           <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#111827' }}>
@@ -113,13 +119,19 @@ export function PengajuanVerifikasiModal({
             type="button"
             onClick={onClose}
             disabled={loadingSubmit}
+            aria-label="Tutup Dialog"
             style={{
-              background: 'transparent',
+              background: '#f1f5f9',
               border: 'none',
-              color: '#9ca3af',
-              fontSize: '18px',
+              borderRadius: '8px',
+              color: '#64748b',
+              fontSize: '16px',
               cursor: 'pointer',
-              padding: '0.25rem',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               lineHeight: 1,
             }}
           >

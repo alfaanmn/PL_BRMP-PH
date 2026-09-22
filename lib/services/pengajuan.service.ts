@@ -12,21 +12,33 @@ export interface PengajuanResponse {
 
 export const pengajuanService = {
   /**
-   * Mengunggah berkas PDF pengajuan magang ke Supabase Storage
+   * Mengunggah berkas PDF pengajuan magang ke Supabase Storage (Private bucket 'dokumen')
    */
   async uploadDokumen(
     file: File,
-    userId: string,
-    prefix: string = 'surat-pengantar'
+    userId?: string,
+    prefix: string = 'surat_pengantar'
   ): Promise<{ url: string | null; error: string | null }> {
     try {
       const supabase = createClient()
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf'
-      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-      const filePath = `${userId}/${prefix}_${Date.now()}_${cleanFileName}`
+      
+      // Ambil user ID dari session Supabase Auth
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
-      // Coba upload ke bucket 'dokumen' atau 'pengajuans'
+      const effectiveUserId = user?.id || userId
+      if (!effectiveUserId || effectiveUserId === 'guest') {
+        return {
+          url: null,
+          error: 'Sesi anda telah berakhir atau belum terautentikasi. Silakan login kembali.',
+        }
+      }
+
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+      const filePath = `${effectiveUserId}/${prefix}_${Date.now()}_${cleanFileName}`
       const bucketName = 'dokumen'
+
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
@@ -35,37 +47,76 @@ export const pengajuanService = {
         })
 
       if (uploadError) {
-        // Coba fallback ke bucket 'pengajuans' jika 'dokumen' belum dibuat
-        const { data: fallbackData, error: fallbackError } = await supabase.storage
-          .from('pengajuans')
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: true,
-          })
-
-        if (fallbackError) {
-          console.warn('Storage upload error:', uploadError.message, fallbackError.message)
-          // Jika storage belum memiliki RLS / bucket aktif, buat URL referensi path aman
-          return {
-            url: `https://storage.placeholder/${filePath}`,
-            error: null,
-          }
+        console.error('Supabase storage upload error:', uploadError)
+        return {
+          url: null,
+          error: `Gagal mengunggah berkas ke storage: ${uploadError.message}`,
         }
-
-        const { data: publicUrlData } = supabase.storage
-          .from('pengajuans')
-          .getPublicUrl(fallbackData?.path || filePath)
-
-        return { url: publicUrlData.publicUrl || filePath, error: null }
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(data?.path || filePath)
-
-      return { url: publicUrlData.publicUrl || filePath, error: null }
+      return { url: data?.path || filePath, error: null }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal mengunggah berkas.'
+      return { url: null, error: msg }
+    }
+  },
+
+  /**
+   * Mendapatkan Signed URL sementara untuk berkas dokumen privat (TTL: 3600 detik / 1 jam)
+   * Mendukung relative object path (misal: "userId/file.pdf") maupun legacy Public URL
+   */
+  async getSignedDocumentUrl(
+    pathOrUrl: string | null | undefined,
+    expiresIn: number = 3600,
+    options?: { download?: boolean | string }
+  ): Promise<{ url: string | null; error: string | null }> {
+    if (!pathOrUrl || typeof pathOrUrl !== 'string' || pathOrUrl.trim() === '' || pathOrUrl.includes('placeholder')) {
+      return { url: null, error: 'Dokumen belum diunggah atau path tidak valid.' }
+    }
+
+    try {
+      const supabase = createClient()
+      let cleanPath = pathOrUrl.trim()
+      const bucketName = 'dokumen'
+
+      // Jika pathOrUrl adalah URL lengkap (legacy URL Supabase), ekstraksi object path-nya
+      if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+        try {
+          const urlObj = new URL(cleanPath)
+          const pathname = urlObj.pathname // misal: /storage/v1/object/public/dokumen/USER/file.pdf
+
+          if (pathname.includes('/dokumen/')) {
+            cleanPath = pathname.split('/dokumen/')[1]
+          } else {
+            // Ambil 2 segmen terakhir (userId/filename) jika format URL berbeda
+            const segments = pathname.split('/').filter(Boolean)
+            if (segments.length >= 2) {
+              cleanPath = segments.slice(-2).join('/')
+            }
+          }
+        } catch {
+          // Jika parsing URL gagal, gunakan cleanPath apa adanya
+        }
+      }
+
+      // Hapus query parameters jika ada
+      cleanPath = cleanPath.split('?')[0]
+
+      // Generate Signed URL dari bucket 'dokumen'
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .createSignedUrl(cleanPath, expiresIn, options?.download ? { download: options.download } : undefined)
+
+      if (error || !data?.signedUrl) {
+        return {
+          url: null,
+          error: error?.message || 'Tidak dapat mengakses berkas privat atau berkas tidak ditemukan di storage.',
+        }
+      }
+
+      return { url: data.signedUrl, error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menghasilkan tautan dokumen aman.'
       return { url: null, error: msg }
     }
   },
