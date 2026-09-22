@@ -70,8 +70,9 @@ export default function RegisterPage() {
         setIsRegisteredSuccess(true)
         setRequiresEmailConfirmation(true)
         setLoading(false)
+        const cleanEmail = email.trim().toLowerCase()
         setTimeout(() => {
-          router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}`)
+          router.push(`/verify-otp?email=${encodeURIComponent(cleanEmail)}`)
         }, 1200)
       } else {
         setIsRegisteredSuccess(true)

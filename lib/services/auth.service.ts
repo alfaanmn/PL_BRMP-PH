@@ -1,12 +1,15 @@
 import { createClient } from '@/lib/supabase/client'
-import type {
+import {
+  AuthResponse,
   LoginCredentials,
   RegisterCredentials,
+  ForgotPasswordCredentials,
+  ResetPasswordCredentials,
   VerifyOtpCredentials,
   ResendOtpCredentials,
   Profile,
-  AuthResponse,
 } from '@/types/auth.types'
+import { normalizePhoneNumber } from '@/lib/validations/auth.validation'
 
 export const authService = {
   /**
@@ -90,17 +93,47 @@ export const authService = {
    * Register Pengguna Baru (Trigger DB otomatis insert ke public.profiles dengan role 'pengguna')
    */
   async register(credentials: RegisterCredentials): Promise<AuthResponse<{ user: unknown; requiresEmailConfirmation: boolean }>> {
-    const supabase = createClient()
+    const cleanEmail = credentials.email.trim().toLowerCase()
+    const cleanPhone = normalizePhoneNumber(credentials.no_hp)
+    const cleanName = credentials.name.trim()
 
+    // 1. Pra-pengecekan duplikasi email dan nomor HP melalui server API
+    try {
+      const checkRes = await fetch('/api/auth/check-duplicate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cleanEmail,
+          no_hp: cleanPhone,
+        }),
+      })
+
+      if (checkRes.ok) {
+        const checkData = await checkRes.json()
+        if (!checkData.success) {
+          return {
+            success: false,
+            error: {
+              code: checkData.error?.code || 'DUPLICATE_REGISTRATION',
+              message: checkData.error?.message || 'Email atau nomor HP sudah terdaftar.',
+            },
+          }
+        }
+      }
+    } catch {
+      // Jika fetch pre-check gagal karena kendala jaringan lokal, biarkan lanjut ke supabase.auth.signUp
+    }
+
+    const supabase = createClient()
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
     const { data, error } = await supabase.auth.signUp({
-      email: credentials.email.trim(),
+      email: cleanEmail,
       password: credentials.password,
       options: {
         data: {
-          name: credentials.name.trim(),
-          no_hp: credentials.no_hp?.trim() || null,
+          name: cleanName,
+          no_hp: cleanPhone || null,
           asal_instansi: credentials.asal_instansi?.trim() || null,
           jurusan: credentials.jurusan?.trim() || null,
           jenis_kelamin: credentials.jenis_kelamin?.trim() || null,
@@ -114,8 +147,29 @@ export const authService = {
       const lowerMsg = error.message?.toLowerCase() || ''
       const errorCode = (error as { code?: string }).code || ''
 
-      if (lowerMsg.includes('already registered') || lowerMsg.includes('user already registered') || errorCode === 'user_already_exists') {
-        message = 'Email ini sudah terdaftar. Silakan login atau gunakan email lain.'
+      if (
+        lowerMsg.includes('already registered') ||
+        lowerMsg.includes('user already registered') ||
+        errorCode === 'user_already_exists' ||
+        lowerMsg.includes('duplicate key') ||
+        lowerMsg.includes('unique constraint')
+      ) {
+        if (lowerMsg.includes('no_hp') || lowerMsg.includes('phone') || lowerMsg.includes('idx_profiles_unique_no_hp')) {
+          message = 'Nomor HP sudah terdaftar. Silakan gunakan nomor HP lain.'
+        } else {
+          message = 'Email sudah terdaftar. Silakan login atau gunakan email lain.'
+        }
+      } else if (
+        lowerMsg.includes('database error saving new user') ||
+        lowerMsg.includes('error saving new user') ||
+        (lowerMsg.includes('database error') && lowerMsg.includes('saving'))
+      ) {
+        // Terjadi saat Supabase trigger gagal insert ke profiles karena unique index (misal no_hp duplicate)
+        if (cleanPhone) {
+          message = 'Nomor HP sudah terdaftar. Silakan gunakan nomor HP lain.'
+        } else {
+          message = 'Terjadi kendala saat menyimpan data pendaftaran. Silakan gunakan data lain atau hubungi administrator.'
+        }
       } else if (lowerMsg.includes('rate limit') || errorCode === 'over_email_send_rate_limit') {
         message = 'Batas pengiriman email verifikasi telah tercapai (Rate limit). Silakan tunggu beberapa saat sebelum mencoba lagi.'
       } else if ((lowerMsg.includes('invalid') && lowerMsg.includes('email')) || errorCode === 'email_address_invalid') {
@@ -141,6 +195,18 @@ export const authService = {
         error: {
           code: 'USER_NOT_CREATED',
           message: 'Pendaftaran tidak dapat diproses oleh server autentikasi. Silakan periksa kembali email dan password Anda.',
+        },
+      }
+    }
+
+    // PENTING: Supabase Auth dengan email confirmation aktif akan mengembalikan user dengan identities kosong [] jika email sudah terdaftar
+    const userIdentities = (data.user as { identities?: unknown[] })?.identities
+    if (Array.isArray(userIdentities) && userIdentities.length === 0) {
+      return {
+        success: false,
+        error: {
+          code: 'EMAIL_ALREADY_REGISTERED',
+          message: 'Email sudah terdaftar. Silakan login atau gunakan email lain.',
         },
       }
     }

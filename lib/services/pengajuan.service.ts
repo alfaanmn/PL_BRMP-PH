@@ -20,6 +20,24 @@ export const pengajuanService = {
     prefix: string = 'surat_pengantar'
   ): Promise<{ url: string | null; error: string | null }> {
     try {
+      // Validasi MIME / ekstensi file PDF
+      const ext = file.name.split('.').pop()?.toLowerCase() || ''
+      if (ext !== 'pdf' && file.type !== 'application/pdf') {
+        return {
+          url: null,
+          error: 'Hanya dokumen berformat PDF yang diperbolehkan.',
+        }
+      }
+
+      // Validasi ukuran berkas (Maksimal 5MB)
+      const maxBytes = 5 * 1024 * 1024
+      if (file.size > maxBytes) {
+        return {
+          url: null,
+          error: 'Ukuran berkas melebihi batas maksimal 5 MB.',
+        }
+      }
+
       const supabase = createClient()
       
       // Ambil user ID dari session Supabase Auth
@@ -83,7 +101,7 @@ export const pengajuanService = {
       if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
         try {
           const urlObj = new URL(cleanPath)
-          const pathname = urlObj.pathname // misal: /storage/v1/object/public/dokumen/USER/file.pdf
+          const pathname = decodeURIComponent(urlObj.pathname) // misal: /storage/v1/object/public/dokumen/USER/file.pdf
 
           if (pathname.includes('/dokumen/')) {
             cleanPath = pathname.split('/dokumen/')[1]
@@ -99,8 +117,16 @@ export const pengajuanService = {
         }
       }
 
-      // Hapus query parameters jika ada
-      cleanPath = cleanPath.split('?')[0]
+      // Hapus query parameters dan hash jika ada
+      cleanPath = cleanPath.split('?')[0].split('#')[0]
+
+      // Hapus leading slash jika ada
+      cleanPath = cleanPath.replace(/^\/+/, '')
+
+      // Dilarang mencoba membuat signed URL jika path kosong setelah pembersihan
+      if (!cleanPath) {
+        return { url: null, error: 'Path dokumen tidak valid.' }
+      }
 
       // Generate Signed URL dari bucket 'dokumen'
       const { data, error } = await supabase.storage

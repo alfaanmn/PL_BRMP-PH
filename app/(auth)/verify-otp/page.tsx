@@ -201,36 +201,132 @@ function VerifyOtpForm() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexWrap: 'wrap',
-      backgroundColor: '#ffffff',
-      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      margin: 0,
-      padding: 0
-    }}>
-      {/* SISI KIRI: HERO BANNER INSTITUSI BRMP PENGELOLA HASIL */}
-      <div style={{
-        flex: '1 1 500px',
-        minHeight: '100vh',
-        backgroundImage: "linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(21, 128, 61, 0.55) 50%, rgba(6, 95, 70, 0.70) 100%), url('/BRMP_PH.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        color: '#ffffff',
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '3rem 3.5rem',
-        boxSizing: 'border-box',
-        overflow: 'hidden'
-      }}>
+    <div className="auth-main-container">
+      <style>{`
+        .auth-main-container {
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          background-color: #ffffff;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+        .auth-hero-banner {
+          display: flex;
+          flex: 1 1 500px;
+          min-height: 100vh;
+          background-image: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(21, 128, 61, 0.55) 50%, rgba(6, 95, 70, 0.70) 100%), url('/BRMP_PH.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          color: #ffffff;
+          position: relative;
+          flex-direction: column;
+          justifyContent: space-between;
+          padding: 3rem 3.5rem;
+          box-sizing: border-box;
+          overflow: hidden;
+        }
+        .auth-form-container {
+          flex: 1 1 480px;
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 3rem 2rem;
+          box-sizing: border-box;
+          background-color: #ffffff;
+        }
+        .auth-form-card {
+          width: 100%;
+          max-width: 440px;
+          box-sizing: border-box;
+        }
+        .auth-mobile-header {
+          display: none;
+        }
+        .auth-back-link-desktop {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.375rem;
+          font-size: 0.8125rem;
+          color: #64748b;
+          text-decoration: none;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          transition: color 0.2s;
+        }
+        .otp-input-box {
+          width: clamp(34px, 9.5vw, 44px);
+          height: clamp(44px, 12vw, 54px);
+          text-align: center;
+          font-size: clamp(1.1rem, 4vw, 1.35rem);
+          font-weight: 800;
+          color: #0f172a;
+          border-radius: 8px;
+          outline: none;
+          box-sizing: border-box;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        @media (max-width: 1023px) {
+          .auth-hero-banner {
+            display: none !important;
+          }
+          .auth-main-container {
+            background-color: #f8fafc;
+            flex-direction: column;
+          }
+          .auth-form-container {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 1.25rem 1rem !important;
+            justify-content: flex-start !important;
+          }
+          .auth-form-card {
+            background-color: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem 1.25rem !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            max-width: 440px;
+          }
+          .auth-mobile-header {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+          }
+          .auth-back-link-desktop {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* SISI KIRI: HERO BANNER INSTITUSI BRMP PENGELOLA HASIL (Desktop only) */}
+      <div className="auth-hero-banner">
         {/* Top Header Institusi */}
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.875rem' }}>
-            <AppLogo size={42} priority />
+            <div style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '12px',
+              backgroundColor: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '3px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              overflow: 'hidden'
+            }}>
+              <AppLogo size={40} alt="Logo BRMP" priority />
+            </div>
             <div>
               <span style={{
                 fontSize: '1.125rem',
@@ -327,32 +423,59 @@ function VerifyOtpForm() {
       </div>
 
       {/* SISI KANAN: FORM VERIFIKASI OTP */}
-      <div style={{
-        flex: '1 1 440px',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '3rem 1.5rem',
-        boxSizing: 'border-box',
-        backgroundColor: '#ffffff'
-      }}>
-        <div style={{ width: '100%', maxWidth: '440px' }}>
-          {/* Tombol Navigasi Kembali ke Register */}
+      <div className="auth-form-container">
+        <div className="auth-form-card">
+          {/* Mobile Header Branding */}
+          <div className="auth-mobile-header">
+            <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                backgroundColor: '#ffffff',
+                border: '1px solid #bbf7d0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2px',
+                boxShadow: '0 2px 4px rgba(21, 128, 61, 0.12)',
+                flexShrink: 0
+              }}>
+                <AppLogo size={30} alt="Logo BRMP" priority />
+              </div>
+              <div>
+                <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#15803d', display: 'block', lineHeight: 1.2 }}>
+                  SIM-Magang
+                </span>
+                <span style={{ fontSize: '0.625rem', color: '#64748b', fontWeight: 600, display: 'block', lineHeight: 1.1 }}>
+                  BRMP Kementan RI
+                </span>
+              </div>
+            </Link>
+
+            <Link
+              href="/register"
+              style={{
+                fontSize: '0.75rem',
+                color: '#64748b',
+                textDecoration: 'none',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.375rem 0.625rem',
+                borderRadius: '6px',
+                backgroundColor: '#f1f5f9'
+              }}
+            >
+              <span>← Ganti</span>
+            </Link>
+          </div>
+
+          {/* Tombol Navigasi Kembali ke Register (Desktop only) */}
           <Link
             href="/register"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              fontSize: '0.8125rem',
-              color: '#64748b',
-              textDecoration: 'none',
-              fontWeight: 600,
-              marginBottom: '2rem',
-              transition: 'color 0.2s'
-            }}
+            className="auth-back-link-desktop"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
@@ -361,35 +484,35 @@ function VerifyOtpForm() {
           </Link>
 
           {/* Heading */}
-          <div style={{ marginBottom: '1.75rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <div style={{
-              width: '48px',
-              height: '48px',
+              width: '44px',
+              height: '44px',
               borderRadius: '12px',
               backgroundColor: '#dcfce7',
               color: '#15803d',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.5rem',
-              marginBottom: '1rem'
+              fontSize: '1.35rem',
+              marginBottom: '0.75rem'
             }}>
               ✉️
             </div>
             <h2 style={{
-              fontSize: '1.75rem',
+              fontSize: '1.5rem',
               fontWeight: 800,
               color: '#0f172a',
               letterSpacing: '-0.025em',
-              margin: '0 0 0.375rem 0'
+              margin: '0 0 0.25rem 0'
             }}>
               Verifikasi Email
             </h2>
-            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
               Masukkan kode OTP yang kami kirimkan ke email:
             </p>
             {email && (
-              <p style={{ fontSize: '0.875rem', fontWeight: 700, color: '#15803d', margin: '0.25rem 0 0 0' }}>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#15803d', margin: '0.25rem 0 0 0', wordBreak: 'break-all' }}>
                 {email}
               </p>
             )}
@@ -436,9 +559,9 @@ function VerifyOtpForm() {
           )}
 
           {/* Form Input OTP 8 Digit */}
-          <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.75rem', textAlign: 'center' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.75rem', textAlign: 'center', letterSpacing: '0.05em' }}>
                 KODE OTP VERIFIKASI
               </label>
 
@@ -447,8 +570,9 @@ function VerifyOtpForm() {
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
-                  gap: '0.375rem',
-                  width: '100%'
+                  gap: 'clamp(4px, 1.5vw, 8px)',
+                  width: '100%',
+                  boxSizing: 'border-box'
                 }}
               >
                 {otp.map((digit, index) => (
@@ -463,20 +587,11 @@ function VerifyOtpForm() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     disabled={loading || isSuccess}
+                    className="otp-input-box"
                     style={{
-                      width: '42px',
-                      height: '52px',
-                      textAlign: 'center',
-                      fontSize: '1.375rem',
-                      fontWeight: 800,
-                      color: '#0f172a',
-                      borderRadius: '8px',
                       border: digit ? '2px solid #15803d' : '1px solid #cbd5e1',
                       backgroundColor: loading || isSuccess ? '#f8fafc' : '#ffffff',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                      boxShadow: digit ? '0 0 0 3px rgba(21, 128, 61, 0.15)' : 'none',
-                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                      boxShadow: digit ? '0 0 0 3px rgba(21, 128, 61, 0.15)' : 'none'
                     }}
                   />
                 ))}
@@ -489,7 +604,7 @@ function VerifyOtpForm() {
               disabled={loading || otp.join('').trim().length < 6 || isSuccess}
               style={{
                 width: '100%',
-                padding: '0.875rem',
+                padding: '0.8125rem',
                 backgroundColor: '#15803d',
                 color: '#ffffff',
                 border: 'none',
@@ -508,14 +623,14 @@ function VerifyOtpForm() {
 
           {/* Area Kirim Ulang OTP & Cooldown */}
           <div style={{
-            marginTop: '2rem',
-            paddingTop: '1.5rem',
+            marginTop: '1.5rem',
+            paddingTop: '1.25rem',
             borderTop: '1px solid #f1f5f9',
             textAlign: 'center',
             fontSize: '0.8125rem',
             color: '#64748b'
           }}>
-            <p style={{ margin: '0 0 0.5rem 0' }}>Tidak menerima kode di email Anda?</p>
+            <p style={{ margin: '0 0 0.375rem 0' }}>Tidak menerima kode di email Anda?</p>
             {cooldown > 0 ? (
               <span style={{ color: '#94a3b8', fontWeight: 600 }}>
                 Kirim ulang kode dalam <strong style={{ color: '#15803d' }}>{cooldown} detik</strong>

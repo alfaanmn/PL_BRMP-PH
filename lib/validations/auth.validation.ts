@@ -1,9 +1,37 @@
+/**
+ * Normalisasi format nomor HP Indonesia ke format canonical string '08xxxxxxxxxx'
+ * Mendukung: '08...', '+628...', '628...', spasi, dan tanda hubung
+ */
+export function normalizePhoneNumber(phone: string | null | undefined): string {
+  if (!phone || typeof phone !== 'string') return ''
+  let clean = phone.replace(/[\s\-().+]/g, '')
+  if (clean.startsWith('62')) {
+    clean = '0' + clean.slice(2)
+  } else if (!clean.startsWith('0') && clean.length > 0) {
+    clean = '0' + clean
+  }
+  return clean
+}
+
+export function validatePhoneNumber(phone: string | null | undefined): string | null {
+  if (!phone || !phone.trim()) {
+    return 'Nomor HP / WhatsApp wajib diisi'
+  }
+  const normalized = normalizePhoneNumber(phone)
+  // Format nomor HP Indonesia standar: diawali 08 dan memiliki panjang 10-14 digit
+  if (!/^08\d{8,12}$/.test(normalized)) {
+    return 'Nomor HP tidak valid. Gunakan format Indonesia yang valid (contoh: 081234567890)'
+  }
+  return null
+}
+
 export function validateEmail(email: string): string | null {
   if (!email || !email.trim()) {
     return 'Email wajib diisi'
   }
+  const cleanEmail = email.trim().toLowerCase()
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email.trim())) {
+  if (!emailRegex.test(cleanEmail)) {
     return 'Format email tidak valid'
   }
   return null
@@ -50,14 +78,8 @@ export function validateRegister(data: {
   if (emailError) errors.email = emailError
 
   // 3. Nomor HP / WhatsApp (Wajib)
-  if (!data.no_hp || !data.no_hp.trim()) {
-    errors.no_hp = 'Nomor HP / WhatsApp wajib diisi'
-  } else {
-    const phoneRegex = /^[0-9+() -]{8,20}$/
-    if (!phoneRegex.test(data.no_hp.trim())) {
-      errors.no_hp = 'Format nomor HP/WA tidak valid'
-    }
-  }
+  const phoneError = validatePhoneNumber(data.no_hp)
+  if (phoneError) errors.no_hp = phoneError
 
   // 4. Jenis Kelamin (Wajib)
   if (!data.jenis_kelamin || !data.jenis_kelamin.trim()) {
