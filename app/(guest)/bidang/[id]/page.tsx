@@ -365,8 +365,10 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
     ? (userRole === 'administrator' ? '/admin/bidang' : `/pengguna/career/step1?bidangId=${bidang.id}`)
     : `/login?redirect=/pengguna/career/step1?bidangId=${bidang.id}`
 
-  const totalKuota = bidang.kuota || 0
-  const isKuotaOpened = (bidang.is_active !== false) && totalKuota > 0
+  const totalKuota = Number(bidang.kuota) || 0
+  const terisiKuota = Number(bidang.terisi) || 0
+  const sisaKuota = bidang.sisa_kuota ?? Math.max(0, totalKuota - terisiKuota)
+  const isKuotaOpened = (bidang.is_active !== false) && sisaKuota > 0
   const pembimbings = bidang.pembimbings || []
   const meta = getBidangMeta(bidang)
 
@@ -510,7 +512,27 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
 
             {/* 2. STATUS KUOTA (SATU BADGE TUNGGAL DI BAWAH HEADER) */}
             <div style={{ marginBottom: '1.75rem' }}>
-              {isKuotaOpened ? (
+              {bidang.is_active === false ? (
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backgroundColor: '#f1f5f9',
+                  border: '1px solid #cbd5e1',
+                  color: '#475569',
+                  padding: '0.4rem 0.875rem',
+                  borderRadius: '9999px',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                  <span>Pendaftaran bidang ditutup</span>
+                </div>
+              ) : isKuotaOpened ? (
                 <div style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -527,26 +549,27 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                     <circle cx="12" cy="12" r="10"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
-                  <span>Pendaftaran dibuka — sisa kuota aktif {totalKuota} mahasiswa</span>
+                  <span>Pendaftaran dibuka — sisa kuota aktif {sisaKuota} dari {totalKuota} mahasiswa</span>
                 </div>
               ) : (
                 <div style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  backgroundColor: '#fef3c7',
-                  border: '1px solid #fde68a',
-                  color: '#92400e',
+                  backgroundColor: '#fee2e2',
+                  border: '1px solid #fecaca',
+                  color: '#991b1b',
                   padding: '0.4rem 0.875rem',
                   borderRadius: '9999px',
                   fontSize: '0.8125rem',
                   fontWeight: 600
                 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
-                  <span>Pendaftaran belum dibuka — gelombang 2025/2026</span>
+                  <span>Kuota magang penuh — {terisiKuota} dari {totalKuota} slot terisi</span>
                 </div>
               )}
             </div>
@@ -596,11 +619,11 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                 <div style={{
                   fontSize: '1.5rem',
                   fontWeight: 800,
-                  color: isKuotaOpened ? '#15803d' : '#0f172a',
+                  color: isKuotaOpened ? '#15803d' : '#dc2626',
                   lineHeight: 1.1,
                   marginBottom: '0.25rem'
                 }}>
-                  {isKuotaOpened ? totalKuota : '-'}
+                  {isKuotaOpened ? sisaKuota : 0}
                 </div>
                 <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
                   Sisa kuota
@@ -908,7 +931,7 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   style={{
                     width: '100%',
                     padding: '0.875rem 1rem',
-                    backgroundColor: '#15803d',
+                    backgroundColor: isKuotaOpened ? '#15803d' : '#94a3b8',
                     color: '#ffffff',
                     borderRadius: '10px',
                     textDecoration: 'none',
@@ -918,14 +941,15 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    boxShadow: '0 4px 10px rgba(21, 128, 61, 0.3)',
+                    boxShadow: isKuotaOpened ? '0 4px 10px rgba(21, 128, 61, 0.3)' : 'none',
+                    pointerEvents: isKuotaOpened ? 'auto' : 'none',
                     boxSizing: 'border-box',
                     transition: 'all 0.2s',
                     marginBottom: '0.75rem'
                   }}
                 >
-                  <span>Daftar magang sekarang</span>
-                  <span>→</span>
+                  <span>{bidang.is_active === false ? 'Pendaftaran Ditutup' : isKuotaOpened ? 'Daftar magang sekarang' : 'Kuota Magang Penuh'}</span>
+                  {isKuotaOpened && <span>→</span>}
                 </Link>
 
                 {/* Secondary Back Button */}

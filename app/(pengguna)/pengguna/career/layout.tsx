@@ -1,6 +1,7 @@
 import React from 'react'
 import { WizardProvider } from '@/hooks/use-pengajuan'
 import { Navbar } from '@/components/layout/navbar'
+import { BlockedApplicationCard } from '@/components/forms/pengajuan/blocked-application-card'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import type { AppRole } from '@/types/auth.types'
@@ -36,6 +37,26 @@ export default async function CareerWizardLayout({
     }
   }
 
+  // Guard Server-Side: Cek apakah user memiliki pengajuan yang sedang aktif (Menunggu Verifikasi / Sedang Magang)
+  const { data: activePengajuans } = await supabase
+    .from('pengajuans')
+    .select(`
+      id,
+      public_id,
+      status,
+      created_at,
+      bidangs (
+        id,
+        nama
+      )
+    `)
+    .eq('user_id', user.id)
+    .in('status', ['Menunggu Verifikasi', 'Sedang Magang'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  const activeApplication = activePengajuans && activePengajuans.length > 0 ? activePengajuans[0] : null
+
   return (
     <WizardProvider>
       <div style={{
@@ -69,9 +90,26 @@ export default async function CareerWizardLayout({
           padding: '2rem 1rem 3rem 1rem',
           boxSizing: 'border-box'
         }}>
-          {children}
+          {activeApplication ? (
+            <div style={{ marginTop: '1rem' }}>
+              <BlockedApplicationCard
+                status={activeApplication.status}
+                bidangNama={(activeApplication as any).bidangs?.nama}
+                publicId={activeApplication.public_id}
+                id={activeApplication.id}
+                createdDate={activeApplication.created_at ? new Date(activeApplication.created_at).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                }) : undefined}
+              />
+            </div>
+          ) : (
+            children
+          )}
         </main>
       </div>
     </WizardProvider>
   )
 }
+

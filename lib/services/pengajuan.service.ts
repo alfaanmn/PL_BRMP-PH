@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { emailService } from '@/lib/services/email.service'
 import { PengajuanInsertPayload } from '@/types/pengajuan.types'
 
 export interface PengajuanResponse {
@@ -148,8 +149,79 @@ export const pengajuanService = {
   },
 
   /**
+   * Memeriksa apakah user memiliki pengajuan yang sedang aktif (Menunggu Verifikasi / Sedang Magang).
+   * Aturan bisnis:
+   * - 'Menunggu Verifikasi' -> BLOKIR daftar baru
+   * - 'Sedang Magang' -> BLOKIR daftar baru
+   * - 'Ditolak' -> BOLEH daftar lagi
+   * - 'Dibatalkan' -> BOLEH daftar lagi
+   * - 'Selesai' -> BOLEH daftar lagi
+   */
+  async checkUserActivePengajuan(userId: string): Promise<{
+    canApply: boolean
+    blockedReason?: string
+    activeStatus?: string
+    activePengajuan?: any
+  }> {
+    try {
+      if (!userId || userId === 'guest') {
+        return { canApply: true }
+      }
+
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pengajuans')
+        .select(`
+          id,
+          public_id,
+          user_id,
+          bidang_id,
+          status,
+          created_at,
+          bidangs (
+            id,
+            nama
+          )
+        `)
+        .eq('user_id', userId)
+        .in('status', ['Menunggu Verifikasi', 'Sedang Magang'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (error) {
+        console.error('Error checking user active pengajuan:', error)
+        return { canApply: true }
+      }
+
+      if (data && data.length > 0) {
+        const active = data[0]
+        const bidangNama = (active as any).bidangs?.nama || `Bidang #${active.bidang_id}`
+        let reason = ''
+
+        if (active.status === 'Menunggu Verifikasi') {
+          reason = `Anda memiliki pengajuan magang yang sedang dalam proses verifikasi (${bidangNama} - ID #${active.public_id || active.id}). Anda baru dapat mengajukan kembali apabila permohonan telah selesai diproses atau ditolak/dibatalkan.`
+        } else if (active.status === 'Sedang Magang') {
+          reason = `Anda saat ini tercatat sedang aktif menjalani kegiatan magang (${bidangNama} - ID #${active.public_id || active.id}). Satu peserta hanya dapat mengikuti 1 kegiatan magang dalam satu waktu.`
+        }
+
+        return {
+          canApply: false,
+          blockedReason: reason,
+          activeStatus: active.status,
+          activePengajuan: active,
+        }
+      }
+
+      return { canApply: true }
+    } catch (err: unknown) {
+      console.error('Exception in checkUserActivePengajuan:', err)
+      return { canApply: true }
+    }
+  },
+
+  /**
    * Menyimpan pengajuan magang baru ke tabel public.pengajuans
-   * CATATAN: public_id dibiarkan default dari database PostgreSQL (jangan di-override di payload JS)
+   * Dilengkapi proteksi satu pengajuan aktif per user.
    */
   async submitPengajuan(payload: PengajuanInsertPayload): Promise<PengajuanResponse> {
     try {
@@ -167,6 +239,18 @@ export const pengajuanService = {
           error: {
             code: 'UNAUTHORIZED',
             message: 'Sesi anda telah berakhir. Silakan login kembali.',
+          },
+        }
+      }
+
+      // 1. Validasi Server/Service Guard: Cek apakah user memiliki pengajuan aktif
+      const activeCheck = await this.checkUserActivePengajuan(user.id)
+      if (!activeCheck.canApply) {
+        return {
+          success: false,
+          error: {
+            code: 'ACTIVE_APPLICATION_EXISTS',
+            message: activeCheck.blockedReason || 'Anda sudah memiliki pengajuan magang yang sedang aktif.',
           },
         }
       }
@@ -204,6 +288,17 @@ export const pengajuanService = {
         .single()
 
       if (insertError) {
+        // Tangani pesan jika ditolak oleh constraint database
+        if (insertError.code === '23505' || insertError.message?.includes('duplicate key') || insertError.message?.includes('single_active')) {
+          return {
+            success: false,
+            error: {
+              code: 'ACTIVE_APPLICATION_EXISTS',
+              message: 'Anda sudah memiliki pengajuan magang yang sedang aktif. Tidak dapat membuat pengajuan baru.',
+            },
+          }
+        }
+
         return {
           success: false,
           error: {
@@ -211,6 +306,36 @@ export const pengajuanService = {
             message: insertError.message || 'Gagal menyimpan data pengajuan magang.',
           },
         }
+      }
+
+      // Kirim email konfirmasi pengajuan magang berhasil terkirim (Asynchronous & Graceful)
+      try {
+        const { data: bData } = await supabase
+          .from('bidangs')
+          .select('nama')
+          .eq('id', Number(payload.bidang_id))
+          .single()
+
+        await emailService.sendNotification({
+          event: 'pengajuan_submitted',
+          recipient: {
+            email: user.email || '',
+            name: payload.nama_lengkap || user.user_metadata?.name || 'Peserta Magang',
+          },
+          pengajuan: {
+            id: data.id,
+            publicId: data.public_id || String(data.id),
+            bidangNama: bData?.nama || `Bidang #${payload.bidang_id}`,
+            asalInstansi: payload.asal_instansi,
+            jurusan: payload.jurusan,
+            nomorSurat: payload.nomor_surat,
+            tanggalMulai: payload.tanggal_mulai,
+            tanggalSelesai: payload.tanggal_selesai,
+            durasiBulan: payload.durasi_bulan,
+          },
+        })
+      } catch (emailErr) {
+        console.warn('[PengajuanService] Gagal memicu email konfirmasi pendaftaran:', emailErr)
       }
 
       return {

@@ -109,16 +109,25 @@ export function BidangListSection({ bidangs, user, userRole }: BidangListSection
   // Hitung statistik
   const totalCount = bidangs.length
   const openCount = useMemo(() => {
-    return bidangs.filter((b) => (b.kuota || 0) > 0).length
+    return bidangs.filter((b) => {
+      const sisa = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+      return sisa > 0 && b.is_active !== false
+    }).length
   }, [bidangs])
 
   // Filter data client-side
   const filteredBidangs = useMemo(() => {
     if (filter === 'tersedia') {
-      return bidangs.filter((b) => (b.kuota || 0) > 0)
+      return bidangs.filter((b) => {
+        const sisa = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+        return sisa > 0 && b.is_active !== false
+      })
     }
     if (filter === 'penuh') {
-      return bidangs.filter((b) => (b.kuota || 0) <= 0)
+      return bidangs.filter((b) => {
+        const sisa = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+        return sisa <= 0 || b.is_active === false
+      })
     }
     return bidangs
   }, [bidangs, filter])
@@ -283,12 +292,12 @@ export function BidangListSection({ bidangs, user, userRole }: BidangListSection
       {/* List Vertikal 1 Kolom */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {filteredBidangs.map((b) => {
-          const isAvailable = (b.kuota || 0) > 0
-          const kuotaNum = b.kuota || 0
-          const totalRefCapacity = 10
-          // Progress bar percentage (misal proporsi keterisian slot)
-          const filledPercentage = isAvailable
-            ? Math.min(100, Math.max(15, Math.round(((totalRefCapacity - kuotaNum) / totalRefCapacity) * 100)))
+          const sisaSlot = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+          const isAvailable = sisaSlot > 0 && b.is_active !== false
+          const totalKapasitas = Number(b.kuota) || 10
+          // Progress bar percentage (proporsi keterisian slot)
+          const filledPercentage = totalKapasitas > 0
+            ? Math.min(100, Math.max(0, Math.round(((Number(b.terisi) || 0) / totalKapasitas) * 100)))
             : 100
 
           const theme = getCategoryTheme(b.nama, isAvailable)
@@ -401,7 +410,7 @@ export function BidangListSection({ bidangs, user, userRole }: BidangListSection
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  {isAvailable ? `${kuotaNum} dari ${totalRefCapacity} slot` : 'Penuh'}
+                  {b.is_active === false ? 'Ditutup' : isAvailable ? `${sisaSlot} dari ${totalKapasitas} slot` : 'Penuh'}
                 </div>
               </div>
 

@@ -409,27 +409,51 @@ export default async function PenggunaDashboardPage() {
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <Link
-                href="/pengguna/career/step1"
-                style={{
-                  padding: '0.875rem 2rem',
-                  backgroundColor: '#22c55e',
-                  color: '#064e3b',
-                  borderRadius: '10px',
-                  textDecoration: 'none',
-                  fontWeight: 900,
-                  fontSize: '0.9375rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <span>✨ Ajukan Magang</span>
-              </Link>
+              {pengajuans && pengajuans.some((p: any) => p.status === 'Menunggu Verifikasi' || p.status === 'Sedang Magang') ? (
+                <Link
+                  href="/pengguna/riwayat"
+                  style={{
+                    padding: '0.875rem 2rem',
+                    backgroundColor: '#f59e0b',
+                    color: '#451a03',
+                    borderRadius: '10px',
+                    textDecoration: 'none',
+                    fontWeight: 900,
+                    fontSize: '0.9375rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    boxShadow: '0 4px 14px rgba(245, 158, 11, 0.4)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span>📋 Pantau Pengajuan Aktif</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/pengguna/career/step1"
+                  style={{
+                    padding: '0.875rem 2rem',
+                    backgroundColor: '#22c55e',
+                    color: '#064e3b',
+                    borderRadius: '10px',
+                    textDecoration: 'none',
+                    fontWeight: 900,
+                    fontSize: '0.9375rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span>✨ Ajukan Magang</span>
+                </Link>
+              )}
 
               <Link
                 href="/pengguna/riwayat"
@@ -561,11 +585,11 @@ export default async function PenggunaDashboardPage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b0.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b0.sisa_kuota ?? Math.max(0, (b0.kuota || 0) - (b0.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b0.kuota || 0) > 0 ? `${b0.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b0.sisa_kuota ?? Math.max(0, (b0.kuota || 0) - (b0.terisi || 0))) > 0 ? `${b0.sisa_kuota ?? Math.max(0, (b0.kuota || 0) - (b0.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -615,11 +639,11 @@ export default async function PenggunaDashboardPage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b2.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b2.sisa_kuota ?? Math.max(0, (b2.kuota || 0) - (b2.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b2.kuota || 0) > 0 ? `${b2.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b2.sisa_kuota ?? Math.max(0, (b2.kuota || 0) - (b2.terisi || 0))) > 0 ? `${b2.sisa_kuota ?? Math.max(0, (b2.kuota || 0) - (b2.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -672,11 +696,11 @@ export default async function PenggunaDashboardPage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b1.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b1.sisa_kuota ?? Math.max(0, (b1.kuota || 0) - (b1.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b1.kuota || 0) > 0 ? `${b1.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b1.sisa_kuota ?? Math.max(0, (b1.kuota || 0) - (b1.terisi || 0))) > 0 ? `${b1.sisa_kuota ?? Math.max(0, (b1.kuota || 0) - (b1.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -726,11 +750,11 @@ export default async function PenggunaDashboardPage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b3.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b3.sisa_kuota ?? Math.max(0, (b3.kuota || 0) - (b3.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b3.kuota || 0) > 0 ? `${b3.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b3.sisa_kuota ?? Math.max(0, (b3.kuota || 0) - (b3.terisi || 0))) > 0 ? `${b3.sisa_kuota ?? Math.max(0, (b3.kuota || 0) - (b3.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -802,7 +826,8 @@ export default async function PenggunaDashboardPage() {
             {bidangs.map((b) => {
               const coverImage = getBidangImage(b.nama, b.id)
               const shortDesc = getBidangShortDesc(b.nama, b.deskripsi)
-              const isAvailable = (b.kuota || 0) > 0
+              const sisaSlot = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+              const isAvailable = sisaSlot > 0 && b.is_active !== false
 
               return (
                 <div
@@ -880,7 +905,7 @@ export default async function PenggunaDashboardPage() {
                         fontWeight: 700,
                         zIndex: 2
                       }}>
-                        {isAvailable ? '● Tersedia' : '● Penuh'}
+                        {b.is_active === false ? '● Ditutup' : isAvailable ? '● Tersedia' : '● Penuh'}
                       </div>
                     </div>
 
@@ -905,8 +930,8 @@ export default async function PenggunaDashboardPage() {
                         {shortDesc}
                       </p>
 
-                      <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700 }}>
-                        {b.kuota || 0} Slot tersedia
+                      <div style={{ fontSize: '0.75rem', color: isAvailable ? '#15803d' : '#dc2626', fontWeight: 700 }}>
+                        {sisaSlot} Slot tersedia
                       </div>
                     </div>
                   </div>

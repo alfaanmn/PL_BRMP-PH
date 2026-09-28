@@ -485,11 +485,11 @@ export default async function HomePage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b0.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b0.sisa_kuota ?? Math.max(0, (b0.kuota || 0) - (b0.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b0.kuota || 0) > 0 ? `${b0.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b0.sisa_kuota ?? Math.max(0, (b0.kuota || 0) - (b0.terisi || 0))) > 0 ? `${b0.sisa_kuota ?? Math.max(0, (b0.kuota || 0) - (b0.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -539,11 +539,11 @@ export default async function HomePage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b2.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b2.sisa_kuota ?? Math.max(0, (b2.kuota || 0) - (b2.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b2.kuota || 0) > 0 ? `${b2.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b2.sisa_kuota ?? Math.max(0, (b2.kuota || 0) - (b2.terisi || 0))) > 0 ? `${b2.sisa_kuota ?? Math.max(0, (b2.kuota || 0) - (b2.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -596,11 +596,11 @@ export default async function HomePage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b1.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b1.sisa_kuota ?? Math.max(0, (b1.kuota || 0) - (b1.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b1.kuota || 0) > 0 ? `${b1.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b1.sisa_kuota ?? Math.max(0, (b1.kuota || 0) - (b1.terisi || 0))) > 0 ? `${b1.sisa_kuota ?? Math.max(0, (b1.kuota || 0) - (b1.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -650,11 +650,11 @@ export default async function HomePage() {
                     </div>
                     <div style={{
                       fontSize: '0.625rem',
-                      color: (b3.kuota || 0) > 0 ? '#15803d' : '#dc2626',
+                      color: (b3.sisa_kuota ?? Math.max(0, (b3.kuota || 0) - (b3.terisi || 0))) > 0 ? '#15803d' : '#dc2626',
                       fontWeight: 700,
                       marginTop: '0.125rem'
                     }}>
-                      ● {(b3.kuota || 0) > 0 ? `${b3.kuota} Slot Tersedia` : 'Kuota Penuh'}
+                      ● {(b3.sisa_kuota ?? Math.max(0, (b3.kuota || 0) - (b3.terisi || 0))) > 0 ? `${b3.sisa_kuota ?? Math.max(0, (b3.kuota || 0) - (b3.terisi || 0))} Slot Tersedia` : 'Kuota Penuh'}
                     </div>
                   </div>
                 </Link>
@@ -730,7 +730,8 @@ export default async function HomePage() {
 
               const coverImage = getBidangImage(b.nama, b.id)
               const shortDesc = getBidangShortDesc(b.nama, b.deskripsi)
-              const isAvailable = (b.kuota || 0) > 0
+              const sisaSlot = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+              const isAvailable = sisaSlot > 0 && b.is_active !== false
 
               return (
                 <div
@@ -805,7 +806,7 @@ export default async function HomePage() {
                         fontSize: '0.6875rem',
                         fontWeight: 700
                       }}>
-                        {isAvailable ? '● Tersedia' : '● Penuh'}
+                        {b.is_active === false ? '● Ditutup' : isAvailable ? '● Tersedia' : '● Penuh'}
                       </div>
                     </div>
 
@@ -830,8 +831,8 @@ export default async function HomePage() {
                         {shortDesc}
                       </p>
 
-                      <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700 }}>
-                        {b.kuota || 0} Slot tersedia
+                      <div style={{ fontSize: '0.75rem', color: isAvailable ? '#15803d' : '#dc2626', fontWeight: 700 }}>
+                        {sisaSlot} Slot tersedia
                       </div>
                     </div>
                   </div>

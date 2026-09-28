@@ -7,6 +7,8 @@ export interface BidangCardItem {
   nama: string
   deskripsi?: string | null
   kuota?: number | null
+  terisi?: number | null
+  sisa_kuota?: number | null
   is_active?: boolean | null
 }
 
@@ -96,7 +98,8 @@ function getBidangShortDesc(nama: string = '', deskripsi: string | null = ''): s
 }
 
 export function BidangCard({ bidang, user, userRole }: BidangCardProps) {
-  const isAvailable = (bidang.kuota || 0) > 0
+  const sisaSlot = bidang.sisa_kuota ?? Math.max(0, (bidang.kuota || 0) - (bidang.terisi || 0))
+  const isAvailable = sisaSlot > 0 && bidang.is_active !== false
   const shortDesc = getBidangShortDesc(bidang.nama, bidang.deskripsi)
 
   const applyUrl = user
@@ -190,10 +193,15 @@ export function BidangCard({ bidang, user, userRole }: BidangCardProps) {
               gap: '0.35rem'
             }}
           >
-            {isAvailable ? (
+            {bidang.is_active === false ? (
+              <>
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#cbd5e1', display: 'inline-block' }} />
+                Ditutup
+              </>
+            ) : isAvailable ? (
               <>
                 <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#86efac', display: 'inline-block' }} />
-                {`${bidang.kuota || 0} slot tersedia`}
+                {`${sisaSlot} slot tersedia`}
               </>
             ) : (
               <>

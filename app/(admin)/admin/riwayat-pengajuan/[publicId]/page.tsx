@@ -885,6 +885,7 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
         isOpen={modalAction !== null}
         actionType={modalAction}
         pembimbingOptions={pembimbings}
+        jumlahAnggota={detail?.jumlah_anggota || 1}
         loadingSubmit={loadingSubmit}
         onClose={() => setModalAction(null)}
         onSubmit={handleVerifikasiSubmit}

@@ -15,8 +15,15 @@ export interface BidangItem {
   nama: string
   deskripsi?: string | null
   kuota?: number | null
+  terisi?: number | null
+  sisa_kuota?: number | null
+  banner_url?: string | null
+  jenjang?: string | null
+  persyaratan?: string | null
+  tugas?: string | null
   is_active?: boolean | null
   created_at?: string | null
+  updated_at?: string | null
 }
 
 export interface BidangDetail extends BidangItem {
@@ -40,7 +47,19 @@ export const bidangService = {
         return { data: [], error: error.message }
       }
 
-      return { data: (data as BidangItem[]) || [], error: null }
+      const mappedData: BidangItem[] = (data || []).map((item: any) => {
+        const kuota = Number(item.kuota) || 0
+        const terisi = Number(item.terisi) || 0
+        const sisa_kuota = Math.max(0, kuota - terisi)
+        return {
+          ...item,
+          kuota,
+          terisi,
+          sisa_kuota,
+        }
+      })
+
+      return { data: mappedData, error: null }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal memuat data bidang.'
       return { data: [], error: msg }
@@ -82,9 +101,16 @@ export const bidangService = {
         pembimbings = []
       }
 
+      const kuota = Number(bidang.kuota) || 0
+      const terisi = Number(bidang.terisi) || 0
+      const sisa_kuota = Math.max(0, kuota - terisi)
+
       return {
         data: {
           ...(bidang as BidangItem),
+          kuota,
+          terisi,
+          sisa_kuota,
           pembimbings,
         },
         error: null,

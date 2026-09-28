@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { emailService } from '@/lib/services/email.service'
 
 export interface AdminPengajuanFilterParams {
   status?: string
@@ -80,6 +81,11 @@ export interface PembimbingOption {
   nama: string
   nip?: string | null
   jabatan?: string | null
+  kuota_default: number
+  terisi: number
+  slot_tersedia: number
+  is_active?: boolean
+  is_full: boolean
 }
 
 export interface VerifikasiPayload {
@@ -290,6 +296,7 @@ export const adminPengajuanService = {
     try {
       const supabase = createClient()
 
+      // 1. Ambil relasi bidang_pembimbing yang aktif beserta data pembimbing
       const { data, error } = await supabase
         .from('bidang_pembimbing')
         .select(`
@@ -299,34 +306,74 @@ export const adminPengajuanService = {
             nama,
             nip,
             jabatan,
+            kuota_default,
             is_active
           )
         `)
         .eq('bidang_id', bidangId)
         .eq('is_active', true)
 
-      if (error) {
+      let rawPembimbings: any[] = []
+
+      if (error || !data || data.length === 0) {
         // Fallback jika bidang_pembimbing kosong, ambil semua pembimbing aktif
         const { data: allPembimbing } = await supabase
           .from('pembimbings')
-          .select('id, nama, nip, jabatan')
+          .select('id, nama, nip, jabatan, kuota_default, is_active')
           .eq('is_active', true)
 
-        return {
-          data: (allPembimbing as PembimbingOption[]) || [],
-          error: null,
+        rawPembimbings = allPembimbing || []
+      } else {
+        rawPembimbings = (data || [])
+          .map((item: any) => item.pembimbings)
+          .filter((p: any) => p && p.is_active !== false)
+      }
+
+      if (rawPembimbings.length === 0) {
+        return { data: [], error: null }
+      }
+
+      const pembimbingIds = rawPembimbings.map((p) => p.id)
+
+      // 2. Ambil seluruh pengajuan aktif yang dibimbing oleh pembimbing ini
+      const { data: activePengajuans } = await supabase
+        .from('pengajuans')
+        .select('pembimbing_id, jumlah_anggota, status')
+        .in('status', ['Sedang Magang', 'Disetujui'])
+        .in('pembimbing_id', pembimbingIds)
+
+      // 3. Hitung total peserta aktif per pembimbing (SUM jumlah_anggota, bukan count row)
+      const terisiMap = new Map<number | string, number>()
+      if (activePengajuans) {
+        for (const row of activePengajuans) {
+          const pId = row.pembimbing_id
+          const count = Number(row.jumlah_anggota) || 1
+          terisiMap.set(pId, (terisiMap.get(pId) || 0) + count)
         }
       }
 
-      const pembimbings: PembimbingOption[] = (data || [])
-        .map((item: any) => item.pembimbings)
-        .filter((p: any) => p && p.is_active !== false)
-        .map((p: any) => ({
+      // 4. Susun PembimbingOption dengan kuota asli database (tanpa fallback angka 5 palsu)
+      const pembimbings: PembimbingOption[] = rawPembimbings.map((p: any) => {
+        const kuota =
+          p.kuota_default !== null && p.kuota_default !== undefined
+            ? Number(p.kuota_default)
+            : 0
+        const terisi = terisiMap.get(p.id) || 0
+        const slotTersedia = Math.max(0, kuota - terisi)
+        const isFull = slotTersedia <= 0
+
+        return {
           id: p.id,
           nama: p.nama,
-          nip: p.nip,
-          jabatan: p.jabatan,
-        }))
+          nip: p.nip || null,
+          jabatan: p.jabatan || null,
+          kuota_default: kuota,
+          terisi,
+          slot_tersedia: slotTersedia,
+          is_active: p.is_active !== false,
+          is_full: isFull,
+        }
+      })
 
       return { data: pembimbings, error: null }
     } catch (err: unknown) {
@@ -443,6 +490,78 @@ export const adminPengajuanService = {
           ])
       } catch (notifErr) {
         console.warn('Gagal membuat entri notifikasi:', notifErr)
+      }
+
+      // 4. Kirim Notifikasi Email Otomatis (Asynchronous & Graceful)
+      try {
+        const { data: pData } = await supabase
+          .from('pengajuans')
+          .select(`
+            id,
+            public_id,
+            user_id,
+            tanggal_mulai,
+            tanggal_selesai,
+            asal_instansi,
+            profiles:user_id (
+              id,
+              name,
+              email
+            ),
+            bidangs (
+              id,
+              nama
+            ),
+            pembimbings (
+              id,
+              nama,
+              nip,
+              jabatan
+            )
+          `)
+          .eq('id', payload.pengajuanId)
+          .single()
+
+        if (pData && (pData as any).profiles?.email) {
+          const userProfile = (pData as any).profiles
+          const bidangInfo = (pData as any).bidangs
+          const pembimbingInfo = (pData as any).pembimbings
+
+          let eventType: 'pengajuan_approved' | 'pengajuan_rejected' | 'pengajuan_completed' = 'pengajuan_approved'
+          if (payload.status === 'Ditolak') {
+            eventType = 'pengajuan_rejected'
+          } else if (payload.status === 'Selesai') {
+            eventType = 'pengajuan_completed'
+          }
+
+          // Panggil email service secara aman tanpa mengganggu transaksi utama
+          await emailService.sendNotification({
+            event: eventType,
+            recipient: {
+              email: userProfile.email,
+              name: userProfile.name || 'Peserta Magang',
+            },
+            pengajuan: {
+              id: pData.id,
+              publicId: pData.public_id || String(pData.id),
+              bidangNama: bidangInfo?.nama,
+              asalInstansi: pData.asal_instansi,
+              tanggalMulai: pData.tanggal_mulai,
+              tanggalSelesai: pData.tanggal_selesai,
+            },
+            pembimbing: pembimbingInfo
+              ? {
+                  nama: pembimbingInfo.nama,
+                  nip: pembimbingInfo.nip,
+                  jabatan: pembimbingInfo.jabatan,
+                }
+              : null,
+            alasanPenolakan: payload.alasanPenolakan,
+            catatan: payload.catatan,
+          })
+        }
+      } catch (emailErr) {
+        console.warn('[AdminPengajuanService] Gagal memicu notifikasi email:', emailErr)
       }
 
       return {

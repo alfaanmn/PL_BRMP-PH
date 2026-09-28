@@ -7,6 +7,7 @@ interface PengajuanVerifikasiModalProps {
   isOpen: boolean
   actionType: 'terima' | 'tolak' | 'selesai' | null
   pembimbingOptions: PembimbingOption[]
+  jumlahAnggota?: number
   loadingSubmit: boolean
   onClose: () => void
   onSubmit: (payload: {
@@ -21,6 +22,7 @@ export function PengajuanVerifikasiModal({
   isOpen,
   actionType,
   pembimbingOptions,
+  jumlahAnggota = 1,
   loadingSubmit,
   onClose,
   onSubmit,
@@ -31,6 +33,8 @@ export function PengajuanVerifikasiModal({
   const [validationError, setValidationError] = useState<string | null>(null)
 
   if (!isOpen || !actionType) return null
+
+  const requiredSlots = Math.max(1, jumlahAnggota || 1)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,6 +51,22 @@ export function PengajuanVerifikasiModal({
         catatan: alasanPenolakan.trim(),
       })
     } else if (actionType === 'terima') {
+      if (selectedPembimbing) {
+        const chosen = pembimbingOptions.find((p) => String(p.id) === String(selectedPembimbing))
+        if (chosen) {
+          if (chosen.is_active === false) {
+            setValidationError(`Pembimbing ${chosen.nama} berstatus nonaktif dan tidak dapat ditugaskan.`)
+            return
+          }
+          if (chosen.slot_tersedia < requiredSlots) {
+            setValidationError(
+              `Kapasitas pembimbing ${chosen.nama} tidak mencukupi (sisa ${chosen.slot_tersedia} slot, pengajuan ini memerlukan ${requiredSlots} slot).`
+            )
+            return
+          }
+        }
+      }
+
       onSubmit({
         status: 'Sedang Magang',
         pembimbingId: selectedPembimbing ? Number(selectedPembimbing) : null,
@@ -71,6 +91,10 @@ export function PengajuanVerifikasiModal({
     }
   }
 
+  const selectedPembimbingData = selectedPembimbing
+    ? pembimbingOptions.find((p) => String(p.id) === String(selectedPembimbing))
+    : null
+
   return (
     <div
       style={{
@@ -90,7 +114,7 @@ export function PengajuanVerifikasiModal({
           backgroundColor: '#ffffff',
           borderRadius: '16px',
           width: '100%',
-          maxWidth: '480px',
+          maxWidth: '520px',
           maxHeight: '90dvh',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
           border: '1px solid #e2e8f0',
@@ -127,8 +151,8 @@ export function PengajuanVerifikasiModal({
               color: '#64748b',
               fontSize: '16px',
               cursor: 'pointer',
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -150,6 +174,7 @@ export function PengajuanVerifikasiModal({
                 borderRadius: '8px',
                 color: '#991b1b',
                 fontSize: '12px',
+                lineHeight: 1.5,
               }}
             >
               {validationError}
@@ -159,8 +184,8 @@ export function PengajuanVerifikasiModal({
           {/* Form Action: TERIMA */}
           {actionType === 'terima' && (
             <>
-              <p style={{ margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: 1.4 }}>
-                Status pengajuan akan diubah menjadi <strong style={{ color: '#15803d' }}>Sedang Magang</strong>. Anda dapat menetapkan Pembimbing Lapangan di bawah ini:
+              <p style={{ margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: 1.5 }}>
+                Status pengajuan akan diubah menjadi <strong style={{ color: '#15803d' }}>Sedang Magang</strong>. Silakan pilih Pembimbing Lapangan yang memiliki kapasitas tersedia untuk penugasan peserta ({requiredSlots} orang):
               </p>
 
               <div>
@@ -169,25 +194,84 @@ export function PengajuanVerifikasiModal({
                 </label>
                 <select
                   value={selectedPembimbing}
-                  onChange={(e) => setSelectedPembimbing(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedPembimbing(e.target.value)
+                    setValidationError(null)
+                  }}
                   style={{
                     width: '100%',
-                    padding: '8px 12px',
+                    padding: '9px 12px',
                     borderRadius: '8px',
-                    border: '1px solid #e5e7eb',
-                    fontSize: '13px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '12.5px',
                     backgroundColor: '#ffffff',
-                    color: '#111827',
+                    color: '#0f172a',
                     outline: 'none',
                   }}
                 >
-                  <option value="">Pilih pembimbing...</option>
-                  {pembimbingOptions.map((p) => (
-                    <option key={p.id} value={String(p.id)}>
-                      {p.nama} {p.jabatan ? `(${p.jabatan})` : ''}
-                    </option>
-                  ))}
+                  <option value="">-- Pilih Pembimbing Lapangan --</option>
+                  {pembimbingOptions.map((p) => {
+                    const isInactive = p.is_active === false
+                    const isFull = p.is_full || p.slot_tersedia <= 0
+                    const isInsufficient = p.slot_tersedia < requiredSlots
+                    const isDisabled = isInactive || isFull || isInsufficient
+
+                    const nipPart = p.nip ? ` (NIP: ${p.nip})` : ''
+                    let label = `${p.nama}${nipPart}`
+
+                    if (isInactive) {
+                      label += ' — [Nonaktif]'
+                    } else if (isFull) {
+                      label += ` — Penuh (Terisi ${p.terisi}/${p.kuota_default})`
+                    } else if (isInsufficient) {
+                      label += ` — ${p.slot_tersedia} slot (Terisi ${p.terisi}/${p.kuota_default}) [Slot tidak cukup untuk ${requiredSlots} peserta]`
+                    } else {
+                      label += ` — ${p.slot_tersedia} slot tersedia (Terisi ${p.terisi}/${p.kuota_default})`
+                    }
+
+                    return (
+                      <option
+                        key={p.id}
+                        value={String(p.id)}
+                        disabled={isDisabled}
+                        style={{
+                          color: isDisabled ? '#94a3b8' : '#0f172a',
+                          backgroundColor: isDisabled ? '#f8fafc' : '#ffffff',
+                          fontWeight: isDisabled ? 400 : 500,
+                        }}
+                      >
+                        {label}
+                      </option>
+                    )
+                  })}
                 </select>
+
+                {/* Ringkasan Kapasitas Pembimbing Terpilih */}
+                {selectedPembimbingData && (
+                  <div
+                    style={{
+                      marginTop: '0.75rem',
+                      padding: '0.75rem 1rem',
+                      backgroundColor: '#f0fdf4',
+                      border: '1px solid #bbf7d0',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      color: '#166534',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.25rem',
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, color: '#064e3b' }}>
+                      {selectedPembimbingData.nama} {selectedPembimbingData.nip ? `(NIP: ${selectedPembimbingData.nip})` : ''}
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '11.5px', color: '#15803d' }}>
+                      <span>Kuota Maks: <strong>{selectedPembimbingData.kuota_default} peserta</strong></span>
+                      <span>Terisi: <strong>{selectedPembimbingData.terisi} peserta</strong></span>
+                      <span>Sisa Slot: <strong>{selectedPembimbingData.slot_tersedia} peserta</strong></span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

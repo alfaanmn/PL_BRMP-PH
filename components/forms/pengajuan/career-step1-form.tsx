@@ -285,7 +285,10 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
                   {selectedBidang.nama}
                 </h4>
                 <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                  {selectedBidang.kuota ? `${selectedBidang.kuota} kuota tersedia` : 'Kuota tersedia'}
+                  {(() => {
+                    const sisa = selectedBidang.sisa_kuota ?? Math.max(0, (selectedBidang.kuota || 0) - (selectedBidang.terisi || 0))
+                    return sisa > 0 ? `${sisa} kuota tersedia (Kapasitas: ${selectedBidang.kuota})` : 'Kuota penuh (0 slot tersedia)'
+                  })()}
                 </p>
               </div>
             </div>
@@ -342,11 +345,14 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
               className="form-input-control"
             >
               <option value="">Pilih bidang magang</option>
-              {bidangList.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.nama} (Kuota: {b.kuota ?? 'Tersedia'})
-                </option>
-              ))}
+              {bidangList.map((b) => {
+                const sisa = b.sisa_kuota ?? Math.max(0, (b.kuota || 0) - (b.terisi || 0))
+                return (
+                  <option key={b.id} value={b.id} disabled={sisa <= 0 || b.is_active === false}>
+                    {b.nama} (Sisa Kuota: {sisa} slot{sisa <= 0 ? ' - Penuh' : ''})
+                  </option>
+                )
+              })}
             </select>
           </div>
         )}

@@ -309,7 +309,11 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
               {selectedBidang?.nama || `Bidang ID #${state.step1.bidang_id}`}
             </div>
             <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              {selectedBidang?.kuota ? `${selectedBidang.kuota} kuota tersedia` : 'Kuota tersedia'}
+              {(() => {
+                if (!selectedBidang) return 'Kuota tersedia'
+                const sisa = selectedBidang.sisa_kuota ?? Math.max(0, (selectedBidang.kuota || 0) - (selectedBidang.terisi || 0))
+                return sisa > 0 ? `${sisa} kuota tersedia (Kapasitas: ${selectedBidang.kuota})` : 'Kuota penuh (0 slot tersedia)'
+              })()}
             </div>
           </div>
         </div>
