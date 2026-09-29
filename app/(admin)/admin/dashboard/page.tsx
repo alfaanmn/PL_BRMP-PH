@@ -11,6 +11,7 @@ import {
 import { DashboardStatsCard } from '@/components/admin/dashboard-stats-card'
 import { DashboardCharts } from '@/components/admin/dashboard-charts'
 import { DashboardPengajuanTable } from '@/components/admin/dashboard-pengajuan-table'
+import { DownloadIcon } from '@/components/ui/admin-icons'
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -99,9 +100,9 @@ export default function AdminDashboardPage() {
             value={rekapYear}
             onChange={(e) => setRekapYear(e.target.value)}
             style={{
-              padding: '5px 12px',
+              padding: '6px 12px',
               borderRadius: '6px',
-              border: '1px solid #e5e7eb',
+              border: '1px solid #d1d5db',
               backgroundColor: '#ffffff',
               fontSize: '12px',
               fontWeight: 500,
@@ -115,22 +116,30 @@ export default function AdminDashboardPage() {
           </select>
 
           <button
-            onClick={() => alert('Fitur Ekspor Excel tersedia pada Fase 6 (Laporan).')}
+            type="button"
+            onClick={() => {
+              window.open(`/api/laporan/export?format=xlsx&category=all&startDate=${rekapYear}-01-01&endDate=${rekapYear}-12-31`, '_blank')
+            }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.375rem',
-              padding: '5px 12px',
-              backgroundColor: '#ffffff',
-              color: '#374151',
-              border: '1px solid #e5e7eb',
+              padding: '6px 14px',
+              backgroundColor: '#16a34a',
+              color: '#ffffff',
+              border: 'none',
               borderRadius: '6px',
               fontSize: '12px',
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(22, 163, 74, 0.25)',
+              transition: 'background-color 0.15s ease',
             }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#15803d')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#16a34a')}
           >
-            <span>Excel</span>
+            <DownloadIcon width={14} height={14} className="text-white" />
+            <span>Ekspor Excel</span>
           </button>
         </div>
       </div>
