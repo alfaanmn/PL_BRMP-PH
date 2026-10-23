@@ -40,39 +40,45 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
     switch (status) {
       case 'Menunggu Verifikasi':
         return {
-          bg: '#fef3c7',
-          color: '#92400e',
-          border: '#fde68a',
+          bg: '#FEF3C7',
+          color: '#78350F',
+          border: '#FDE68A',
           label: 'Menunggu verifikasi',
         }
       case 'Disetujui':
       case 'Sedang Magang':
+        return {
+          bg: '#EFF6FF',
+          color: '#1D4ED8',
+          border: '#BFDBFE',
+          label: status,
+        }
       case 'Selesai':
         return {
-          bg: '#ecfdf5',
-          color: '#16a34a',
-          border: '#bbf7d0',
-          label: status,
+          bg: '#ECFDF5',
+          color: '#065F46',
+          border: '#A7F3D0',
+          label: 'Selesai',
         }
       case 'Ditolak':
         return {
-          bg: '#fef2f2',
-          color: '#dc2626',
-          border: '#fecaca',
+          bg: '#FEF2F2',
+          color: '#991B1B',
+          border: '#FECACA',
           label: 'Ditolak',
         }
       case 'Dibatalkan':
         return {
-          bg: '#f1f5f9',
-          color: '#64748b',
-          border: '#e2e8f0',
+          bg: '#F1F5F9',
+          color: '#475569',
+          border: '#CBD5E1',
           label: 'Dibatalkan',
         }
       default:
         return {
-          bg: '#ecfdf5',
-          color: '#16a34a',
-          border: '#bbf7d0',
+          bg: '#F1F5F9',
+          color: '#475569',
+          border: '#CBD5E1',
           label: status || 'Tercatat',
         }
     }

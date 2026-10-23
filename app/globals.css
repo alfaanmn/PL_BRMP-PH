@@ -1,4 +1,37 @@
 /* Global CSS SIM-Magang */
+:root {
+  --kementan-gold: #F5C400;
+  --kementan-gold-hover: #E0B300;
+  --kementan-gold-dark: #B8860B;
+  --kementan-gold-light: #FEF3C7;
+  --kementan-gold-text: #78350F;
+
+  --kementan-blue: #1A6FC4;
+  --kementan-blue-brand: #1E78D2;
+  --kementan-blue-hover: #155DA6;
+  --kementan-blue-dark: #0F2A47;
+  --kementan-blue-light: #EFF6FF;
+  --kementan-blue-text: #1D4ED8;
+
+  --kementan-green: #238833;
+  --kementan-green-brand: #2E9E3E;
+  --kementan-green-dark: #02482E;
+  --kementan-green-light: #ECFDF5;
+  --kementan-green-text: #065F46;
+
+  --kementan-red: #D62828;
+  --kementan-red-hover: #BA1F1F;
+  --kementan-red-light: #FEF2F2;
+  --kementan-red-text: #991B1B;
+
+  --surface-bg: #F8FAFC;
+  --surface-card: #FFFFFF;
+  --surface-border: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #1E293B;
+  --text-muted: #64748B;
+}
+
 *,
 *::before,
 *::after {

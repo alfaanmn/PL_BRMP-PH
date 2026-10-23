@@ -21,13 +21,23 @@ export function Footer({
   return (
     <footer
       style={{
-        backgroundColor: '#064e3b',
-        color: '#ecfdf5',
-        borderTop: '1px solid #047857',
+        backgroundColor: '#0F2A47',
+        color: '#e2e8f0',
+        borderTop: '2px solid #F5C400',
         padding: '3rem 1.5rem 2rem 1.5rem',
         marginTop: 'auto',
       }}
     >
+      <style>{`
+        .footer-link {
+          color: #cbd5e1;
+          text-decoration: none;
+          transition: color 0.15s ease;
+        }
+        .footer-link:hover {
+          color: #F5C400 !important;
+        }
+      `}</style>
       <div
         style={{
           maxWidth: '1240px',
@@ -68,7 +78,7 @@ export function Footer({
                 style={{
                   fontSize: '0.875rem',
                   fontWeight: 500,
-                  color: '#d1fae5',
+                  color: '#cbd5e1',
                   lineHeight: 1.45,
                 }}
               >
@@ -102,16 +112,16 @@ export function Footer({
               fontSize: '0.8125rem',
             }}
           >
-            <Link href={homeLink} style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+            <Link href={homeLink} className="footer-link">
               Beranda Utama
             </Link>
-            <Link href="/#bidang" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+            <Link href="/#bidang" className="footer-link">
               Katalog Bidang &amp; Riset
             </Link>
-            <Link href="/#alur" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+            <Link href="/#alur" className="footer-link">
               Alur Magang
             </Link>
-            <Link href="/kontak" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
+            <Link href="/kontak" className="footer-link">
               Bantuan &amp; Helpdesk
             </Link>
           </div>
@@ -137,7 +147,7 @@ export function Footer({
               flexDirection: 'column',
               gap: '0.5rem',
               fontSize: '0.8125rem',
-              color: '#a7f3d0',
+              color: '#cbd5e1',
               lineHeight: 1.5,
             }}
           >
@@ -148,7 +158,7 @@ export function Footer({
               Email:{' '}
               <a
                 href="mailto:brmp.pengelolahasil@pertanian.go.id"
-                style={{ color: '#a7f3d0', textDecoration: 'none' }}
+                className="footer-link"
               >
                 brmp.pengelolahasil@pertanian.go.id
               </a>
@@ -159,7 +169,7 @@ export function Footer({
                 href="https://wa.me/6281805503899"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: '#a7f3d0', textDecoration: 'none' }}
+                className="footer-link"
               >
                 +62 818-0550-3899
               </a>
@@ -174,24 +184,24 @@ export function Footer({
           maxWidth: '1240px',
           margin: '0 auto',
           paddingTop: '1.5rem',
-          borderTop: '1px solid #047857',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '1rem',
           fontSize: '0.75rem',
-          color: '#86efac',
+          color: '#94a3b8',
         }}
       >
         <div>
           © {currentYear} BRMP Pengelola Hasil — Kementerian Pertanian RI.
         </div>
         <div style={{ display: 'flex', gap: '1.5rem' }}>
-          <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>
+          <Link href="/kontak" className="footer-link">
             Syarat &amp; Ketentuan
           </Link>
-          <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>
+          <Link href="/kontak" className="footer-link">
             Kebijakan Privasi
           </Link>
         </div>

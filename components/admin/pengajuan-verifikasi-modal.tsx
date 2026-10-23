@@ -58,12 +58,6 @@ export function PengajuanVerifikasiModal({
             setValidationError(`Pembimbing ${chosen.nama} berstatus nonaktif dan tidak dapat ditugaskan.`)
             return
           }
-          if (chosen.slot_tersedia < requiredSlots) {
-            setValidationError(
-              `Kapasitas pembimbing ${chosen.nama} tidak mencukupi (sisa ${chosen.slot_tersedia} slot, pengajuan ini memerlukan ${requiredSlots} slot).`
-            )
-            return
-          }
         }
       }
 
@@ -212,21 +206,17 @@ export function PengajuanVerifikasiModal({
                   <option value="">-- Pilih Pembimbing Lapangan --</option>
                   {pembimbingOptions.map((p) => {
                     const isInactive = p.is_active === false
-                    const isFull = p.is_full || p.slot_tersedia <= 0
-                    const isInsufficient = p.slot_tersedia < requiredSlots
-                    const isDisabled = isInactive || isFull || isInsufficient
+                    const isDisabled = isInactive
 
                     const nipPart = p.nip ? ` (NIP: ${p.nip})` : ''
                     let label = `${p.nama}${nipPart}`
 
                     if (isInactive) {
                       label += ' — [Nonaktif]'
-                    } else if (isFull) {
-                      label += ` — Penuh (Terisi ${p.terisi}/${p.kuota_default})`
-                    } else if (isInsufficient) {
-                      label += ` — ${p.slot_tersedia} slot (Terisi ${p.terisi}/${p.kuota_default}) [Slot tidak cukup untuk ${requiredSlots} peserta]`
+                    } else if (p.terisi > 0) {
+                      label += ` — (${p.terisi} peserta aktif dibimbing)`
                     } else {
-                      label += ` — ${p.slot_tersedia} slot tersedia (Terisi ${p.terisi}/${p.kuota_default})`
+                      label += ' — (Belum ada bimbingan aktif)'
                     }
 
                     return (
@@ -246,29 +236,27 @@ export function PengajuanVerifikasiModal({
                   })}
                 </select>
 
-                {/* Ringkasan Kapasitas Pembimbing Terpilih */}
+                {/* Ringkasan Pembimbing Terpilih */}
                 {selectedPembimbingData && (
                   <div
                     style={{
                       marginTop: '0.75rem',
                       padding: '0.75rem 1rem',
-                      backgroundColor: '#f0fdf4',
-                      border: '1px solid #bbf7d0',
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #e2e8f0',
                       borderRadius: '8px',
                       fontSize: '12px',
-                      color: '#166534',
+                      color: '#334155',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '0.25rem',
                     }}
                   >
-                    <div style={{ fontWeight: 700, color: '#064e3b' }}>
+                    <div style={{ fontWeight: 700, color: '#0f172a' }}>
                       {selectedPembimbingData.nama} {selectedPembimbingData.nip ? `(NIP: ${selectedPembimbingData.nip})` : ''}
                     </div>
-                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '11.5px', color: '#15803d' }}>
-                      <span>Kuota Maks: <strong>{selectedPembimbingData.kuota_default} peserta</strong></span>
-                      <span>Terisi: <strong>{selectedPembimbingData.terisi} peserta</strong></span>
-                      <span>Sisa Slot: <strong>{selectedPembimbingData.slot_tersedia} peserta</strong></span>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '11.5px', color: '#64748b' }}>
+                      <span>Bimbingan Aktif Saat Ini: <strong style={{ color: selectedPembimbingData.terisi > 0 ? '#15803d' : '#64748b' }}>{selectedPembimbingData.terisi} peserta</strong></span>
                     </div>
                   </div>
                 )}

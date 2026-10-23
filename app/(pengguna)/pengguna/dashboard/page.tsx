@@ -472,8 +472,8 @@ export default async function PenggunaDashboardPage() {
                   href="/pengguna/career/step1"
                   style={{
                     padding: '0.875rem 2rem',
-                    backgroundColor: '#22c55e',
-                    color: '#064e3b',
+                    backgroundColor: '#F5C400',
+                    color: '#0F172A',
                     borderRadius: '10px',
                     textDecoration: 'none',
                     fontWeight: 900,
@@ -483,7 +483,7 @@ export default async function PenggunaDashboardPage() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)',
+                    boxShadow: '0 4px 14px rgba(245, 196, 0, 0.4)',
                     transition: 'all 0.2s'
                   }}
                 >
@@ -495,16 +495,17 @@ export default async function PenggunaDashboardPage() {
                 href="/pengguna/riwayat"
                 style={{
                   padding: '0.875rem 1.75rem',
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                  backgroundColor: '#1A6FC4',
                   color: '#ffffff',
                   borderRadius: '10px',
                   textDecoration: 'none',
                   fontWeight: 700,
                   fontSize: '0.9375rem',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  border: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
+                  boxShadow: '0 4px 14px rgba(26, 111, 196, 0.4)',
                   transition: 'all 0.2s'
                 }}
               >
@@ -524,7 +525,7 @@ export default async function PenggunaDashboardPage() {
             maxWidth: '640px',
             margin: '0 auto'
           }}>
-            {/* Backdrop Persegi Melengkung Halus */}
+            {/* Backdrop Persegi Melengkung Hijau Tua & Gambar Memenuhi Card */}
             <div style={{
               position: 'absolute',
               width: '320px',
@@ -532,32 +533,25 @@ export default async function PenggunaDashboardPage() {
               backgroundColor: '#043c2b',
               borderRadius: '28px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)',
-              zIndex: 0
-            }} />
-
-            {/* Gambar Karakter Anti-Aliased Halus di Tengah */}
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '380px',
+              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.35)',
+              overflow: 'hidden',
               display: 'flex',
-              justifyContent: 'center',
               alignItems: 'flex-end',
-              zIndex: 1
+              justifyContent: 'center',
+              zIndex: 0
             }}>
+              {/* Gambar Karakter Memenuhi Card Responsif (Full-bleed) */}
               <Image
-                src="/siswa.png"
+                src="/siswa-cropped.png"
                 alt="Peserta Magang BRMP Kementan"
-                width={684}
-                height={684}
+                width={315}
+                height={333}
                 priority
                 style={{
                   width: '100%',
-                  maxWidth: '350px',
-                  height: 'auto',
-                  maxHeight: '460px',
-                  objectFit: 'contain',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'bottom center',
                   display: 'block',
                   filter: 'drop-shadow(0 15px 25px rgba(0, 0, 0, 0.35))'
                 }}

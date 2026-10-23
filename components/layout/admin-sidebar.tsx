@@ -190,7 +190,7 @@ export function AdminSidebar({
           bottom: 0,
           left: 0,
           width: isCollapsed ? '70px' : '240px',
-          backgroundColor: '#02482e',
+          backgroundColor: '#0F2A47',
           color: '#ffffff',
           zIndex: 50,
           display: 'flex',
@@ -217,7 +217,7 @@ export function AdminSidebar({
               height: '26px',
               borderRadius: '50%',
               backgroundColor: '#ffffff',
-              color: '#02482e',
+              color: '#0F2A47',
               border: '1px solid #cbd5e1',
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.18)',
               display: 'flex',
@@ -231,12 +231,12 @@ export function AdminSidebar({
           >
             {isCollapsed ? (
               /* Chevron Right (Buka / Expand) */
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#02482e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0F2A47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             ) : (
               /* Chevron Left (Tutup / Collapse) */
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#02482e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0F2A47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             )}
@@ -301,7 +301,7 @@ export function AdminSidebar({
               <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', lineHeight: 1.15 }}>
                 SIMPUL BRMP-PH
               </div>
-              <div style={{ fontSize: '0.6875rem', color: '#6ee7b7', fontWeight: 500, letterSpacing: '0.02em', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.6875rem', color: '#94A3B8', fontWeight: 500, letterSpacing: '0.02em', marginTop: '2px' }}>
                 Admin Portal
               </div>
             </div>
@@ -328,7 +328,7 @@ export function AdminSidebar({
                     padding: isCollapsed ? '0.25rem 0' : '0 0.625rem 0.375rem 0.625rem',
                     fontSize: '0.6875rem',
                     fontWeight: 800,
-                    color: '#6ee7b7',
+                    color: '#F5C400',
                     letterSpacing: '0.06em',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -351,6 +351,7 @@ export function AdminSidebar({
                     href={item.href}
                     onClick={onCloseMobile}
                     title={isCollapsed ? item.label : undefined}
+                    className="admin-sidebar-nav-link"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -361,13 +362,13 @@ export function AdminSidebar({
                       textDecoration: 'none',
                       fontSize: '0.8125rem',
                       fontWeight: active ? 700 : 500,
-                      color: active ? '#ffffff' : '#d1fae5',
-                      backgroundColor: active ? '#16a34a' : 'transparent',
-                      transition: 'background-color 0.15s ease, padding 0.25s ease',
+                      color: active ? '#0F172A' : '#E2E8F0',
+                      backgroundColor: active ? '#F5C400' : 'transparent',
+                      transition: 'background-color 0.15s ease, padding 0.25s ease, color 0.15s ease',
                       minWidth: 0,
                     }}
                   >
-                    <span style={{ color: active ? '#ffffff' : '#a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', flexShrink: 0 }}>
+                    <span style={{ color: active ? '#0F172A' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', flexShrink: 0 }}>
                       {item.icon}
                     </span>
 
@@ -444,6 +445,13 @@ export function AdminSidebar({
       </aside>
 
       <style jsx global>{`
+        .admin-sidebar-nav-link:hover {
+          background-color: #163B63 !important;
+          color: #ffffff !important;
+        }
+        .admin-sidebar-nav-link:hover span {
+          color: #ffffff !important;
+        }
         @media (max-width: 1023px) {
           .admin-sidebar {
             width: 260px !important;

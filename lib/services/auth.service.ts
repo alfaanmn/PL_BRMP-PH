@@ -175,7 +175,7 @@ export const authService = {
       } else if ((lowerMsg.includes('invalid') && lowerMsg.includes('email')) || errorCode === 'email_address_invalid') {
         message = 'Alamat email tidak valid atau domain email ditolak oleh server autentikasi.'
       } else if (lowerMsg.includes('password should be') || lowerMsg.includes('weak password') || errorCode === 'weak_password') {
-        message = 'Password tidak memenuhi syarat (minimal 6 karakter).'
+        message = 'Password tidak memenuhi syarat keamanan (minimal 8 karakter, kombinasi huruf kapital, angka, dan simbol).'
       } else if (lowerMsg.includes('signup is disabled') || errorCode === 'signup_disabled') {
         message = 'Pendaftaran akun baru saat ini dinonaktifkan di sistem.'
       }

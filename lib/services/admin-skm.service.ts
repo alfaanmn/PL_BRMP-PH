@@ -692,8 +692,10 @@ export const adminSKMService = {
           pengajuans (
             id,
             public_id,
+            user_id,
             nama_lengkap,
             nim_nis,
+            jenis_kelamin,
             asal_instansi,
             created_at,
             bidangs (
@@ -705,6 +707,44 @@ export const adminSKMService = {
 
       if (aErr || !allAnswers) {
         return { data: [], totalCount: 0, error: aErr?.message || 'Gagal memuat riwayat pengisian.' }
+      }
+
+      // Ambil user_id unik untuk fallback profil jika jenis_kelamin pengajuan kosong
+      const userIds = Array.from(
+        new Set(
+          allAnswers
+            .map((r: any) => r.pengajuans?.user_id)
+            .filter((uid: any) => typeof uid === 'string' && uid.length > 0)
+        )
+      )
+      const profileGenderMap = new Map<string, string>()
+      if (userIds.length > 0) {
+        try {
+          const { data: profs } = await supabase
+            .from('profiles')
+            .select('id, jenis_kelamin')
+            .in('id', userIds)
+          if (profs) {
+            profs.forEach((p: any) => {
+              if (p.id) profileGenderMap.set(p.id, p.jenis_kelamin || '')
+            })
+          }
+        } catch {
+          // ignore profile lookup failure
+        }
+      }
+
+      // Helper normalisasi jenis kelamin
+      const normalizeGender = (raw?: string | null): string => {
+        if (!raw) return '-'
+        const clean = raw.trim().toLowerCase()
+        if (clean === 'l' || clean === 'laki-laki' || clean === 'pria' || clean === 'male') {
+          return 'Laki-laki'
+        }
+        if (clean === 'p' || clean === 'perempuan' || clean === 'wanita' || clean === 'female') {
+          return 'Perempuan'
+        }
+        return raw.trim() || '-'
       }
 
       // 2. Kelompokkan berdasarkan pengajuan_id
@@ -760,10 +800,18 @@ export const adminSKMService = {
               )
             : null
 
+        // Gender: cek pengajuan, fallback profil, fallback '-' (jika anonim wajib '-')
+        let gender = '-'
+        if (!isAnon) {
+          const rawGender = p?.jenis_kelamin || (p?.user_id ? profileGenderMap.get(p.user_id) : null)
+          gender = normalizeGender(rawGender)
+        }
+
         list.push({
           pengajuanId: pId,
           publicId: isAnon ? null : (p?.public_id || null),
           namaPemohon: isAnon ? '🔒 Responden Anonim' : (p?.nama_lengkap || 'Pemohon'),
+          jenisKelamin: gender,
           nimNis: isAnon ? null : (p?.nim_nis || null),
           asalInstansi: isAnon ? 'Peserta Magang' : (p?.asal_instansi || null),
           bidangNama: p?.bidangs?.nama || 'Bidang Magang BRMP',
@@ -933,9 +981,13 @@ export const adminSKMService = {
   },
 
   /**
-   * Membuat konten CSV untuk diekspor oleh Administrator
+   * Mengambil data terstruktur untuk ekspor SKM (beserta jawaban Q1-Q17 dan jenis kelamin)
    */
-  async generateCSVData(periodFilter: string = 'all'): Promise<{ csvString: string; error: string | null }> {
+  async getExportData(periodFilter: string = 'all'): Promise<{
+    submissions: AdminSKMSubmissionItem[]
+    answerLookup: Map<string, string>
+    error: string | null
+  }> {
     try {
       const { data: submissions, error: subErr } = await this.getSubmissionsList({
         page: 1,
@@ -944,7 +996,7 @@ export const adminSKMService = {
       })
 
       if (subErr || !submissions) {
-        return { csvString: '', error: subErr || 'Gagal memuat data export.' }
+        return { submissions: [], answerLookup: new Map(), error: subErr || 'Gagal memuat data export.' }
       }
 
       const supabase = createClient()
@@ -962,6 +1014,116 @@ export const adminSKMService = {
         })
       }
 
+      return { submissions, answerLookup, error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memuat dataset export.'
+      return { submissions: [], answerLookup: new Map(), error: msg }
+    }
+  },
+
+  /**
+   * Menghasilkan berkas Excel asli (.xlsx) menggunakan pustaka xlsx
+   */
+  async generateXLSXBuffer(periodFilter: string = 'all'): Promise<{ buffer: Uint8Array | null; error: string | null }> {
+    try {
+      const XLSX = await import('xlsx')
+      const { submissions, answerLookup, error } = await this.getExportData(periodFilter)
+      if (error) return { buffer: null, error }
+
+      const headers = [
+        'No',
+        'ID Pengajuan',
+        'Public ID',
+        'Tanggal Pengisian',
+        'Nama Pemohon',
+        'Jenis Kelamin',
+        'NIM/NIS',
+        'Asal Instansi',
+        'Bidang Magang',
+        'Q1 (Informasi Pelayanan)',
+        'Q2 (Persyaratan Pelayanan)',
+        'Q3 (Kejelasan Prosedur)',
+        'Q4 (Kemudahan Prosedur)',
+        'Q5 (Waktu Layanan)',
+        'Q6 (Biaya Layanan)',
+        'Q7 (Produk Layanan)',
+        'Q8 (Kecepatan Respon)',
+        'Q9 (Keramahan Petugas)',
+        'Q10 (Akses Pengaduan)',
+        'Q11 (Sarana Prasarana)',
+        'Q12 (Keadilan Pelayanan)',
+        'Q13 (Integritas Layanan)',
+        'Q14 (Anti Gratifikasi)',
+        'Q15 (Bebas Pungli)',
+        'Q16 (Bebas Percaloan)',
+        'Rata-Rata Skor (Skala 1-4)',
+        'Q17 (Saran dan Masukan)',
+      ]
+
+      const rows: any[][] = [headers]
+
+      submissions.forEach((item, idx) => {
+        const qAnswers: string[] = []
+        for (let i = 1; i <= 17; i++) {
+          const ans = answerLookup.get(`${item.pengajuanId}_${i}`) || '-'
+          qAnswers.push(ans)
+        }
+
+        const dateStr = item.tanggalPengisian
+          ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })
+          : '-'
+
+        rows.push([
+          idx + 1,
+          item.isAnonim ? '-' : item.pengajuanId,
+          item.publicId || '-',
+          dateStr,
+          item.namaPemohon,
+          item.jenisKelamin || '-',
+          item.nimNis || '-',
+          item.asalInstansi || '-',
+          item.bidangNama,
+          ...qAnswers.slice(0, 16),
+          item.rataRataSkor !== null ? item.rataRataSkor.toFixed(2) : '-',
+          qAnswers[16] || '-',
+        ])
+      })
+
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.aoa_to_sheet(rows)
+
+      // Auto width
+      const colWidths = headers.map((h, i) => {
+        let maxLen = h.length
+        rows.forEach((r) => {
+          const valStr = String(r[i] ?? '')
+          if (valStr.length > maxLen) maxLen = valStr.length
+        })
+        return { wch: Math.min(Math.max(maxLen + 2, 10), 40) }
+      })
+      ws['!cols'] = colWidths
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Rekapitulasi SKM')
+      const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' })
+      return { buffer: new Uint8Array(buf), error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menghasilkan berkas Excel.'
+      return { buffer: null, error: msg }
+    }
+  },
+
+  /**
+   * Membuat konten CSV untuk diekspor oleh Administrator
+   */
+  async generateCSVData(periodFilter: string = 'all'): Promise<{ csvString: string; error: string | null }> {
+    try {
+      const { submissions, answerLookup, error } = await this.getExportData(periodFilter)
+      if (error) return { csvString: '', error }
+
       // Headers CSV
       const headers = [
         'No',
@@ -969,6 +1131,7 @@ export const adminSKMService = {
         'Public ID',
         'Tanggal Pengisian',
         'Nama Pemohon',
+        'Jenis Kelamin',
         'NIM/NIS',
         'Asal Instansi',
         'Bidang Magang',
@@ -1018,10 +1181,11 @@ export const adminSKMService = {
 
         const row = [
           idx + 1,
-          escapeCSV(item.pengajuanId),
+          escapeCSV(item.isAnonim ? '-' : item.pengajuanId),
           escapeCSV(item.publicId || '-'),
           escapeCSV(dateStr),
           escapeCSV(item.namaPemohon),
+          escapeCSV(item.jenisKelamin || '-'),
           escapeCSV(item.nimNis || '-'),
           escapeCSV(item.asalInstansi || '-'),
           escapeCSV(item.bidangNama),

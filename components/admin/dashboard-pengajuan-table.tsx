@@ -101,9 +101,9 @@ export function DashboardPengajuanTable({ items, loading }: DashboardPengajuanTa
                         borderRadius: '9999px',
                         fontSize: '11px',
                         fontWeight: 600,
-                        backgroundColor: '#fef3c7',
-                        color: '#b45309',
-                        border: '1px solid #fde68a',
+                        backgroundColor: '#FEF3C7',
+                        color: '#78350F',
+                        border: '1px solid #FDE68A',
                       }}
                     >
                       {item.status || 'Menunggu verifikasi'}

@@ -174,18 +174,18 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Menunggu Verifikasi':
-        return { bg: '#fef3c7', color: '#b45309', border: '#fde68a', label: 'Menunggu verifikasi' }
+        return { bg: '#FEF3C7', color: '#78350F', border: '#FDE68A', label: 'Menunggu verifikasi' }
       case 'Sedang Magang':
       case 'Disetujui':
-        return { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0', label: 'Sedang magang' }
+        return { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE', label: 'Sedang magang' }
       case 'Selesai':
-        return { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0', label: 'Selesai' }
+        return { bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0', label: 'Selesai' }
       case 'Ditolak':
-        return { bg: '#fee2e2', color: '#b91c1c', border: '#fecaca', label: 'Ditolak' }
+        return { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA', label: 'Ditolak' }
       case 'Dibatalkan':
-        return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0', label: 'Dibatalkan' }
+        return { bg: '#F1F5F9', color: '#475569', border: '#CBD5E1', label: 'Dibatalkan' }
       default:
-        return { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0', label: status }
+        return { bg: '#F1F5F9', color: '#475569', border: '#CBD5E1', label: status }
     }
   }
 

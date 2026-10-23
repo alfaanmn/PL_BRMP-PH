@@ -56,6 +56,7 @@ export interface AdminSKMSubmissionItem {
   pengajuanId: number
   publicId: string | null
   namaPemohon: string
+  jenisKelamin?: string
   nimNis: string | null
   asalInstansi: string | null
   bidangNama: string

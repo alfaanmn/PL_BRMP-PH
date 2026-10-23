@@ -12,6 +12,8 @@ import { DashboardStatsCard } from '@/components/admin/dashboard-stats-card'
 import { DashboardCharts } from '@/components/admin/dashboard-charts'
 import { DashboardPengajuanTable } from '@/components/admin/dashboard-pengajuan-table'
 import { DownloadIcon } from '@/components/ui/admin-icons'
+import { ExportMenu } from '@/components/admin/export-menu'
+import { exportTableToPDF, exportTableToWord } from '@/lib/utils/export-doc'
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -115,32 +117,71 @@ export default function AdminDashboardPage() {
             <option value="2025">2025</option>
           </select>
 
-          <button
-            type="button"
-            onClick={() => {
-              window.open(`/api/laporan/export?format=xlsx&category=all&startDate=${rekapYear}-01-01&endDate=${rekapYear}-12-31`, '_blank')
+          <ExportMenu
+            buttonText="Export"
+            onExportExcel={() => {
+              window.open(
+                `/api/laporan/export?format=xlsx&category=all&startDate=${rekapYear}-01-01&endDate=${rekapYear}-12-31`,
+                '_blank'
+              )
             }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              padding: '6px 14px',
-              backgroundColor: '#16a34a',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(22, 163, 74, 0.25)',
-              transition: 'background-color 0.15s ease',
+            onExportPDF={async () => {
+              const columns = [
+                { header: 'No', key: 'no' },
+                { header: 'ID / Public ID', key: 'publicId' },
+                { header: 'Nama Pemohon', key: 'nama' },
+                { header: 'Institusi', key: 'instansi' },
+                { header: 'Bidang', key: 'bidang' },
+                { header: 'Tanggal Mulai', key: 'tanggalMulai' },
+                { header: 'Status', key: 'status' },
+              ]
+              const dataRows = recentPengajuans.map((item, idx) => ({
+                no: idx + 1,
+                publicId: item.public_id || `#${item.id}`,
+                nama: item.nama_lengkap,
+                instansi: item.asal_instansi,
+                bidang: item.bidang_nama || '-',
+                tanggalMulai: item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-',
+                status: item.status,
+              }))
+              await exportTableToPDF({
+                title: 'Ringkasan Eksekutif & Permohonan Magang Terbaru',
+                subtitle: `Kementerian Pertanian — BRMP-PH (Tahun ${rekapYear})`,
+                dateRange: `Tahun ${rekapYear}`,
+                filename: `ringkasan_dashboard_${rekapYear}_${Date.now()}`,
+                columns,
+                data: dataRows,
+              })
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#15803d')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#16a34a')}
-          >
-            <DownloadIcon width={14} height={14} className="text-white" />
-            <span>Ekspor Excel</span>
-          </button>
+            onExportWord={async () => {
+              const columns = [
+                { header: 'No', key: 'no' },
+                { header: 'ID / Public ID', key: 'publicId' },
+                { header: 'Nama Pemohon', key: 'nama' },
+                { header: 'Institusi', key: 'instansi' },
+                { header: 'Bidang', key: 'bidang' },
+                { header: 'Tanggal Pengajuan', key: 'tanggalMulai' },
+                { header: 'Status', key: 'status' },
+              ]
+              const dataRows = recentPengajuans.map((item, idx) => ({
+                no: idx + 1,
+                publicId: item.public_id || `#${item.id}`,
+                nama: item.nama_lengkap,
+                instansi: item.asal_instansi,
+                bidang: item.bidang_nama || '-',
+                tanggalMulai: item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-',
+                status: item.status,
+              }))
+              await exportTableToWord({
+                title: 'Ringkasan Eksekutif & Permohonan Magang Terbaru',
+                subtitle: `Kementerian Pertanian — BRMP-PH (Tahun ${rekapYear})`,
+                dateRange: `Tahun ${rekapYear}`,
+                filename: `ringkasan_dashboard_${rekapYear}_${Date.now()}`,
+                columns,
+                data: dataRows,
+              })
+            }}
+          />
         </div>
       </div>
 
@@ -159,7 +200,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* 2. Top Metric Cards (3 Kartu Sesuai Prompt, Ikon Hijau Konsisten) */}
+      {/* 2. Top Metric Cards (Multi-warna Kementan yang informatif) */}
       <div
         style={{
           display: 'grid',
@@ -167,21 +208,23 @@ export default function AdminDashboardPage() {
           gap: '1rem',
         }}
       >
-        {/* Total Pengguna */}
+        {/* Total Pengguna (Biru) */}
         <DashboardStatsCard
           title="total pengguna"
           value={loading ? '...' : stats.totalPengguna}
           iconType="users"
+          colorVariant="blue"
         />
 
-        {/* Total Pengajuan */}
+        {/* Total Pengajuan (Emas) */}
         <DashboardStatsCard
           title="total pengajuan"
           value={loading ? '...' : stats.totalPengajuan}
           iconType="file-text"
+          colorVariant="gold"
         />
 
-        {/* Rata-Rata Kepuasan */}
+        {/* Rata-Rata Kepuasan (Hijau) */}
         <DashboardStatsCard
           title="rata-rata kepuasan"
           value={
@@ -192,6 +235,7 @@ export default function AdminDashboardPage() {
               : '3.69 / 4.00'
           }
           iconType="star"
+          colorVariant="emerald"
         />
       </div>
 

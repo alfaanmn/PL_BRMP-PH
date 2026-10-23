@@ -88,13 +88,19 @@ export const bidangService = {
       try {
         const { data: bpData } = await supabase
           .from('bidang_pembimbing')
-          .select('pembimbing_id, pembimbings(id, nama, nip, jabatan, kuota_default, is_active)')
+          .select('pembimbing_id, pembimbings(id, nama, nip, jabatan, kuota_default, is_active, created_at)')
           .eq('bidang_id', id)
 
         if (bpData && bpData.length > 0) {
           pembimbings = bpData
             .map((item: any) => item.pembimbings)
             .filter((p: any) => p && p.is_active !== false)
+            .sort((a: any, b: any) => {
+              const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
+              const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
+              if (dateA !== dateB) return dateA - dateB
+              return (a.nama || '').localeCompare(b.nama || '')
+            })
         }
       } catch {
         // Fallback jika relasi bidang_pembimbing kosong

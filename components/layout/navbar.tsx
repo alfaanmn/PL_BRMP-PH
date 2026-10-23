@@ -77,11 +77,11 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
   const isKontakActive = activeKey === 'kontak' || (!activeKey && pathname === '/kontak')
 
   const linkActiveStyle = {
-    color: '#15803d',
+    color: '#B8860B',
     textDecoration: 'none',
     fontSize: '0.875rem',
     fontWeight: 700 as const,
-    borderBottom: '2px solid #15803d',
+    borderBottom: '2px solid #F5C400',
     paddingBottom: '0.25rem'
   }
 
@@ -152,7 +152,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
         color: '#ecfdf5',
         fontSize: '0.8125rem',
         padding: '0.45rem 1rem',
-        borderBottom: '1px solid #047857'
+        borderBottom: '1px solid #163B63'
       }}>
         <div style={{
           maxWidth: '1240px',
@@ -249,7 +249,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
               <span style={{
                 fontSize: '1rem',
                 fontWeight: 800,
-                color: '#15803d',
+                color: '#238833',
                 letterSpacing: '-0.02em',
                 lineHeight: 1.2,
                 display: 'block',
@@ -300,12 +300,12 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     href="/admin/dashboard"
                     style={{
                       padding: '0.45rem 0.75rem',
-                      color: '#15803d',
+                      color: '#1A6FC4',
                       textDecoration: 'none',
                       fontSize: '0.8125rem',
                       fontWeight: 700,
                       borderRadius: '8px',
-                      border: '1px solid #bbf7d0',
+                      border: '1px solid #bfdbfe',
                       backgroundColor: '#ffffff',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -321,12 +321,12 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                       href="/pengguna/riwayat"
                       style={{
                         padding: '0.45rem 0.75rem',
-                        color: '#15803d',
+                        color: '#1A6FC4',
                         textDecoration: 'none',
                         fontSize: '0.8125rem',
                         fontWeight: 700,
                         borderRadius: '8px',
-                        border: '1px solid #bbf7d0',
+                        border: '1px solid #bfdbfe',
                         backgroundColor: '#ffffff',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -341,13 +341,13 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                       href="/pengguna/sertifikat"
                       style={{
                         padding: '0.45rem 0.75rem',
-                        color: '#15803d',
+                        color: '#1A6FC4',
                         textDecoration: 'none',
                         fontSize: '0.8125rem',
                         fontWeight: 700,
                         borderRadius: '8px',
-                        border: '1px solid #bbf7d0',
-                        backgroundColor: pathname === '/pengguna/sertifikat' ? '#ecfdf5' : '#ffffff',
+                        border: '1px solid #bfdbfe',
+                        backgroundColor: pathname === '/pengguna/sertifikat' ? '#eff6ff' : '#ffffff',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.375rem'
@@ -367,9 +367,9 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     alignItems: 'center',
                     gap: '0.5rem',
                     padding: '0.3rem 0.75rem 0.3rem 0.4rem',
-                    backgroundColor: '#ecfdf5',
+                    backgroundColor: '#f8fafc',
                     borderRadius: '9999px',
-                    border: '1px solid #a7f3d0',
+                    border: '1px solid #e2e8f0',
                     textDecoration: 'none',
                     cursor: 'pointer'
                   }}
@@ -378,7 +378,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     width: '28px',
                     height: '28px',
                     borderRadius: '50%',
-                    backgroundColor: '#15803d',
+                    backgroundColor: '#0F2A47',
                     color: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
@@ -389,10 +389,10 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     {userInitial}
                   </div>
                   <div style={{ textAlign: 'left', lineHeight: 1.1 }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#065f46' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0f172a' }}>
                       {userName || 'Pemohon'}
                     </div>
-                    <div style={{ fontSize: '0.625rem', color: '#059669', fontWeight: 600 }}>
+                    <div style={{ fontSize: '0.625rem', color: '#64748b', fontWeight: 600 }}>
                       {role === 'administrator' ? 'Administrator' : 'Pemohon'}
                     </div>
                   </div>
@@ -422,7 +422,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                   href="/login"
                   style={{
                     padding: '0.45rem 0.875rem',
-                    color: '#334155',
+                    color: '#0f172a',
                     border: '1px solid #cbd5e1',
                     borderRadius: '8px',
                     textDecoration: 'none',
@@ -437,12 +437,13 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                   href="/register"
                   style={{
                     padding: '0.45rem 0.875rem',
-                    backgroundColor: '#15803d',
-                    color: '#ffffff',
+                    backgroundColor: '#F5C400',
+                    color: '#0F172A',
                     borderRadius: '8px',
                     textDecoration: 'none',
                     fontSize: '0.8125rem',
-                    fontWeight: 700
+                    fontWeight: 800,
+                    boxShadow: '0 2px 6px rgba(245, 196, 0, 0.3)'
                   }}
                 >
                   Daftar
@@ -510,14 +511,14 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                   href="/register"
                   style={{
                     padding: '0.35rem 0.625rem',
-                    backgroundColor: '#15803d',
-                    color: '#ffffff',
+                    backgroundColor: '#F5C400',
+                    color: '#0F172A',
                     borderRadius: '7px',
                     textDecoration: 'none',
                     fontSize: '0.75rem',
-                    fontWeight: 700,
+                    fontWeight: 800,
                     whiteSpace: 'nowrap',
-                    boxShadow: '0 1px 3px rgba(21, 128, 61, 0.2)'
+                    boxShadow: '0 1px 3px rgba(245, 196, 0, 0.25)'
                   }}
                 >
                   Daftar

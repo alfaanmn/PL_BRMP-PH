@@ -126,6 +126,7 @@ export interface LaporanSKMRow {
   publicId: string
   tanggalPengisian: string
   namaPemohon: string
+  jenisKelamin?: string
   asalInstansi: string
   bidangNama: string
   rataRataSkor: string

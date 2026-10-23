@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 import { authService } from '@/lib/services/auth.service'
+import { validatePassword } from '@/lib/validations/auth.validation'
+import { PasswordRequirements } from '@/components/auth/password-requirements'
 import type { Profile } from '@/types/auth.types'
 
 interface UserProfileFormProps {
@@ -68,10 +70,9 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
     }
 
     if (wantsPasswordChange) {
-      if (!newPassword) {
-        errors.newPassword = 'Password baru wajib diisi'
-      } else if (newPassword.length < 6) {
-        errors.newPassword = 'Password minimal 6 karakter'
+      const passwordError = validatePassword(newPassword)
+      if (passwordError) {
+        errors.newPassword = passwordError
       }
 
       if (!confirmPassword) {
@@ -595,7 +596,7 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
                       {/* Password Baru */}
                       <div>
                         <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#334155', marginBottom: '3px' }}>
-                          Password baru (minimal 6 karakter) <span style={{ color: '#dc2626' }}>*</span>
+                          Password baru (minimal 8 karakter) <span style={{ color: '#dc2626' }}>*</span>
                         </label>
                         <div style={{ position: 'relative' }}>
                           <input
@@ -631,6 +632,7 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
                             {showPassword ? 'Tutup' : 'Lihat'}
                           </button>
                         </div>
+                        <PasswordRequirements password={newPassword} />
                         {fieldErrors.newPassword && (
                           <span style={{ fontSize: '11px', color: '#dc2626', marginTop: '2px', display: 'block' }}>
                             {fieldErrors.newPassword}

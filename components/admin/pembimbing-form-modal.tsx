@@ -71,11 +71,6 @@ export function PembimbingFormModal({ isOpen, pembimbingToEdit, onClose, onSucce
       return
     }
 
-    if (formData.kuota_default < 0) {
-      setErrorMsg('Kuota bimbingan tidak boleh kurang dari 0.')
-      return
-    }
-
     setLoading(true)
 
     try {
@@ -87,7 +82,6 @@ export function PembimbingFormModal({ isOpen, pembimbingToEdit, onClose, onSucce
           email: formData.email.trim() || null,
           no_hp: formData.no_hp.trim() || null,
           spesialisasi: formData.spesialisasi.trim() || null,
-          kuota_default: Number(formData.kuota_default) || 0,
           is_active: formData.is_active,
         }
         const res = await adminPembimbingService.updatePembimbing(pembimbingToEdit.id, payload)
@@ -104,7 +98,7 @@ export function PembimbingFormModal({ isOpen, pembimbingToEdit, onClose, onSucce
           email: formData.email.trim() || null,
           no_hp: formData.no_hp.trim() || null,
           spesialisasi: formData.spesialisasi.trim() || null,
-          kuota_default: Number(formData.kuota_default) || 5,
+          kuota_default: 5, // Default aman eksplisit untuk database NOT NULL
           is_active: formData.is_active,
         }
         const res = await adminPembimbingService.createPembimbing(payload)
@@ -343,27 +337,6 @@ export function PembimbingFormModal({ isOpen, pembimbingToEdit, onClose, onSucce
               />
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                Kuota Maksimal <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <input
-                type="number"
-                min={0}
-                required
-                value={formData.kuota_default}
-                onChange={(e) => setFormData({ ...formData, kuota_default: parseInt(e.target.value) || 0 })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 0.75rem',
-                  fontSize: '13px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
           </div>
 
           <div style={{ paddingTop: '0.25rem' }}>

@@ -39,8 +39,8 @@ export function AdminHeader({
     <header
       style={{
         height: '64px',
-        backgroundColor: '#02482e',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: '#ffffff',
+        borderBottom: '2px solid #F5C400',
         padding: '0 1.5rem',
         display: 'flex',
         alignItems: 'center',
@@ -48,7 +48,7 @@ export function AdminHeader({
         position: 'sticky',
         top: 0,
         zIndex: 30,
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
         gap: '1rem',
       }}
     >
@@ -61,12 +61,12 @@ export function AdminHeader({
           title="Buka Menu"
           style={{
             display: 'none',
-            background: '#013723',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
             borderRadius: '8px',
             padding: '0.5rem',
             cursor: 'pointer',
-            color: '#ffffff',
+            color: '#0f172a',
           }}
           className="admin-mobile-menu-btn"
         >
@@ -83,27 +83,27 @@ export function AdminHeader({
               style={{
                 fontSize: '11px',
                 fontWeight: 700,
-                color: '#34d399',
-                backgroundColor: '#013723',
+                color: '#1A6FC4',
+                backgroundColor: '#eff6ff',
                 padding: '2px 8px',
                 borderRadius: '9999px',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                border: '1px solid #bfdbfe',
                 letterSpacing: '0.02em',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.25rem',
               }}
             >
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#34d399' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#1A6FC4' }} />
               SIM BRMP PH
             </span>
-            <span style={{ fontSize: '13px', color: '#d1fae5' }}>
-              Selamat datang, <strong style={{ color: '#ffffff', fontWeight: 700 }}>{adminName}</strong>
+            <span style={{ fontSize: '13px', color: '#475569' }}>
+              Selamat datang, <strong style={{ color: '#0f172a', fontWeight: 700 }}>{adminName}</strong>
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '11px', color: '#a7f3d0', marginTop: '2px' }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
               <line x1="8" y1="2" x2="8" y2="6" />
@@ -130,7 +130,7 @@ export function AdminHeader({
             left: '10px',
             top: '50%',
             transform: 'translateY(-50%)',
-            color: '#34d399',
+            color: '#64748b',
             display: 'flex',
             alignItems: 'center',
             pointerEvents: 'none',
@@ -150,21 +150,21 @@ export function AdminHeader({
             width: '100%',
             padding: '6px 12px 6px 30px',
             borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            backgroundColor: '#013723',
-            color: '#ffffff',
+            border: '1px solid #cbd5e1',
+            backgroundColor: '#f8fafc',
+            color: '#0f172a',
             fontSize: '12px',
             outline: 'none',
             boxSizing: 'border-box',
             transition: 'border-color 0.15s ease, background-color 0.15s ease',
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = '#34d399'
-            e.currentTarget.style.backgroundColor = '#012e1d'
+            e.currentTarget.style.borderColor = '#1A6FC4'
+            e.currentTarget.style.backgroundColor = '#ffffff'
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
-            e.currentTarget.style.backgroundColor = '#013723'
+            e.currentTarget.style.borderColor = '#cbd5e1'
+            e.currentTarget.style.backgroundColor = '#f8fafc'
           }}
         />
       </form>
@@ -177,14 +177,14 @@ export function AdminHeader({
             width: '36px',
             height: '36px',
             borderRadius: '8px',
-            backgroundColor: '#013723',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #e2e8f0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
             cursor: 'pointer',
-            color: '#d1fae5',
+            color: '#475569',
             transition: 'all 0.15s ease',
           }}
           title="Notifikasi Sistem"
@@ -203,7 +203,7 @@ export function AdminHeader({
               height: '8px',
               borderRadius: '50%',
               backgroundColor: '#ef4444',
-              border: '2px solid #013723',
+              border: '2px solid #ffffff',
             }}
           />
         </div>
@@ -216,19 +216,20 @@ export function AdminHeader({
             gap: '0.5rem',
             padding: '5px 12px',
             borderRadius: '8px',
-            backgroundColor: '#013723',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #e2e8f0',
           }}
         >
-          <span style={{ fontSize: '12px', fontWeight: 600, color: '#ffffff' }}>
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
             {adminName}
           </span>
           <span
             style={{
               fontSize: '10px',
               fontWeight: 700,
-              color: '#34d399',
-              backgroundColor: 'rgba(52, 211, 153, 0.15)',
+              color: '#78350F',
+              backgroundColor: '#FEF3C7',
+              border: '1px solid #FDE68A',
               padding: '1px 6px',
               borderRadius: '4px',
               letterSpacing: '0.03em',

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { authService } from '@/lib/services/auth.service'
 import { AppLogo } from '@/components/shared/app-logo'
 import { validateRegister } from '@/lib/validations/auth.validation'
+import { PasswordRequirements } from '@/components/auth/password-requirements'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -637,7 +638,7 @@ export default function RegisterPage() {
                 {/* Password */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
-                    Password <span style={{ color: '#ef4444' }}>*</span> (Min. 6 karakter)
+                    Password <span style={{ color: '#ef4444' }}>*</span> (Min. 8 karakter)
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input
@@ -682,6 +683,7 @@ export default function RegisterPage() {
                       {showPassword ? '👁️' : '👁️‍🗨️'}
                     </button>
                   </div>
+                  <PasswordRequirements password={password} />
                 </div>
 
                 {/* Konfirmasi Password */}

@@ -334,14 +334,14 @@ export default async function HomePage() {
               Simpul (Sistem Informasi Magang dan Pelatihan Unggulan Lanjutan) merupakan platform resmi untuk memfasilitasi mahasiswa dan siswa dalam melaksanakan kegiatan magang akademik, riset vokasi, dan pengujian mutu instrumen di lingkungan Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian (BRMP-PH) Kementerian Pertanian.
             </p>
 
-            {/* CTA Button Hijau Cerah */}
+            {/* CTA Buttons: Emas Kementan & Biru Solid */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <a
                 href="#bidang"
                 style={{
                   padding: '0.875rem 2rem',
-                  backgroundColor: '#22c55e',
-                  color: '#064e3b',
+                  backgroundColor: '#F5C400',
+                  color: '#0F172A',
                   borderRadius: '10px',
                   textDecoration: 'none',
                   fontWeight: 900,
@@ -351,7 +351,7 @@ export default async function HomePage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)',
+                  boxShadow: '0 4px 14px rgba(245, 196, 0, 0.4)',
                   transition: 'all 0.2s'
                 }}
               >
@@ -362,16 +362,17 @@ export default async function HomePage() {
                 href={user ? dashboardUrl : '/register'}
                 style={{
                   padding: '0.875rem 1.75rem',
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                  backgroundColor: '#1A6FC4',
                   color: '#ffffff',
                   borderRadius: '10px',
                   textDecoration: 'none',
                   fontWeight: 700,
                   fontSize: '0.9375rem',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  border: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
+                  boxShadow: '0 4px 14px rgba(26, 111, 196, 0.4)',
                   transition: 'all 0.2s'
                 }}
               >
@@ -395,7 +396,7 @@ export default async function HomePage() {
             <div style={{
               position: 'absolute',
               width: '320px',
-              height: '420px',
+              height: '430px',
               backgroundColor: '#043c2b',
               borderRadius: '28px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -406,20 +407,20 @@ export default async function HomePage() {
               justifyContent: 'center',
               zIndex: 0
             }}>
-              {/* Gambar Karakter Transparan Menyatu Rapi di Dalam Card */}
+              {/* Gambar Karakter Memenuhi Card Responsif (Full-bleed) */}
               <Image
-                src="/siswa.png"
+                src="/siswa-cropped.png"
                 alt="Peserta Magang BRMP Kementan"
-                width={461}
-                height={496}
+                width={315}
+                height={333}
                 priority
                 style={{
-                  width: '92%',
-                  maxWidth: '300px',
-                  height: 'auto',
-                  objectFit: 'contain',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'bottom center',
                   display: 'block',
-                  marginBottom: 0
+                  filter: 'drop-shadow(0 15px 25px rgba(0, 0, 0, 0.35))'
                 }}
               />
             </div>
@@ -968,8 +969,8 @@ export default async function HomePage() {
 
       </main>
 
-          {/* Footer Global SIMPUL BRMP-PH */}
-          <Footer dashboardUrl={dashboardUrl} />
-        </div>
-        )
+      {/* Footer Global SIMPUL BRMP-PH */}
+      <Footer dashboardUrl={dashboardUrl} />
+    </div>
+  )
 }

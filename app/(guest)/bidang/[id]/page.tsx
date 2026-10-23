@@ -160,48 +160,48 @@ function renderCategoryIcon(type: string) {
     case 'broadcast':
       return (
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
-          <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
-          <circle cx="12" cy="12" r="2"/>
-          <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/>
-          <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
+          <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
+          <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
+          <circle cx="12" cy="12" r="2" />
+          <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
+          <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" />
         </svg>
       )
     case 'building':
       return (
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
-          <path d="M9 22v-4h6v4"/>
-          <path d="M8 6h.01"/>
-          <path d="M16 6h.01"/>
-          <path d="M8 10h.01"/>
-          <path d="M16 10h.01"/>
-          <path d="M8 14h.01"/>
-          <path d="M16 14h.01"/>
+          <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+          <path d="M9 22v-4h6v4" />
+          <path d="M8 6h.01" />
+          <path d="M16 6h.01" />
+          <path d="M8 10h.01" />
+          <path d="M16 10h.01" />
+          <path d="M8 14h.01" />
+          <path d="M16 14h.01" />
         </svg>
       )
     case 'book':
       return (
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-          <path d="M6 6h10"/>
-          <path d="M6 10h10"/>
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+          <path d="M6 6h10" />
+          <path d="M6 10h10" />
         </svg>
       )
     case 'handshake':
       return (
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0 0-1.4l-3-3a1 1 0 0 0-1.4 0L13 11.6"/>
-          <path d="m7 12.4 1.4-1.4a1 1 0 0 1 1.4 0l1.9 1.9"/>
-          <path d="m18 13 3-3a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L14 8.6"/>
-          <path d="m3 11 3-3a2 2 0 0 1 2.8 0l1.4 1.4a2 2 0 0 1 0 2.8L6.4 16"/>
+          <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0 0-1.4l-3-3a1 1 0 0 0-1.4 0L13 11.6" />
+          <path d="m7 12.4 1.4-1.4a1 1 0 0 1 1.4 0l1.9 1.9" />
+          <path d="m18 13 3-3a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L14 8.6" />
+          <path d="m3 11 3-3a2 2 0 0 1 2.8 0l1.4 1.4a2 2 0 0 1 0 2.8L6.4 16" />
         </svg>
       )
     default:
       return (
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
         </svg>
       )
   }
@@ -214,77 +214,77 @@ function renderActivityIcon(type: string) {
     case 'palette':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
         </svg>
       )
     case 'server':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="20" height="8" x="2" y="2" rx="2" ry="2"/>
-          <rect width="20" height="8" x="2" y="14" rx="2" ry="2"/>
-          <line x1="6" x2="6.01" y1="6" y2="6"/>
-          <line x1="6" x2="6.01" y1="18" y2="18"/>
+          <rect width="20" height="8" x="2" y="2" rx="2" ry="2" />
+          <rect width="20" height="8" x="2" y="14" rx="2" ry="2" />
+          <line x1="6" x2="6.01" y1="6" y2="6" />
+          <line x1="6" x2="6.01" y1="18" y2="18" />
         </svg>
       )
     case 'camera':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-          <circle cx="12" cy="13" r="3"/>
+          <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+          <circle cx="12" cy="13" r="3" />
         </svg>
       )
     case 'file':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-          <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-          <path d="M10 13h4"/>
-          <path d="M10 17h4"/>
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+          <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+          <path d="M10 13h4" />
+          <path d="M10 17h4" />
         </svg>
       )
     case 'database':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <ellipse cx="12" cy="5" rx="9" ry="3"/>
-          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-          <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+          <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
         </svg>
       )
     case 'search':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.3-4.3"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
         </svg>
       )
     case 'scale':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
-          <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
-          <path d="M7 21h10"/>
-          <path d="M12 3v18"/>
-          <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+          <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+          <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+          <path d="M7 21h10" />
+          <path d="M12 3v18" />
+          <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
         </svg>
       )
     case 'handshake':
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0 0-1.4l-3-3a1 1 0 0 0-1.4 0L13 11.6"/>
-          <path d="m7 12.4 1.4-1.4a1 1 0 0 1 1.4 0l1.9 1.9"/>
-          <path d="m18 13 3-3a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L14 8.6"/>
-          <path d="m3 11 3-3a2 2 0 0 1 2.8 0l1.4 1.4a2 2 0 0 1 0 2.8L6.4 16"/>
+          <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0 0-1.4l-3-3a1 1 0 0 0-1.4 0L13 11.6" />
+          <path d="m7 12.4 1.4-1.4a1 1 0 0 1 1.4 0l1.9 1.9" />
+          <path d="m18 13 3-3a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L14 8.6" />
+          <path d="m3 11 3-3a2 2 0 0 1 2.8 0l1.4 1.4a2 2 0 0 1 0 2.8L6.4 16" />
         </svg>
       )
     default:
       return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
         </svg>
       )
   }
@@ -440,8 +440,8 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
             <li>
               <Link href="/" style={{ color: '#15803d', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
                 </svg>
                 <span>Beranda</span>
               </Link>
@@ -527,9 +527,9 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   fontWeight: 600
                 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
                   </svg>
                   <span>Pendaftaran bidang ditutup</span>
                 </div>
@@ -547,8 +547,8 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   fontWeight: 600
                 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="m9 12 2 2 4-4"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m9 12 2 2 4-4" />
                   </svg>
                   <span>Pendaftaran dibuka — sisa kuota aktif {sisaKuota} dari {totalKuota} mahasiswa</span>
                 </div>
@@ -566,9 +566,9 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   fontWeight: 600
                 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
                   <span>Kuota magang penuh — {terisiKuota} dari {totalKuota} slot terisi</span>
                 </div>
@@ -587,10 +587,10 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
               }}>
                 <div style={{ color: '#15803d', marginBottom: '0.5rem' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
                 </div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '0.25rem' }}>
@@ -611,10 +611,10 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
               }}>
                 <div style={{ color: '#15803d', marginBottom: '0.5rem' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
-                    <path d="M13 5v2"/>
-                    <path d="M13 17v2"/>
-                    <path d="M13 11v2"/>
+                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                    <path d="M13 5v2" />
+                    <path d="M13 17v2" />
+                    <path d="M13 11v2" />
                   </svg>
                 </div>
                 <div style={{
@@ -641,10 +641,10 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
               }}>
                 <div style={{ color: '#15803d', marginBottom: '0.5rem' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-                    <line x1="16" x2="16" y1="2" y2="6"/>
-                    <line x1="8" x2="8" y1="2" y2="6"/>
-                    <line x1="3" x2="21" y1="10" y2="10"/>
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                    <line x1="16" x2="16" y1="2" y2="6" />
+                    <line x1="8" x2="8" y1="2" y2="6" />
+                    <line x1="3" x2="21" y1="10" y2="10" />
                   </svg>
                 </div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '0.25rem' }}>
@@ -746,17 +746,17 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   Daftar pembimbing lapangan
                 </h2>
                 <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600 }}>
-                  {pembimbings.length} pembimbing terdaftar
+                  {Math.min(pembimbings.length, Math.max(0, totalKuota))} pembimbing ditugaskan
                 </span>
               </div>
 
-              {pembimbings.length > 0 ? (
+              {pembimbings.length > 0 && totalKuota > 0 ? (
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                   gap: '1rem'
                 }}>
-                  {pembimbings.map((p, idx) => (
+                  {pembimbings.slice(0, Math.max(0, totalKuota)).map((p, idx) => (
                     <div
                       key={p.id || idx}
                       style={{
@@ -803,22 +803,9 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                         <span style={{
                           fontSize: '0.6875rem',
                           color: '#64748b',
-                          display: 'block',
-                          marginBottom: '0.375rem'
+                          display: 'block'
                         }}>
                           NIP: {p.nip || '-'} | {p.jabatan || 'Pembimbing teknis'}
-                        </span>
-                        <span style={{
-                          display: 'inline-block',
-                          backgroundColor: '#ffffff',
-                          color: '#15803d',
-                          border: '1px solid #86efac',
-                          padding: '0.125rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.6875rem',
-                          fontWeight: 700
-                        }}>
-                          Kuota: {p.kuota_default ?? p.kuota ?? 2} mahasiswa
                         </span>
                       </div>
                     </div>
@@ -834,7 +821,9 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   fontSize: '0.8125rem',
                   color: '#64748b'
                 }}>
-                  Belum ada pembimbing khusus — ditetapkan saat berkas diverifikasi.
+                  {totalKuota <= 0
+                    ? 'Kuota bimbingan pada bidang ini belum tersedia.'
+                    : 'Belum ada pembimbing khusus — ditetapkan saat berkas diverifikasi.'}
                 </div>
               )}
             </div>
@@ -917,12 +906,6 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                       height={20}
                       style={{ width: '20px', height: '20px', objectFit: 'contain', flexShrink: 0, marginTop: '0.125rem' }}
                     />
-                    <div>
-                      <span style={{ fontSize: '0.6875rem', color: '#64748b', display: 'block', fontWeight: 600 }}>MASA PENERIMAAN</span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a' }}>
-                        Gelombang aktif tahun 2025/2026
-                      </span>
-                    </div>
                   </div>
                 </div>
 

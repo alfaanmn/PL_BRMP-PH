@@ -340,7 +340,8 @@ export const adminPengajuanService = {
             nip,
             jabatan,
             kuota_default,
-            is_active
+            is_active,
+            created_at
           )
         `)
         .eq('bidang_id', bidangId)
@@ -352,7 +353,7 @@ export const adminPengajuanService = {
         // Fallback jika bidang_pembimbing kosong, ambil semua pembimbing aktif
         const { data: allPembimbing } = await supabase
           .from('pembimbings')
-          .select('id, nama, nip, jabatan, kuota_default, is_active')
+          .select('id, nama, nip, jabatan, kuota_default, is_active, created_at')
           .eq('is_active', true)
 
         rawPembimbings = allPembimbing || []
@@ -361,6 +362,14 @@ export const adminPengajuanService = {
           .map((item: any) => item.pembimbings)
           .filter((p: any) => p && p.is_active !== false)
       }
+
+      // Urutkan stabil: created_at ascending lalu nama
+      rawPembimbings.sort((a: any, b: any) => {
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
+        if (dateA !== dateB) return dateA - dateB
+        return (a.nama || '').localeCompare(b.nama || '')
+      })
 
       if (rawPembimbings.length === 0) {
         return { data: [], error: null }
@@ -446,6 +455,44 @@ export const adminPengajuanService = {
   }> {
     try {
       const supabase = createClient()
+
+      // 0. Validasi Kuota Bidang Sebelum Menerima Pengajuan
+      if (payload.status === 'Sedang Magang') {
+        const { data: pengajuanData, error: pengajuanErr } = await supabase
+          .from('pengajuans')
+          .select('id, bidang_id, jumlah_anggota')
+          .eq('id', payload.pengajuanId)
+          .single()
+
+        if (pengajuanErr || !pengajuanData) {
+          return {
+            success: false,
+            error: 'Data pengajuan tidak ditemukan.',
+          }
+        }
+
+        if (pengajuanData.bidang_id) {
+          const { data: bidangData, error: bidangErr } = await supabase
+            .from('bidangs')
+            .select('id, nama, kuota, terisi')
+            .eq('id', pengajuanData.bidang_id)
+            .single()
+
+          if (!bidangErr && bidangData) {
+            const kuota = Number(bidangData.kuota) || 0
+            const terisi = Number(bidangData.terisi) || 0
+            const requiredSlots = Number(pengajuanData.jumlah_anggota) || 1
+
+            if (terisi >= kuota || (terisi + requiredSlots) > kuota) {
+              const sisa = Math.max(0, kuota - terisi)
+              return {
+                success: false,
+                error: `Tidak dapat menerima pengajuan: Kuota pada bidang "${bidangData.nama}" tidak mencukupi (Tersisa ${sisa} dari ${kuota} slot, pengajuan ini membutuhkan ${requiredSlots} slot).`,
+              }
+            }
+          }
+        }
+      }
 
       // 1. Siapkan update data pada tabel pengajuans
       const updateData: any = {

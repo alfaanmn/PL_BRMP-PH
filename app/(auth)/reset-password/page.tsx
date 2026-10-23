@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { authService } from '@/lib/services/auth.service'
 import { validateResetPassword } from '@/lib/validations/auth.validation'
 import { AppLogo } from '@/components/shared/app-logo'
+import { PasswordRequirements } from '@/components/auth/password-requirements'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -158,7 +159,7 @@ export default function ResetPasswordPage() {
             <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.375rem' }}>
-                  Password Baru (Minimal 6 karakter)
+                  Password Baru (Minimal 8 karakter)
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
@@ -198,6 +199,7 @@ export default function ResetPasswordPage() {
                     {showPassword ? 'Sembunyi' : 'Lihat'}
                   </button>
                 </div>
+                <PasswordRequirements password={password} />
               </div>
 
               <div>

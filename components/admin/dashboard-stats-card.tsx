@@ -1,16 +1,29 @@
 import React from 'react'
 
+export type StatsColorVariant = 'gold' | 'blue' | 'emerald' | 'rose'
+
 export interface StatsCardProps {
   title: string
   value: number | string
   iconType?: 'users' | 'file-text' | 'star'
+  colorVariant?: StatsColorVariant
+}
+
+const STAT_VARIANT_STYLES: Record<StatsColorVariant, { bg: string; color: string; border: string }> = {
+  gold: { bg: '#FEF3C7', color: '#78350F', border: '#FDE68A' },
+  blue: { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE' },
+  emerald: { bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
+  rose: { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
 }
 
 export function DashboardStatsCard({
   title,
   value,
   iconType = 'users',
+  colorVariant = 'blue',
 }: StatsCardProps) {
+  const variant = STAT_VARIANT_STYLES[colorVariant] || STAT_VARIANT_STYLES.blue
+
   const renderIcon = () => {
     switch (iconType) {
       case 'users':
@@ -46,22 +59,23 @@ export function DashboardStatsCard({
       style={{
         backgroundColor: '#ffffff',
         borderRadius: '12px',
-        border: '1px solid #f1f5f9',
+        border: '1px solid #e2e8f0',
         padding: '1.25rem',
         display: 'flex',
         flexDirection: 'column',
         gap: '0.75rem',
-        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
       }}
     >
-      {/* Icon 32x32px, radius 8px, bg-success (#dcfce7), text-success (#15803d) */}
+      {/* Icon 32x32px, radius 8px, semantic color variant */}
       <div
         style={{
           width: '32px',
           height: '32px',
           borderRadius: '8px',
-          backgroundColor: '#dcfce7',
-          color: '#15803d',
+          backgroundColor: variant.bg,
+          color: variant.color,
+          border: `1px solid ${variant.border}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

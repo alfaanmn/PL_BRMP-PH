@@ -17,6 +17,8 @@ import {
   DownloadIcon,
   ChartBarIcon,
 } from '@/components/ui/admin-icons'
+import { ExportMenu } from '@/components/admin/export-menu'
+import { exportTableToPDF, exportTableToWord, type ExportTableColumn } from '@/lib/utils/export-doc'
 
 export default function AdminRekapSKMPage() {
   // Stats & Analysis state
@@ -158,27 +160,164 @@ export default function AdminRekapSKMPage() {
     }
   }
 
-  // Handler Export CSV
-  const handleExportCSV = async () => {
+  // Columns definition untuk PDF & Word
+  const exportColumns: ExportTableColumn[] = useMemo(
+    () => [
+      { header: 'No', key: 'no' },
+      { header: 'ID Pengajuan', key: 'idPermohonan' },
+      { header: 'Public ID', key: 'publicId' },
+      { header: 'Tanggal', key: 'tanggalPengisian' },
+      { header: 'Nama Pemohon', key: 'namaPemohon' },
+      { header: 'Jenis Kelamin', key: 'jenisKelamin' },
+      { header: 'NIM/NIS', key: 'nimNis' },
+      { header: 'Asal Instansi', key: 'asalInstansi' },
+      { header: 'Bidang Magang', key: 'bidangNama' },
+      { header: 'Skor (1-4)', key: 'rataRataSkor' },
+    ],
+    []
+  )
+
+  // Handler Export Excel (.xlsx asli menggunakan xlsx)
+  const handleExportExcel = async () => {
     setExporting(true)
     try {
-      const res = await adminSKMService.generateCSVData(periodFilter)
-      if (res.csvString) {
-        const blob = new Blob([res.csvString], { type: 'text/csv;charset=utf-8;' })
+      const res = await adminSKMService.generateXLSXBuffer(periodFilter)
+      if (res.buffer) {
+        const blob = new Blob([res.buffer as any], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `rekap_skm_brmp_${periodFilter}_${Date.now()}.csv`)
+        link.setAttribute('download', `rekap_skm_brmp_${periodFilter}_${Date.now()}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
         URL.revokeObjectURL(url)
-        showToast('success', 'Data rekapitulasi SKM berhasil diekspor ke CSV.')
+        showToast('success', 'Data rekapitulasi SKM berhasil diekspor ke Excel (.xlsx).')
       } else {
-        showToast('error', res.error || 'Gagal menghasilkan berkas CSV.')
+        showToast('error', res.error || 'Gagal menghasilkan berkas Excel.')
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat ekspor CSV.'
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat ekspor Excel.'
+      showToast('error', msg)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  // Handler Export PDF (Landscape, autotable pagination, text header)
+  const handleExportPDF = async () => {
+    setExporting(true)
+    try {
+      const { data: list, error: err } = await adminSKMService.getSubmissionsList({
+        page: 1,
+        limit: 10000,
+        periodFilter,
+      })
+
+      if (err || !list) {
+        showToast('error', err || 'Gagal memuat data untuk ekspor PDF.')
+        return
+      }
+
+      const rows = list.map((item, idx) => ({
+        no: idx + 1,
+        idPermohonan: item.isAnonim ? '-' : item.pengajuanId,
+        publicId: item.publicId || '-',
+        tanggalPengisian: item.tanggalPengisian
+          ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })
+          : '-',
+        namaPemohon: item.namaPemohon,
+        jenisKelamin: item.jenisKelamin || '-',
+        nimNis: item.nimNis || '-',
+        asalInstansi: item.asalInstansi || '-',
+        bidangNama: item.bidangNama,
+        rataRataSkor: item.rataRataSkor !== null ? item.rataRataSkor.toFixed(2) : '-',
+      }))
+
+      const periodLabelMap: Record<string, string> = {
+        all: 'Semua Periode',
+        '30days': '30 Hari Terakhir',
+        this_month: 'Bulan Ini',
+        this_year: 'Tahun Ini',
+      }
+
+      await exportTableToPDF({
+        title: 'Laporan Rekapitulasi Survei Kepuasan Masyarakat (SKM)',
+        subtitle: 'Kementerian Pertanian — Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian (BRMP-PH)',
+        dateRange: periodLabelMap[periodFilter] || 'Semua Periode',
+        filename: `rekap_skm_brmp_${periodFilter}_${Date.now()}`,
+        columns: exportColumns,
+        data: rows,
+      })
+
+      showToast('success', 'Data rekapitulasi SKM berhasil diekspor ke PDF.')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat ekspor PDF.'
+      showToast('error', msg)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  // Handler Export Word (.docx, landscape table)
+  const handleExportWord = async () => {
+    setExporting(true)
+    try {
+      const { data: list, error: err } = await adminSKMService.getSubmissionsList({
+        page: 1,
+        limit: 10000,
+        periodFilter,
+      })
+
+      if (err || !list) {
+        showToast('error', err || 'Gagal memuat data untuk ekspor Word.')
+        return
+      }
+
+      const rows = list.map((item, idx) => ({
+        no: idx + 1,
+        idPermohonan: item.isAnonim ? '-' : item.pengajuanId,
+        publicId: item.publicId || '-',
+        tanggalPengisian: item.tanggalPengisian
+          ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })
+          : '-',
+        namaPemohon: item.namaPemohon,
+        jenisKelamin: item.jenisKelamin || '-',
+        nimNis: item.nimNis || '-',
+        asalInstansi: item.asalInstansi || '-',
+        bidangNama: item.bidangNama,
+        rataRataSkor: item.rataRataSkor !== null ? item.rataRataSkor.toFixed(2) : '-',
+      }))
+
+      const periodLabelMap: Record<string, string> = {
+        all: 'Semua Periode',
+        '30days': '30 Hari Terakhir',
+        this_month: 'Bulan Ini',
+        this_year: 'Tahun Ini',
+      }
+
+      await exportTableToWord({
+        title: 'Laporan Rekapitulasi Survei Kepuasan Masyarakat (SKM)',
+        subtitle: 'Kementerian Pertanian — Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian (BRMP-PH)',
+        dateRange: periodLabelMap[periodFilter] || 'Semua Periode',
+        filename: `rekap_skm_brmp_${periodFilter}_${Date.now()}`,
+        columns: exportColumns,
+        data: rows,
+      })
+
+      showToast('success', 'Data rekapitulasi SKM berhasil diekspor ke Word (.docx).')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat ekspor Word.'
       showToast('error', msg)
     } finally {
       setExporting(false)
@@ -288,29 +427,14 @@ export default function AdminRekapSKMPage() {
             <option value="this_year">Tahun ini</option>
           </select>
 
-          <button
-            type="button"
-            onClick={handleExportCSV}
+          <ExportMenu
+            buttonText="Export"
             disabled={exporting || stats.totalResponden === 0}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.45rem 1rem',
-              backgroundColor: stats.totalResponden === 0 ? '#94a3b8' : '#16a34a',
-              color: '#ffffff',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              cursor: stats.totalResponden === 0 || exporting ? 'not-allowed' : 'pointer',
-              boxShadow: '0 1px 3px rgba(22, 163, 74, 0.25)',
-              transition: 'background-color 0.15s ease',
-            }}
-          >
-            <DownloadIcon width={16} height={16} />
-            <span>{exporting ? 'Mengekspor...' : 'Ekspor CSV'}</span>
-          </button>
+            loading={exporting}
+            onExportExcel={handleExportExcel}
+            onExportPDF={handleExportPDF}
+            onExportWord={handleExportWord}
+          />
         </div>
       </div>
 
@@ -660,6 +784,7 @@ export default function AdminRekapSKMPage() {
                 <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '0.75rem 1rem', width: '90px' }}>ID Permohonan</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Nama Pemohon / Instansi</th>
+                  <th style={{ padding: '0.75rem 1rem', width: '110px' }}>Jenis Kelamin</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Bidang Magang</th>
                   <th style={{ padding: '0.75rem 1rem', width: '130px' }}>Tanggal Pengisian</th>
                   <th style={{ padding: '0.75rem 1rem', width: '110px', textAlign: 'center' }}>Rata-Rata Skor</th>
@@ -681,6 +806,9 @@ export default function AdminRekapSKMPage() {
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <div style={{ fontWeight: 600, color: row.isAnonim ? '#02482e' : '#0f172a' }}>{row.namaPemohon}</div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.asalInstansi || '-'}</div>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem', color: '#475569', fontSize: '0.8125rem' }}>
+                      {row.isAnonim ? '-' : (row.jenisKelamin || '-')}
                     </td>
                     <td style={{ padding: '0.875rem 1rem', color: '#334155' }}>
                       {row.bidangNama}

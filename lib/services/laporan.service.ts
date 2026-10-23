@@ -369,6 +369,7 @@ export const laporanService = {
           jumlah_anggota,
           nama_lengkap,
           nim_nis,
+          jenis_kelamin,
           no_hp,
           topik_magang,
           status,
@@ -431,15 +432,19 @@ export const laporanService = {
       // Query profil email pemohon secara aman (tanpa memaksa join yang membuang baris)
       const userIds = Array.from(new Set(allPengajuans.map((p) => p.user_id).filter(Boolean)))
       const profileEmailMap = new Map<string, string>()
+      const profileGenderMap = new Map<string, string>()
       if (userIds.length > 0) {
         try {
           const { data: userProfiles } = await supabase
             .from('profiles')
-            .select('id, email, no_hp')
+            .select('id, email, no_hp, jenis_kelamin')
             .in('id', userIds)
           if (userProfiles) {
             userProfiles.forEach((prof: any) => {
-              if (prof.id) profileEmailMap.set(String(prof.id), prof.email || '')
+              if (prof.id) {
+                profileEmailMap.set(String(prof.id), prof.email || '')
+                profileGenderMap.set(String(prof.id), prof.jenis_kelamin || '')
+              }
             })
           }
         } catch {
@@ -699,10 +704,22 @@ export const laporanService = {
           const qInfo = ans.skm_pertanyaan || qMapById.get(ans.skm_pertanyaan_id)
 
           if (!skmMap.has(pId)) {
+            let gender = '-'
+            if (!ans.is_anonim) {
+              const rawG = pInfo?.jenis_kelamin || (pInfo?.user_id ? profileGenderMap.get(String(pInfo.user_id)) : null)
+              if (rawG) {
+                const clean = rawG.trim().toLowerCase()
+                if (clean === 'l' || clean === 'laki-laki' || clean === 'pria' || clean === 'male') gender = 'Laki-laki'
+                else if (clean === 'p' || clean === 'perempuan' || clean === 'wanita' || clean === 'female') gender = 'Perempuan'
+                else gender = rawG.trim() || '-'
+              }
+            }
+
             skmMap.set(pId, {
               pengajuanId: pId,
               publicId: pInfo?.public_id || String(pId),
               namaPemohon: ans.is_anonim ? '🔒 Responden Anonim' : (pInfo?.nama_lengkap || 'Pemohon'),
+              jenisKelamin: gender,
               asalInstansi: ans.is_anonim ? 'Peserta Magang' : (pInfo?.asal_instansi || '-'),
               bidangNama: pInfo?.bidangs?.nama || '-',
               tanggalPengisian: ans.created_at ? new Date(ans.created_at).toISOString().split('T')[0] : '-',
@@ -741,6 +758,7 @@ export const laporanService = {
           publicId: entry.publicId,
           tanggalPengisian: entry.tanggalPengisian,
           namaPemohon: entry.namaPemohon,
+          jenisKelamin: entry.jenisKelamin || '-',
           asalInstansi: entry.asalInstansi,
           bidangNama: entry.bidangNama,
           rataRataSkor: avg,

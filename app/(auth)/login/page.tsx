@@ -39,9 +39,8 @@ function LoginForm() {
       return
     }
 
-    const passErr = validatePassword(password)
-    if (passErr) {
-      setErrorMessage(passErr)
+    if (!password) {
+      setErrorMessage('Password wajib diisi')
       return
     }
 

@@ -14,6 +14,7 @@ import {
   AlertCircleIcon,
   ChartBarIcon,
 } from '@/components/ui/admin-icons'
+import { ExportButtonGroup } from '@/components/admin/laporan/export-button-group'
 
 export default function AdminLaporanPage() {
   // 1. Filter states
@@ -148,18 +149,18 @@ export default function AdminLaporanPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Menunggu Verifikasi':
-        return { bg: '#fef3c7', color: '#b45309', border: '#fde68a' }
+        return { bg: '#FEF3C7', color: '#78350F', border: '#FDE68A' }
       case 'Sedang Magang':
       case 'Disetujui':
-        return { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' }
+        return { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE' }
       case 'Selesai':
-        return { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' }
+        return { bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' }
       case 'Ditolak':
-        return { bg: '#fee2e2', color: '#b91c1c', border: '#fecaca' }
+        return { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' }
       case 'Dibatalkan':
-        return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' }
+        return { bg: '#F1F5F9', color: '#475569', border: '#CBD5E1' }
       default:
-        return { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' }
+        return { bg: '#F1F5F9', color: '#475569', border: '#CBD5E1' }
     }
   }
 
@@ -208,7 +209,7 @@ export default function AdminLaporanPage() {
       )}
 
       {/* 1. Page Header with Title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.375rem 0', letterSpacing: '-0.02em' }}>
             Pusat laporan & ringkasan analitik
@@ -216,6 +217,14 @@ export default function AdminLaporanPage() {
           <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
             Ringkasan data pengajuan, peserta magang, bidang, pembimbing, status, dan survei kepuasan masyarakat
           </p>
+        </div>
+
+        <div>
+          <ExportButtonGroup
+            filterParams={activeFilterParams}
+            onExportSuccess={(msg) => showToast('success', msg)}
+            onExportError={(msg) => showToast('error', msg)}
+          />
         </div>
       </div>
 

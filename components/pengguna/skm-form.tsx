@@ -481,7 +481,7 @@ export function SKMForm({
           letterSpacing: '0.04em',
           marginBottom: '4px'
         }}>
-          Bagian
+
         </div>
         <h2 style={{
           fontSize: '1.0625rem',
@@ -490,7 +490,7 @@ export function SKMForm({
           margin: '0 0 0.5rem 0',
           lineHeight: 1.4
         }}>
-          B. PENDAPAT RESPONDEN TENTANG PELAYANAN
+          PENDAPAT RESPONDEN TENTANG PELAYANAN
         </h2>
         <p style={{
           fontSize: '0.875rem',

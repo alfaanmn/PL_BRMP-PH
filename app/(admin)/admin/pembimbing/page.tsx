@@ -309,37 +309,7 @@ export default function AdminPembimbingPage() {
           </div>
         </div>
 
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            padding: '1rem 1.25rem',
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.875rem',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-          }}
-        >
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '8px',
-              backgroundColor: '#fef3c7',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#d97706',
-            }}
-          >
-            <LayersIcon width={20} height={20} />
-          </div>
-          <div>
-            <p style={{ margin: 0, fontSize: '11px', color: '#64748b', fontWeight: 500 }}>Total Kapasitas</p>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>{totalKapasitas} Slot</p>
-          </div>
-        </div>
+
 
         <div
           style={{
@@ -651,8 +621,8 @@ export default function AdminPembimbingPage() {
                     {/* Capacity & Field Badge */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', fontSize: '12px', color: '#64748b' }}>
                       <div>
-                        Kapasitas Bimbingan: <strong style={{ color: '#0f172a' }}>{kuota}</strong> Peserta (Aktif:{' '}
-                        <strong style={{ color: '#15803d' }}>{activePeserta}</strong>)
+                        Bimbingan Aktif:{' '}
+                        <strong style={{ color: activePeserta > 0 ? '#15803d' : '#64748b' }}>{activePeserta}</strong> Peserta
                       </div>
 
                       <button

@@ -1,3 +1,6 @@
+import { checkPasswordCriteria } from '@/lib/helpers/password.helper'
+export { checkPasswordCriteria }
+
 /**
  * Normalisasi format nomor HP Indonesia ke format canonical string '08xxxxxxxxxx'
  * Mendukung: '08...', '+628...', '628...', spasi, dan tanda hubung
@@ -41,8 +44,9 @@ export function validatePassword(password: string): string | null {
   if (!password) {
     return 'Password wajib diisi'
   }
-  if (password.length < 6) {
-    return 'Password minimal 6 karakter'
+  const criteria = checkPasswordCriteria(password)
+  if (!criteria.isValid) {
+    return `Password belum memenuhi syarat: ${criteria.missingCriteria.join(', ')}`
   }
   return null
 }

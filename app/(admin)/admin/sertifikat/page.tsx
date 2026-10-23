@@ -358,7 +358,7 @@ export default function AdminSertifikatPage() {
                     {/* Instansi */}
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <div style={{ color: '#334155', fontWeight: 500 }}>{item.asalInstansi}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600 }}>{item.bidangNama}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#1A6FC4', fontWeight: 600 }}>{item.bidangNama}</div>
                     </td>
 
                     {/* Periode */}
@@ -375,8 +375,8 @@ export default function AdminSertifikatPage() {
                           alignItems: 'center',
                           gap: '0.25rem',
                           backgroundColor: '#ecfdf5',
-                          color: '#15803d',
-                          border: '1px solid #bbf7d0',
+                          color: '#065F46',
+                          border: '1px solid #a7f3d0',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '6px',
                           fontSize: '0.75rem',
@@ -390,7 +390,7 @@ export default function AdminSertifikatPage() {
                           alignItems: 'center',
                           gap: '0.25rem',
                           backgroundColor: '#fffbeb',
-                          color: '#b45309',
+                          color: '#78350F',
                           border: '1px solid #fde68a',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '6px',
@@ -411,8 +411,8 @@ export default function AdminSertifikatPage() {
                             alignItems: 'center',
                             gap: '0.25rem',
                             backgroundColor: '#ecfdf5',
-                            color: '#166534',
-                            border: '1px solid #86efac',
+                            color: '#065F46',
+                            border: '1px solid #a7f3d0',
                             padding: '0.25rem 0.5rem',
                             borderRadius: '6px',
                             fontSize: '0.75rem',
@@ -450,8 +450,8 @@ export default function AdminSertifikatPage() {
                           alignItems: 'center',
                           gap: '0.25rem',
                           backgroundColor: '#ecfdf5',
-                          color: '#15803d',
-                          border: '1px solid #bbf7d0',
+                          color: '#065F46',
+                          border: '1px solid #a7f3d0',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '6px',
                           fontSize: '0.75rem',
@@ -487,9 +487,9 @@ export default function AdminSertifikatPage() {
                           style={{
                             padding: '0.35rem 0.65rem',
                             borderRadius: '6px',
-                            backgroundColor: item.sertifikat ? '#f8fafc' : '#15803d',
+                            backgroundColor: item.sertifikat ? '#f8fafc' : '#1A6FC4',
                             color: item.sertifikat ? '#0f172a' : '#ffffff',
-                            border: item.sertifikat ? '1px solid #cbd5e1' : '1px solid #15803d',
+                            border: item.sertifikat ? '1px solid #cbd5e1' : '1px solid #1A6FC4',
                             fontSize: '0.75rem',
                             fontWeight: 700,
                             cursor: 'pointer',
@@ -507,9 +507,9 @@ export default function AdminSertifikatPage() {
                             style={{
                               padding: '0.35rem 0.65rem',
                               borderRadius: '6px',
-                              backgroundColor: '#ecfdf5',
-                              color: '#15803d',
-                              border: '1px solid #a7f3d0',
+                              backgroundColor: '#eff6ff',
+                              color: '#1A6FC4',
+                              border: '1px solid #bfdbfe',
                               fontSize: '0.75rem',
                               fontWeight: 700,
                               cursor: previewLoadingId === item.pengajuanId ? 'not-allowed' : 'pointer',
@@ -638,7 +638,7 @@ export default function AdminSertifikatPage() {
                     padding: '0.5rem 1.25rem',
                     borderRadius: '8px',
                     border: 'none',
-                    backgroundColor: '#15803d',
+                    backgroundColor: '#1A6FC4',
                     color: '#ffffff',
                     fontSize: '0.875rem',
                     fontWeight: 700,
