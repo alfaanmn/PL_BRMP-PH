@@ -11,10 +11,20 @@ export const emailService = {
   async sendNotification(payload: EmailNotificationPayload): Promise<EmailSendResult> {
     try {
       // Tentukan base URL sesuai context (Browser vs Server-Side execution)
-      const baseUrl =
-        typeof window !== 'undefined'
-          ? ''
-          : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      let baseUrl = ''
+      if (typeof window === 'undefined') {
+        const rawUrl =
+          process.env.NEXT_PUBLIC_APP_URL ||
+          (process.env.VERCEL_PROJECT_PRODUCTION_URL
+            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+            : process.env.VERCEL_URL
+              ? `https://${process.env.VERCEL_URL}`
+              : process.env.NODE_ENV === 'production'
+                ? 'https://simpul-brmpph.id'
+                : 'http://localhost:3000')
+
+        baseUrl = rawUrl.replace(/\/+$/, '')
+      }
 
       const endpoint = `${baseUrl}/api/notifications/email`
 

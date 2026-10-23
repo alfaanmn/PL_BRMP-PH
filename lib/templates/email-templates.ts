@@ -53,11 +53,29 @@ export function getEmailSubject(payload: EmailNotificationPayload): string {
 }
 
 /**
+ * Menentukan base URL aplikasi dengan sanitasi trailing slash dan fallback produksi
+ */
+function resolveBaseUrl(appUrl?: string): string {
+  const raw =
+    appUrl ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NODE_ENV === 'production'
+      ? 'https://simpul-brmpph.id'
+      : 'http://localhost:3000')
+
+  return raw.replace(/\/+$/, '')
+}
+
+/**
  * Menghasilkan Plain Text fallback untuk Email Client yang tidak mendukung HTML
  */
 export function renderEmailPlainText(payload: EmailNotificationPayload): string {
   const { recipient, pengajuan, pembimbing, alasanPenolakan, appUrl } = payload
-  const baseUrl = appUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = resolveBaseUrl(appUrl)
 
   let body = `Halo ${recipient.name},\n\n`
 
@@ -109,7 +127,7 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
  */
 export function renderEmailHtml(payload: EmailNotificationPayload): string {
   const { recipient, pengajuan, pembimbing, alasanPenolakan, appUrl } = payload
-  const baseUrl = appUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = resolveBaseUrl(appUrl)
   const logoUrl = 'https://dlspskkmuuysmpmvklnp.supabase.co/storage/v1/object/public/smile.png/smile.png'
 
   let badgeBg = '#ecfdf5'
