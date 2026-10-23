@@ -38,17 +38,17 @@ export function getEmailSubject(payload: EmailNotificationPayload): string {
   const publicId = payload.pengajuan.publicId || 'ID'
   switch (payload.event) {
     case 'pengajuan_submitted':
-      return `[SIM-Magang] Pengajuan Magang Berhasil Terkirim (#${publicId})`
+      return `[SIMPUL] Pengajuan Magang Berhasil Terkirim (#${publicId})`
     case 'pengajuan_approved':
-      return `[SIM-Magang] Selamat! Pengajuan Magang Anda Telah Disetujui (#${publicId})`
+      return `[SIMPUL] Selamat! Pengajuan Magang Anda Telah Disetujui (#${publicId})`
     case 'pengajuan_rejected':
-      return `[SIM-Magang] Pemberitahuan Status Pengajuan Magang (#${publicId})`
+      return `[SIMPUL] Pemberitahuan Status Pengajuan Magang (#${publicId})`
     case 'pengajuan_completed':
-      return `[SIM-Magang] Selamat! Rangkaian Kegiatan Magang Anda Telah Selesai (#${publicId})`
+      return `[SIMPUL] Selamat! Rangkaian Kegiatan Magang Anda Telah Selesai (#${publicId})`
     case 'sertifikat_available':
-      return `[SIM-Magang] Sertifikat Magang Anda Telah Terbit (#${publicId})`
+      return `[SIMPUL] Sertifikat Magang Anda Telah Terbit (#${publicId})`
     default:
-      return `[SIM-Magang] Update Status Pengajuan Magang (#${publicId})`
+      return `[SIMPUL] Update Status Pengajuan Magang (#${publicId})`
   }
 }
 
@@ -62,10 +62,10 @@ function resolveBaseUrl(appUrl?: string): string {
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NODE_ENV === 'production'
-      ? 'https://simpul-brmpph.id'
-      : 'http://localhost:3000')
+        ? `https://${process.env.VERCEL_URL}`
+        : process.env.NODE_ENV === 'production'
+          ? 'https://simpul-brmpph.id'
+          : 'http://localhost:3000')
 
   return raw.replace(/\/+$/, '')
 }
@@ -118,7 +118,7 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
       break
   }
 
-  body += `\n--\nSIM-MAGANG BRMP PH\nBalai Pengelola Hasil Perakitan dan Modernisasi Pertanian\n`
+  body += `\n--\nSIMPUL BRMP PH\n(Sistem Informasi Magang dan Pelatihan Unggulan Lanjutan)\nBalai Pengelola Hasil Perakitan dan Modernisasi Pertanian\n`
   return body
 }
 
@@ -128,7 +128,7 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
 export function renderEmailHtml(payload: EmailNotificationPayload): string {
   const { recipient, pengajuan, pembimbing, alasanPenolakan, appUrl } = payload
   const baseUrl = resolveBaseUrl(appUrl)
-  const logoUrl = 'https://dlspskkmuuysmpmvklnp.supabase.co/storage/v1/object/public/smile.png/smile.png'
+  const logoUrl = 'https://dlspskkmuuysmpmvklnp.supabase.co/storage/v1/object/public/smile.png/logo_simpul.png'
 
   let badgeBg = '#ecfdf5'
   let badgeColor = '#15803d'
@@ -251,7 +251,7 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
     headingTitle = 'Sertifikat Magang Anda Telah Siap'
     leadText = `Kabar baik! Sertifikat resmi kelulusan magang Anda di <strong>BRMP PH</strong> telah diterbitkan dan dilampirkan langsung pada email ini.`
     ctaLink = `${baseUrl}/pengguna/sertifikat`
-    ctaText = 'Lihat di Portal SIM-Magang'
+    ctaText = 'Lihat di Portal SIMPUL'
 
     infoContent = `
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:18px 20px;margin:22px 0;">
@@ -259,7 +259,7 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
           Terima kasih atas dedikasi dan kontribusi Anda selama mengikuti program magang di BRMP PH.
         </p>
         <p style="margin:0;font-size:13px;color:#475569;line-height:1.5;">
-          Berkas resmi telah dilampirkan pada email ini. Sebagai cadangan, Anda juga dapat masuk ke portal SIM-Magang untuk melihat pratinjau dokumen dan mengunduh ulang sertifikat kapan saja.
+          Berkas resmi telah dilampirkan pada email ini. Sebagai cadangan, Anda juga dapat masuk ke portal SIMPUL untuk melihat pratinjau dokumen dan mengunduh ulang sertifikat kapan saja.
         </p>
       </div>
     `
@@ -273,23 +273,23 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(headingTitle)}</title>
 </head>
-<body style="margin:0;padding:40px 16px;background:#f0fdf4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-  <div style="max-width:540px;margin:0 auto;background:#ffffff;border:1px solid #dcfce7;border-radius:18px;overflow:hidden;box-shadow:0 4px 12px rgba(6,78,59,0.06);">
+<body style="margin:0;padding:40px 16px;background:#f0fdf4;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #dcfce7;border-radius:18px;overflow:hidden;box-shadow:0 4px 12px rgba(6,78,59,0.06);">
     
     <!-- Header -->
-    <div style="background:#064e3b;padding:32px 24px 28px;text-align:center;">
+    <div style="background:#064e3b;padding:30px 24px;text-align:center;">
       <img
         src="${logoUrl}"
-        alt="SIM-MAGANG BRMP PH"
+        alt="SIMPUL BRMP"
         width="76"
         height="76"
-        style="display:block;margin:0 auto 14px;border-radius:12px;background:#ffffff;padding:4px;box-sizing:border-box;"
+        style="display:block;margin:0 auto 14px;border-radius:12px;"
       />
-      <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.02em;">
-        SIM-MAGANG BRMP PH
+      <div style="color:#ffffff;font-size:21px;font-weight:700;">
+        SIMPUL
       </div>
-      <div style="margin-top:4px;color:#bbf7d0;font-size:13px;font-weight:500;">
-        Sistem Informasi Manajemen Magang
+      <div style="margin-top:5px;color:#bbf7d0;font-size:13px;">
+        (Sistem Informasi Magang dan Pelatihan Unggulan Lanjutan)
       </div>
     </div>
 
@@ -331,7 +331,7 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
       <!-- Helper Notice -->
       <div style="margin-top:24px;padding:14px 16px;background:#f8fafc;border-radius:10px;">
         <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;">
-          Email ini dikirim secara otomatis oleh sistem. Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi tim administrasi melalui portal resmi SIM-Magang.
+          Email ini dikirim secara otomatis oleh sistem. Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi tim administrasi melalui portal resmi SIMPUL.
         </p>
       </div>
 
@@ -340,9 +340,9 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
     <!-- Footer -->
     <div style="padding:20px 24px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
       <p style="margin:0;color:#475569;font-size:12px;">
-        Email otomatis dari <strong style="color:#15803d;">SIM-MAGANG BRMP PH</strong>
+        Email otomatis dari <strong style="color:#15803d;">SIMPUL BRMP PH</strong>
       </p>
-      <p style="margin:6px 0 0;color:#94a3b8;font-size:11px;">
+      <p style="margin:7px 0 0;color:#94a3b8;font-size:11px;">
         Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian
       </p>
     </div>

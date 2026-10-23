@@ -21,7 +21,7 @@ export function Footer({
   return (
     <footer
       style={{
-        backgroundColor: '#0F2A47',
+        backgroundColor: '#064e3b',
         color: '#e2e8f0',
         borderTop: '2px solid #F5C400',
         padding: '3rem 1.5rem 2rem 1.5rem',
