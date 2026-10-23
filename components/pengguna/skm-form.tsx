@@ -41,7 +41,6 @@ export function SKMForm({
 
   // State Form Jawaban: Record<skmPertanyaanId, string>
   const [answers, setAnswers] = useState<Record<number, string>>({})
-  const [isAnonim, setIsAnonim] = useState<boolean>(true)
   const [submitting, setSubmitting] = useState(false)
   const [submittedSuccess, setSubmittedSuccess] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -91,6 +90,10 @@ export function SKMForm({
       ...prev,
       [questionId]: text,
     }))
+    if (text.trim().length > 0) {
+      setUnansweredHighlight((prev) => prev.filter((id) => id !== questionId))
+      if (errorMessage) setErrorMessage(null)
+    }
   }
 
   // Handler submit formulir
@@ -107,7 +110,7 @@ export function SKMForm({
       return
     }
 
-    // Validasi pertanyaan pilihan 1–13 (wajib diisi)
+    // 1. Validasi 16 pertanyaan pilihan (wajib diisi)
     const missingChoiceIds: number[] = []
     choiceQuestions.forEach((q) => {
       const val = answers[q.id]
@@ -116,13 +119,31 @@ export function SKMForm({
       }
     })
 
+    // 2. Validasi pertanyaan teks terbuka nomor 17 (wajib diisi)
+    const missingTextIds: number[] = []
+    textQuestions.forEach((q) => {
+      const val = answers[q.id]
+      if (!val || val.trim().length === 0) {
+        missingTextIds.push(q.id)
+      }
+    })
+
     if (missingChoiceIds.length > 0) {
-      setUnansweredHighlight(missingChoiceIds)
-      setErrorMessage(`Mohon lengkapi seluruh pertanyaan pilihan wajib (Terdapat ${missingChoiceIds.length} butir yang belum dipilih).`)
-      // Scroll ke butir pertama yang belum dijawab
+      setUnansweredHighlight([...missingChoiceIds, ...missingTextIds])
+      setErrorMessage(`Mohon lengkapi seluruh pertanyaan pilihan wajib (Terdapat ${missingChoiceIds.length} butir pertanyaan yang belum dipilih).`)
       const firstMissingElem = document.getElementById(`question-card-${missingChoiceIds[0]}`)
       if (firstMissingElem) {
         firstMissingElem.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      return
+    }
+
+    if (missingTextIds.length > 0) {
+      setUnansweredHighlight(missingTextIds)
+      setErrorMessage('Kolom saran dan masukan untuk Layanan BRMP Pengelola Hasil wajib diisi.')
+      const textElem = document.getElementById(`question-card-${missingTextIds[0]}`)
+      if (textElem) {
+        textElem.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
       return
     }
@@ -131,15 +152,15 @@ export function SKMForm({
     setErrorMessage(null)
 
     try {
-      // Susun payload submission
+      // Susun payload submission (isAnonim = false)
       const formattedAnswers = questions.map((q) => ({
         skmPertanyaanId: q.id,
-        jawaban: answers[q.id] || '',
+        jawaban: (answers[q.id] || '').trim(),
       }))
 
       const response = await skmService.submitSKMJawaban({
         pengajuanId: selectedPengajuanId,
-        isAnonim,
+        isAnonim: false,
         answers: formattedAnswers,
       })
 
@@ -254,7 +275,7 @@ export function SKMForm({
         {/* Action Buttons */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <Link
-            href="/pengguna/riwayat"
+            href={isSelesai && hasSertifikat ? '/pengguna/sertifikat' : '/pengguna/riwayat'}
             style={{
               padding: '0.625rem 1.25rem',
               backgroundColor: '#16a34a',
@@ -444,37 +465,48 @@ export function SKMForm({
         </div>
       )}
 
-      {/* 2. Box Info Kecil Terpisah Instruksi Pengisian */}
+      {/* 2. Header Bagian B & Petunjuk Pengisian Sesuai Kuesioner IKM 2026 */}
       <div style={{
-        backgroundColor: '#f8fafc',
-        borderRadius: '10px',
-        padding: '12px 16px',
-        border: '1px solid #f1f5f9',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.625rem',
-        color: '#64748b',
-        fontSize: '12px',
-        lineHeight: 1.5
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        border: '1px solid #e2e8f0',
+        padding: '1.25rem 1.5rem',
+        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)'
       }}>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ flexShrink: 0, color: '#64748b' }}
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4" />
-          <path d="M12 8h.01" />
-        </svg>
-        <span>
-          Pilih salah satu jawaban yang paling mencerminkan pengalaman Anda pada tiap pertanyaan di bawah.
-        </span>
+        <div style={{
+          fontSize: '11px',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          color: '#0F6E56',
+          letterSpacing: '0.04em',
+          marginBottom: '4px'
+        }}>
+          Bagian
+        </div>
+        <h2 style={{
+          fontSize: '1.0625rem',
+          fontWeight: 700,
+          color: '#0f172a',
+          margin: '0 0 0.5rem 0',
+          lineHeight: 1.4
+        }}>
+          B. PENDAPAT RESPONDEN TENTANG PELAYANAN
+        </h2>
+        <p style={{
+          fontSize: '0.875rem',
+          color: '#475569',
+          margin: '0 0 0.5rem 0',
+          lineHeight: 1.5
+        }}>
+          <strong>Petunjuk:</strong> (Pilih salah satu sesuai jawaban masyarakat/responden)
+        </p>
+        <div style={{
+          fontSize: '0.8125rem',
+          color: '#dc2626',
+          fontWeight: 500
+        }}>
+          Tanda * = wajib diisi.
+        </div>
       </div>
 
       {/* 2. Floating Sticky Progress Bar */}
@@ -556,7 +588,12 @@ export function SKMForm({
             q.opsi.length === 4 &&
             q.opsi.every((o) => typeof o.skor === 'number' && typeof o.label === 'string' && o.label.trim().length > 0)
 
-          const options = isValidOpsi ? q.opsi! : []
+          const options = isValidOpsi ? q.opsi! : [
+            { skor: 1, label: 'Tidak Baik' },
+            { skor: 2, label: 'Kurang Baik' },
+            { skor: 3, label: 'Baik' },
+            { skor: 4, label: 'Sangat Baik' },
+          ]
           const selectedScoreStr = answers[q.id] || ''
 
           return (
@@ -591,21 +628,6 @@ export function SKMForm({
                 </span>
 
                 <div style={{ flex: 1 }}>
-                  {q.unsur && (
-                    <span style={{
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      color: '#16a34a',
-                      backgroundColor: '#ecfdf5',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      display: 'inline-block',
-                      marginBottom: '0.35rem',
-                      border: '1px solid #bbf7d0'
-                    }}>
-                      Unsur: {q.unsur}
-                    </span>
-                  )}
                   <h3 style={{
                     fontSize: '0.9375rem',
                     fontWeight: 600,
@@ -669,10 +691,11 @@ export function SKMForm({
         })}
       </div>
 
-      {/* 4. Pertanyaan Masukan Teks Bebas (Q14 & Q15) */}
+      {/* 4. Pertanyaan Terbuka: Saran dan Masukan (Wajib) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {textQuestions.map((q) => {
           const currentText = answers[q.id] || ''
+          const isHighlighted = unansweredHighlight.includes(q.id)
 
           return (
             <div
@@ -681,9 +704,10 @@ export function SKMForm({
               style={{
                 backgroundColor: '#ffffff',
                 borderRadius: '12px',
-                border: '1px solid #e2e8f0',
+                border: isHighlighted ? '2px solid #ef4444' : '1px solid #e2e8f0',
                 padding: '1.25rem 1.5rem',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                boxShadow: isHighlighted ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 1px 2px rgba(0,0,0,0.02)',
+                transition: 'border-color 0.2s, box-shadow 0.2s'
               }}
             >
               {/* Header Butir */}
@@ -705,21 +729,6 @@ export function SKMForm({
                 </span>
 
                 <div style={{ flex: 1 }}>
-                  {q.unsur && (
-                    <span style={{
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      color: '#16a34a',
-                      backgroundColor: '#ecfdf5',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      display: 'inline-block',
-                      marginBottom: '0.35rem',
-                      border: '1px solid #bbf7d0'
-                    }}>
-                      Unsur: {q.unsur}
-                    </span>
-                  )}
                   <h3 style={{
                     fontSize: '0.9375rem',
                     fontWeight: 600,
@@ -727,128 +736,39 @@ export function SKMForm({
                     margin: 0,
                     lineHeight: 1.45
                   }}>
-                    {q.pertanyaan}
+                    {q.pertanyaan} <span style={{ color: '#ef4444' }}>*</span>
                   </h3>
                 </div>
               </div>
 
               {/* Textarea Input */}
               <textarea
-                rows={3}
+                rows={4}
                 className="skm-textarea"
-                placeholder={
-                  q.urutan === 14
-                    ? 'Tuliskan hal-hal yang paling memuaskan Anda selama pelaksanaan pelayanan/magang...'
-                    : 'Tuliskan kritik, saran, atau masukan untuk perbaikan kualitas layanan ke depan...'
-                }
+                placeholder="Tuliskan saran dan masukan Anda untuk Layanan BRMP Pengelola Hasil..."
                 value={currentText}
                 onChange={(e) => handleTextChange(q.id, e.target.value)}
                 maxLength={500}
               />
               <div style={{
                 display: 'flex',
-                justifyContent: 'flex-end',
+                justifyContent: 'space-between',
+                alignItems: 'center',
                 marginTop: '0.35rem',
                 fontSize: '11px',
                 color: '#94a3b8'
               }}>
-                {currentText.length} / 500 karakter
+                <span style={{ color: currentText.trim().length === 0 ? '#ef4444' : '#16a34a' }}>
+                  {currentText.trim().length === 0 ? '* Kolom ini wajib diisi' : '✓ Telah terisi'}
+                </span>
+                <span>{currentText.length} / 500 karakter</span>
               </div>
             </div>
           )
         })}
       </div>
 
-      {/* 5. Pilihan Identitas Responden (Anonim vs Tampilkan Nama) */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0',
-        padding: '1.25rem 1.5rem',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem'
-      }}>
-        <div>
-          <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
-            Identitas Responden
-          </h3>
-          <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
-            Tentukan preferensi tampilan identitas Anda pada laporan hasil survei:
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
-          {/* Opsi 1: Anonim (Default) */}
-          <label
-            onClick={() => setIsAnonim(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '0.625rem',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              border: isAnonim ? '1px solid #16a34a' : '1px solid #e2e8f0',
-              backgroundColor: isAnonim ? '#f0fdf4' : '#ffffff',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <input
-              type="radio"
-              name="identitas_responden"
-              value="anonim"
-              checked={isAnonim}
-              onChange={() => setIsAnonim(true)}
-              style={{ marginTop: '3px', accentColor: '#16a34a' }}
-            />
-            <div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: isAnonim ? '#02482e' : '#334155' }}>
-                🔒 Anonim (Direkomendasikan)
-              </div>
-              <div style={{ fontSize: '0.75rem', color: isAnonim ? '#15803d' : '#64748b' }}>
-                Nama dan identitas pribadi Anda dirahasiakan pada rekapitulasi penilaian.
-              </div>
-            </div>
-          </label>
-
-          {/* Opsi 2: Tampilkan Nama */}
-          <label
-            onClick={() => setIsAnonim(false)}
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '0.625rem',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              border: !isAnonim ? '1px solid #16a34a' : '1px solid #e2e8f0',
-              backgroundColor: !isAnonim ? '#f0fdf4' : '#ffffff',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <input
-              type="radio"
-              name="identitas_responden"
-              value="tampilkan"
-              checked={!isAnonim}
-              onChange={() => setIsAnonim(false)}
-              style={{ marginTop: '3px', accentColor: '#16a34a' }}
-            />
-            <div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: !isAnonim ? '#02482e' : '#334155' }}>
-                👤 Tampilkan Nama
-              </div>
-              <div style={{ fontSize: '0.75rem', color: !isAnonim ? '#15803d' : '#64748b' }}>
-                Nama pemohon magang Anda akan ditampilkan kepada administrator BRMP.
-              </div>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      {/* 6. Footer Aksi Submit */}
+      {/* 5. Footer Aksi Submit */}
       <div style={{
         backgroundColor: '#ffffff',
         borderRadius: '12px',
@@ -861,8 +781,10 @@ export function SKMForm({
         gap: '1rem'
       }}>
         <div>
-          <span style={{ fontSize: '0.8125rem', color: '#64748b' }}>
-            Pastikan seluruh pertanyaan bertanda (<span style={{ color: '#ef4444' }}>*</span>) telah terisi dengan benar.
+          <span style={{ fontSize: '0.8125rem', color: answeredCount < totalQuestions ? '#dc2626' : '#16a34a', fontWeight: 500 }}>
+            {answeredCount < totalQuestions
+              ? `* Mohon lengkapi seluruh ${totalQuestions} butir pertanyaan (${answeredCount} dari ${totalQuestions} terisi).`
+              : `✓ Seluruh ${totalQuestions} butir pertanyaan telah lengkap terisi.`}
           </span>
         </div>
 
@@ -884,22 +806,23 @@ export function SKMForm({
 
           <button
             type="submit"
-            disabled={submitting || isAlreadySubmitted}
+            disabled={submitting || isAlreadySubmitted || answeredCount < totalQuestions}
             style={{
               padding: '0.625rem 1.5rem',
-              backgroundColor: submitting || isAlreadySubmitted ? '#94a3b8' : '#16a34a',
+              backgroundColor: submitting || isAlreadySubmitted || answeredCount < totalQuestions ? '#94a3b8' : '#16a34a',
               color: '#ffffff',
               borderRadius: '8px',
               border: 'none',
               fontSize: '0.875rem',
               fontWeight: 600,
-              cursor: submitting || isAlreadySubmitted ? 'not-allowed' : 'pointer',
+              cursor: submitting || isAlreadySubmitted || answeredCount < totalQuestions ? 'not-allowed' : 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              boxShadow: submitting ? 'none' : '0 2px 6px rgba(22, 163, 74, 0.25)',
+              boxShadow: submitting || answeredCount < totalQuestions ? 'none' : '0 2px 6px rgba(22, 163, 74, 0.25)',
               transition: 'all 0.15s ease'
             }}
+            title={answeredCount < totalQuestions ? `Lengkapi ${totalQuestions - answeredCount} butir pertanyaan yang belum diisi` : 'Kirim survei kepuasan'}
           >
             {submitting ? (
               <>

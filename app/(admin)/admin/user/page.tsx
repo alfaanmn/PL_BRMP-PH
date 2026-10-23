@@ -228,7 +228,7 @@ export default function AdminUserPage() {
             </span>
           </div>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '12px', color: '#6b7280' }}>
-            Daftar akun pemohon magang dan administrator terdaftar di lingkungan SIM-Magang BRMP PH.
+            Daftar akun pemohon magang dan administrator terdaftar di lingkungan SIMPUL BRMP-PH.
           </p>
         </div>
       </div>

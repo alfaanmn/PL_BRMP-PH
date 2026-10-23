@@ -79,7 +79,7 @@ function renderEmailPlainText(payload) {
       break
   }
 
-  body += `\n--\nSIM-MAGANG BRMP PH\nBadan Perakitan dan Modernisasi Pertanian Pengelola Hasil\n`
+  body += `\n--\nSIM-MAGANG BRMP PH\nBalai Pengelola Hasil Perakitan dan Modernisasi Pertanian\n`
   return body
 }
 
@@ -282,7 +282,7 @@ function renderEmailHtml(payload) {
         Email otomatis dari <strong style="color:#15803d;">SIM-MAGANG BRMP PH</strong>
       </p>
       <p style="margin:6px 0 0;color:#94a3b8;font-size:11px;">
-        Badan Perakitan dan Modernisasi Pertanian Pengelola Hasil
+        Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian
       </p>
     </div>
 

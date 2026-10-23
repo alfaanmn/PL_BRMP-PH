@@ -224,18 +224,12 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
             <div style={{
               width: '38px',
               height: '38px',
-              borderRadius: '8px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #bbf7d0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '2px',
-              boxShadow: '0 2px 4px rgba(21, 128, 61, 0.12)',
               flexShrink: 0,
-              overflow: 'hidden'
             }}>
-              <AppLogo size={34} alt="Logo SIM-Magang" priority />
+              <AppLogo size={36} variant="kementan" alt="Logo Kementerian Pertanian" priority />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
               <span style={{
@@ -250,7 +244,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
               }}>
-                KEMENTERIAN PERTANIAN RI
+                KEMENTERIAN PERTANIAN REPUBLIK INDONESIA
               </span>
               <span style={{
                 fontSize: '1rem',
@@ -263,7 +257,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
               }}>
-                SIM-Magang BRMP
+                SIMPUL BRMP-PH
               </span>
             </div>
           </Link>
@@ -322,25 +316,47 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     <span>Admin</span>
                   </Link>
                 ) : (
-                  <Link
-                    href="/pengguna/riwayat"
-                    style={{
-                      padding: '0.45rem 0.75rem',
-                      color: '#15803d',
-                      textDecoration: 'none',
-                      fontSize: '0.8125rem',
-                      fontWeight: 700,
-                      borderRadius: '8px',
-                      border: '1px solid #bbf7d0',
-                      backgroundColor: '#ffffff',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.375rem'
-                    }}
-                  >
-                    <span>📄</span>
-                    <span>Riwayat</span>
-                  </Link>
+                  <>
+                    <Link
+                      href="/pengguna/riwayat"
+                      style={{
+                        padding: '0.45rem 0.75rem',
+                        color: '#15803d',
+                        textDecoration: 'none',
+                        fontSize: '0.8125rem',
+                        fontWeight: 700,
+                        borderRadius: '8px',
+                        border: '1px solid #bbf7d0',
+                        backgroundColor: '#ffffff',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.375rem'
+                      }}
+                    >
+                      <span>📄</span>
+                      <span>Riwayat</span>
+                    </Link>
+
+                    <Link
+                      href="/pengguna/sertifikat"
+                      style={{
+                        padding: '0.45rem 0.75rem',
+                        color: '#15803d',
+                        textDecoration: 'none',
+                        fontSize: '0.8125rem',
+                        fontWeight: 700,
+                        borderRadius: '8px',
+                        border: '1px solid #bbf7d0',
+                        backgroundColor: pathname === '/pengguna/sertifikat' ? '#ecfdf5' : '#ffffff',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.375rem'
+                      }}
+                    >
+                      <span>🎓</span>
+                      <span>Sertifikat</span>
+                    </Link>
+                  </>
                 )}
 
                 <Link
@@ -585,13 +601,13 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                 marginBottom: '1.25rem'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                  <AppLogo size={32} alt="Logo BRMP" />
+                  <AppLogo size={32} variant="kementan" alt="Logo Kementerian Pertanian" />
                   <div>
                     <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#15803d', lineHeight: 1.2 }}>
-                      SIM-Magang
+                      SIMPUL BRMP-PH
                     </div>
                     <div style={{ fontSize: '0.625rem', color: '#64748b', fontWeight: 600 }}>
-                      BRMP Kementan RI
+                      Kementerian Pertanian RI
                     </div>
                   </div>
                 </div>
@@ -788,6 +804,27 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     >
                       <span>📄</span>
                       <span>Riwayat Pengajuan</span>
+                    </Link>
+
+                    <Link
+                      href="/pengguna/sertifikat"
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        minHeight: '44px',
+                        padding: '0 0.875rem',
+                        borderRadius: '8px',
+                        backgroundColor: pathname === '/pengguna/sertifikat' ? '#f0fdf4' : 'transparent',
+                        color: pathname === '/pengguna/sertifikat' ? '#15803d' : '#334155',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      <span>🎓</span>
+                      <span>Sertifikat Magang</span>
                     </Link>
 
                     <Link

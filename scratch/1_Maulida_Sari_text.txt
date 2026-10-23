@@ -1,0 +1,551 @@
+=== FULL TEXT OF 1_Maulida_Sari (File: jurnall/02_BAB_II_TINJAUAN_PUSTAKA/2.1_Sistem_Informasi_Manajemen_Magang/2.1.1_Sistem_Informasi/asrianda,+7+Jurnal+Indah+Maulida+Sari+(new).pdf) ===
+Total Pages: 18
+
+==================== PAGE 1 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              110 
+ 
+ 
+SISTEM INFORMASI MAGANG BERBASIS WEBSITE PADA KANTOR 
+CABANG BPJS KETENAGAKERJAAN LHOKSEUMAWE 
+ 
+Indah Maulida Sari1 , Zalfie Ardian 2 , Ilham Sahputra3 , Veri Ilhadi4 
+Sistem Informasi Universitas Malikussaleh 
+Jl. Kampus Unimal Bukit Indah, Blang Pulo, Kec. Muara Satu, 
+Kabupaten Aceh Utara, Aceh, 24355 
+E-mail: indah.210180153@mhs.unimal.ac.id1 
+ 
+Abstrak 
+Sistem Informasi Magang Berbasis Website pada Kantor Cabang BPJS Ketenagakerjaan 
+Lhokseumawe bertujuan untuk meningkatkan efisiensi dan efektivitas proses pendaftaran serta 
+pengelolaan magang. Sistem ini memungkinkan calon peserta magang untuk mendaftar se cara 
+online, mengunggah dokumen -dokumen yang diperlukan, dan memantau status lamaran mereka 
+secara real -time. Hasil dari perancangan sistem ini menunjukkan peningkatan signifikan dalam 
+efisiensi operasional, transparansi dalam proses seleksi, dan peningkat an kualitas layanan kepada 
+calon peserta magang. Dengan adanya sistem ini, BPJS Ketenagakerjaan dapat memberikan 
+pelayanan yang lebih responsif dan profesional, sesuai dengan kebutuhan dan harapan pengguna. 
+Selain itu, sistem ini memungkinkan integrasi den gan database internal BPJS Ketenagakerjaan, 
+sehingga memudahkan pengambilan keputusan berbasis data dan pelaporan yang lebih akurat. Fitur 
+analisis data membantu mengidentifikasi tren dan kebutuhan pelatihan yang lebih spesifik, 
+meningkatkan pengembangan keterampilan peserta magang sesuai dengan kebutuhan industri.  
+Kata kunci :Sistem Informasi, website, BPJS Ketenagakerjaan, Efesiensi Proses, Mnajemen Data 
+ 
+Abstract 
+The Internship Information System based on a Website at the Branch Office of BPJS Ketenagakerjaan 
+Lhokseumawe aims to enhance  the efficiency and effectiveness of internship registration and management 
+processes. This system enables prospective interns to register online, upload necessary documents, and monitor 
+the status of their applications in real-time. The results of this system design demonstrate significant 
+improvements in operational efficiency, transparency in selection processes, and enhanced service quality for 
+prospective interns. With this system, BPJS Ketenagakerjaan can deliver more responsive and professional 
+services, meeting user needs and expectations. Furthermore, the system integrates with BPJS 
+Ketenagakerjaan's internal database, facilitating data-driven decision-making and accurate reporting. Data 
+analysis features aid in identifying trends and specific training needs, fostering the development of intern skills 
+aligned with industry requirements 
+Keywords : Internship Information System, Website, BPJS Ketenagakerjaan, Process Efficiency, Data 
+Management 
+ 
+
+==================== PAGE 2 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              111 
+ 
+ 
+1.  PENDAHULUAN 
+ Di Indonesia, berbagai industri telah tumbuh dan berkembang sesuai dengan kebutuhan 
+hidup masyarakat. Salah satunya adalah BPJS Ketenagakerjaan, sebuah Badan Usaha Milik Negara 
+yang bergerak di bidang pelayanan jaminan sosial tenaga kerja[1]BPJS Ketenagakerjaan Cabang 
+Lhokseumawe memiliki visi dan misi untuk meningkatkan pelayanan kepada peserta jaminan sosial, 
+dan terus berinovasi dalam upaya memberikan layanan yang lebih Dalam rangka meningkatkan 
+efisiensi dan kualitas layana n, BPJS Ketenagakerjaan Cabang Lhokseumawe berkolaborasi dengan 
+mahasiswa kerja praktek untuk merancang dan mengimplementasikan Sistem Informasi Magang 
+berbasis web. Sistem ini bertujuan untuk memberikan akses yang lebih mudah bagi mahasiswa dan 
+siswa dalam proses pendaftaran, seleksi, dan pengelolaan magang. Fasilitas yang disediakan oleh 
+sistem ini meliputi informasi lengkap mengenai program magang yang ditawarkan oleh BPJS, 
+pendaftaran online yang memudahkan mahasiswa dan siswa dalam mengajukan permohona n 
+magang, serta proses seleksi yang lebih sederhana dengan status persetujuan atau pending yang 
+dapat diakses langsung oleh peserta.Selain itu, sistem ini juga mengumumkan hasil seleksi magang, 
+mengatur penugasan mentor kepada peserta magang secara efisien,dan memudahkan mentor dalam 
+memberikan penilaian terhadap kinerja peserta magang. 
+Dengan adanya Sistem Informasi Magang ini, diharapkan pengelolaan program magang di 
+BPJS Ketenagakerjaan Cabang Lhokseumawe dapat ditingkatkan secara signifikan. Sistem ini tidak 
+hanya mempermudah proses administrasi, tetapi juga meningkatkan transparansi dan akuntabilitas 
+dalam pengelolaan program magang. 
+ 
+2.  TINJAUAN PUSTAKA 
+2.1  Pengertian Sistem  
+Sistem adalah sekelompok komponen dan elemen yang digabungkan menjadi satu untuk 
+mencapai tujuan tertentu. Sistem berasal dari bahasa Latin (systēma) dan bahasa Yunani (sustēma) 
+yang berarti kesatuan yang terdiri komponen atau elemen yang dihubungkan bersama untuk 
+memudahkan aliran informasi, materi atau energi untuk mencapai suatu tujuan (Luhur, 2019). Istilah 
+ini sering dipergunakan untuk menggambarkan suatu set entitas yang berinteraksi, di mana suatu 
+model matematika seringkali bisa dibuat. Pendapat lain juga menyebutkan bahwa sistem merupakan 
+interaksi antara perangkat lunak yang terdapat didalam sebuah komputer yang sering melakukan 
+pertukaran atau transaksi data sehingga menghasilkan pencapaian atau tujuan yang sama (Purwanto 
+and N. Yuanita, 2019) . informasi adalah kumpulan data yang diolah menjadi bentuk yang lebih 
+berguna dan lebih berarti bagi yang menerimanya (Wardani, 2023). Jadi informasi adalah kumpulan 
+data yang diolah menjadi bentuk yang lebih berguna dan lebih berarti bagi yang menerimanya  
+(Tukino, 2015). 
+
+==================== PAGE 3 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              112 
+ 
+ 
+2.2  Pengertian Informasi  
+Informasi merupakan beberapa data yang bersumber dari berbagai pihak yang diolah dalam 
+bentuk yang lebih berguna bagi penerimanya dan dapat membantu dalam pengambilan keputusan. 
+Data adalah bukti yang menjelaskan hasil tinjauan dari beberapa insiden. Pengol ahan data mentah 
+menghasilkan hasil berupa informasi (Ardian,  & Tombeng, 2020). 
+Informasi merupakan kumpulan data yang diolah menjadi bentuk yang lebih berguna dan 
+lebih berarti bagi yang menerima. Sistem informasi merupakan suatu sistem yang dibuat oleh 
+manusia yang terdiri dari komponen dalam organisasi untuk mencapai suatu tujuan y aitu 
+menyajikan informasi (Mulyani, 2016) . Informasi dikatakan sebagai hasil dari pengolahan data 
+kedalam bentuk yang lebih berguna lagi untuk penerimanya yang didalamnya menggambarkan 
+suatu kejadian -kejadian nyata dan mampu digunakan untuk alat bantu peng ambilan suatu 
+keputusan (Sihombing, 2016). 
+ 
+2.3     Pengertian Sistem Informasi 
+Sistem informasi merupakan kegiatan pengolahan data yang dapat di awali dengan 
+mengumpulkan informasi, memperosesnya, menganalisis informasi yang didapat, menyimpan 
+informasi, selanjutnya menyebarkan informasi yang telah di saring dari proses sebelumnya untuk 
+kemanjuan serta kepentingan suatu individu maupun organisasi. Sistem informasi juga diartikan 
+oleh Kristanto yaitu, suatu kesatuan dari beberapa perangkat yang didalamnya terdiri dari perangkat 
+keras, perangkat lunak komputer dan perangkat manusia sehingga nantinya data yang diperoleh 
+oleh perangkat-perangkat tersebut di olah menggunakan perangkat keras dan perangkat lunak [8]. 
+Sistem Informasi dapat definisikan bahwa suatu sistem dalam suatu organisasi yang menyatukan 
+kebutuhan pengolahan transaksi harian, mendukung operasi, bersifat manajerial dan kegiatan 
+strategi dari suatu organisasi dan menyediakan pihak luar tertentu dengan laporan -laporan yang 
+diperlukan. 
+ 
+2.4     Pengertian Website 
+Situs web, halaman web atau website adalah kumpulan informasi yang dikemas dalam bentuk 
+halaman-halaman website yang dihubungkan satu sama lain oleh domain atau URL. Misalnya, situs 
+web untuk nama domain domainsaya.com memiliki banyak halaman lain, termasuk home, about, 
+blog, dan halaman contact. Yang dapat diakses langsung dari halaman beranda. Tentu saja, 
+pengaksesan halaman web ini dengan menggunakan jaringan internet (Saepuloh, 2018) . Website 
+dapat diartikan sebagai suatu kumpulan -kumpulan halaman yang menampilkan berbagai macam 
+informasi teks,data, gambar diam maupun bergerak, data animasi, suara, video maupun gabungan 
+dari semuanya, baik itu yang bersifat statis maupun yang dinamis,  dimana membentuk satu 
+
+==================== PAGE 4 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              113 
+ 
+ 
+rangkaian bangunan yang saling berkaitan dimana masing - masing dihubungkan denganjaringan 
+halaman atau hyperlink (Siti et.all., 2021) 
+ 
+2.5     Pengertian Black-Box Testing 
+Black-Box Testing  merupakan Teknik pengujian perangkat lunak yang berfokus pada 
+spesifikasi fungsional dari perangkat lunak. Blackbox Testing bekerja dengan mengabaikan struktur 
+kontrol sehingga perhatiannya difokuskan pada informasi domain. Black-box Testing memungkinkan 
+pengembang software untuk membuat himpunan kondisi input yang akan melatih seluruh 
+syaratsyarat fungsional suatu program. 
+ 
+2.6     Tools Pemograman 
+Untuk mempermudah pengerjaan pembuatan website diperlukan proses coding, tentunya 
+diperlukan berbagai tools yang tepat.Dalam merancang dan mengembangkan sebuah Pemogram 
+atau istilahnya tools yaitu XAMPP, PhpMyAdmin, MySQL, dan Visual Studio Code 
+ 
+2.7     Tools Desain Aplikasi 
+Tools desain aplikasi mencakup berbagai perangkat dan teknik yang digunakan untuk 
+merancang, memodelkan, dan mendokumentasikan aplikasi perangkat lunak. Tools ini membantu 
+pengembang dan desainer dalam memahami kebutuhan sistem, merencanakan arsitektur, da n 
+memastikan bahwa produk akhir sesuai dengan spesifikasi dan kebutuhan pengguna. Salah satu 
+komponen penting dalam tools desain aplikasi adalah Unified Modeling Language (UML) 
+ 
+3.  PERANCANGAN SISTEM 
+Setelah melakukan analisis sistem yang sedang berjalan, kemudian dilakukan perancangan 
+yang dimana dapat didefinisikan sebagai gambaran, perancangan dan pembuatan sebuah pola 
+maupun sketsa dari beberapa elemen yang terpisah ke dalam suatu kesatuan yang utuh atau sering 
+disebut sebagai sebuah interface . Proses alur data sistem informasi tersebut menjelaskan dengan 
+menggunakan Use case Diagram , Activity Diagram dan Class Diagram. 
+ 
+3.1  Use case Diagram 
+Use case diagram  ini menggambarkan interaksi antara aktor dengan sistem dalam berbagai 
+skenario yang memungkinkan. Pada sistem informasi magang berbasis website ini, aktor utamanya 
+adalah peserta magang dan admin SDM. Use case diagram  ini akan membantu dalam memahami 
+kebutuhan fungsional dari sistem yang dirancang.  
+Berikut adalah use case diagram yang menggambarkan interaksi antara aktor dan sistem pada 
+sistem informasi magang berbasis website BPJS Kesehatan Kantor Cabang Lhokseumawe: 
+
+==================== PAGE 5 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              114 
+ 
+ 
+ 
+Gambar 1. Use Case Diagram 
+ 
+3.2  Activity Diagram 
+Activity Diagram digunakan untuk menggambarkan alur kerja atau aktivitas dalam sistem 
+informasi magang pada BPJS Ketenagakerjaan. Diagram ini menampilkan urutan aktivitas yang 
+dilakukan oleh sistem dan pengguna, serta bagaimana aktivitas tersebut saling berinteraksi. Berikut 
+ini adalah Activity Diagram yang akan digunakan 
+ 
+A.  Activity Diagram Lihat Data Profil 
+Berikut adalah activity diagram lihat data profile pada perancangan sistem informasi magang 
+berbasis website pada Kantor Cabang BPJS Ketenagakerjaan Lhokseumawe 
+ 
+Gambar 2. Activity Diagram Lihat Data Profil 
+
+
+==================== PAGE 6 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              115 
+ 
+ 
+ 
+B.  Activity Diagram Lamar Magang 
+Berikut adalah activity diagram lamar magang pada perancangan sistem informasi magang 
+berbasis website pada Kantor Cabang BPJS Ketenagakerjaan Lhokseumawe. 
+ 
+Gambar 3. Activity Diagram Lamar Magang 
+ 
+C.  Activity Diagram Status Lamaran 
+ 
+Gambar 4. Activity Diagram Status Lamaran 
+ 
+
+
+==================== PAGE 7 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              116 
+ 
+ 
+D.  Activity Diagram Kelola Lowongan 
+ 
+Gambar 5. Activity Diagram Kelola Lowongan 
+ 
+E.  Activity Diagram Konfirmasi Status Lamaran 
+Gambar 6. Activity Diagram Konfirmasi Status Lamaran 
+ 
+E.  Activity Diagram Lihat Data Pelamar 
+
+
+==================== PAGE 8 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              117 
+ 
+ 
+ 
+Gambar 7. Activity Diagram Lihat Data Pelamar 
+ 
+F.  Activity Diagram Kelola Pengguna 
+Gambar 8. Activity Diagram Kelola Pengguna 
+ 
+
+
+==================== PAGE 9 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              118 
+ 
+ 
+G.  Activity Diagram Kelola Berita 
+ 
+Gambar 9. Activity Diagram Kelola Berita 
+ 
+3.3  Class Diagram 
+Class diagram adalah diagram yang menggambarkan struktur sistem dalam hal 
+mendefinisikan kelas-kelas yang ada dalam sistem beserta atribut, metode dan hubungan antar 
+kelas yang ada. 
+Gambar 10. Class Diagram Sistem 
+ 
+4.  HASIL DAN PEMBAHASAN 
+Perancangan sebuah sistem memiliki langkah - langkah tertentu. Sistem informasi magang 
+berbasis website pada kantor cabang BPJS Ketenagakerjaan, dimulai dengan membuat perancangan 
+pada Use Case Diagram, Data Flow Diagram, ERD, dan tabel database yang akan digunakan. Berikut 
+
+
+==================== PAGE 10 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              119 
+ 
+ 
+tampilan dari perancangan Sistem Informasi Magang Berbasis Website Pada Kantor Cabang BPJS 
+Ketenagakerjaan Lhokseumawe. 
+ 
+4.1  Tampilan Halaman Utama Sistem 
+Gambar 11. Halaman Utama Sistem 
+ 
+Gambar diatas adalah tampilan dari halaman login. Pada halaman ini admin dan user akan 
+diarahkan untuk mengisi username dan password agar dapat masuk ke dalam sistem. 
+ 
+4.2  Tampilan Halaman Utama Admin 
+ 
+Gambar 12. Halaman Input Data 
+ 
+Gambar diatas adalah tampilan dari halaman utama. Halaman ini adalah halaman utama yang 
+diakses oleh admin ketika berhasil masuk ke dalam sistem 
+
+
+==================== PAGE 11 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              120 
+ 
+ 
+4.3 Tampilan Kelola Data Lowongan 
+Gambar 13. Halaman Kelola Data Pengguna 
+ 
+Gambar diatas adalah tampilan dari halaman kelola data lowongan. Halaman ini digunakan 
+oleh admin untuk mengelola data lowongan seperti tambah, edit dan hapus data pada database., 
+admin dapat dengan mudah melakukan berbagai fungsi manajemen. 
+ 
+4.4 Tampilan Konfirmasi Status Pelamar 
+Gambar 14. Halaman Konfirmasi Status Pelamar 
+ 
+Gambar diatas adalah tampilan dari halaman konfirmasi status pelamar. Halaman ini 
+digunakan oleh admin untuk mengkonfirmasi status pelamar magang apakah ditolak atau diterima. 
+ 
+4.5 Tampilan Lihat Data Pelamar 
+ 
+Gambar 15. Halaman Lihat Data Pelamar 
+
+
+==================== PAGE 12 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              121 
+ 
+ 
+Gambar diatas adalah tampilan dari halaman lihat data pelamar. Halaman ini digunakan oleh 
+admin untuk lihat data pelamar yang telah memasukkan lamaran ke dalam sistem. 
+ 
+4.6 Tampilan Lihat Data Pengguna 
+Gambar 16. Halaman Lihat Data Pengguna 
+ 
+Gambar diatas adalah tampilan dari halaman lihat data pengguna. Halaman ini digunakan 
+oleh admin untuk lihat data pengguna yang telah registrasi ke dalam sistem. 
+ 
+4.7 Tampilan Kelola Data Berita 
+Gambar 17. Halaman Kelola Data Berita 
+ 
+Gambar diatas adalah tampilan dari halaman kelola data berita. Halaman ini digunakan oleh 
+admin untuk mengelola data berita seperti tambah, edit dan hapus data pada database. 
+ 
+4.8 Tampilan Lihat Data Profil 
+
+
+==================== PAGE 13 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              122 
+ 
+ 
+Gambar 18. Halaman Lihat Data Profil 
+Gambar diatas merupakan halaman untuk melihat data profil pelamar. Pada halaman tersebut 
+pelamar dapat melihat data -data profile ketika telah mengisi form lowongan pada halaman lamar 
+magang. Halaman ini memungkinkan pelamar untuk memeriksa dan memastikan b ahwa semua 
+informasi yang telah mereka masukkan benar dan lengkap. 
+ 
+4.9 Tampilan Lowongan 
+Gambar 19. Halaman Lowongan 
+ 
+Gambar diatas merupakan halaman lowongan. Pada halaman tersebut user dapat 
+memasukkan data - data permohonan lowongan magang serta dapat mengisi form -form yang 
+tersedia ketika mengklik button lamar. 
+ 
+4.10 Tampilan Form Data Diri 
+Gambar 20. Halaman Form Data Diri 
+ 
+Pada halaman tersebut user dapat memasukkan data-data pribadi mereka seperti nama 
+lengkap, nomor KTP, alamat, tanggal lahir, jenis kelamin, dan informasi kontak lainnya. Selain itu, 
+user juga dapat mengunggah berkas-berkas yang diperlukan seperti foto, surat lamaran, CV, 
+transkrip nilai, surat rekomendasi, dan KTP. Semua informasi ini diisi melalui form-form yang 
+tersedia pada halaman tersebut ketika user mengklik button untuk mengisi data diri. 
+
+
+==================== PAGE 14 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              123 
+ 
+ 
+4.11 Halaman Status Lamaran 
+Gambar 21. Halaman Status Lamaran 
+ 
+Gambar diatas merupakan halaman status lamaran. Pada halaman tersebut user dapat melihat 
+riwayat dan status dari lamaran yang telah mereka ajukan. Informasi yang ditampilkan mencakup 
+nomor lamaran, nama lengkap, jenis kelamin, bidang pekerjaan, nama perusahaan, dan status 
+lamaran (seperti Pending, Diterima, atau Ditolak). Halaman ini memudahkan user untuk memonitor 
+perkembangan lamaran mereka dan memastikan bahwa mereka mendapatkan informasi terbaru 
+mengenai status aplikasi magang mereka. User dapat mengakses halaman ini melalui menu navigasi 
+di sebelah kiri. 
+ 
+4.11 Black Box Testing 
+Pengujian black box, juga dikenal sebagai pengujian berbasis fungsional, adalah metode 
+pengujian di mana penguji mengevaluasi perangkat lunak berdasarkan spesifikasi dan kebutuhan 
+fungsional tanpa memperhatikan struktur internal atau kode sumber sistem. Ha sil pengujian 
+Blackbox ditunjukkan pada tabel: 
+ 
+Gambar 22. Pengujian Pada Black Box 
+ 
+
+
+==================== PAGE 15 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              124 
+ 
+ 
+5.  KESIMPULAN DAN SARAN 
+5.1 Kesimpulan 
+ Berdasarkan hasil kerja praktik di Kantor Cabang BPJS Ketenagakerjaan Lhokseumawe 
+berupa pengembangan aplikasi Sistem Informasi Magang berbasis web, diperoleh beberapa 
+kesimpulan sebagai berikut. 
+1. Pengembangan aplikasi sistem informasi magang berbasis web di BPJS Ketenagakerjaan 
+berhasil dilaksanakan dengan baik 
+2. Aplikasi ini memenuhi kebutuhan BPJS Ketenagakerjaan dalam meningkatkan efektivitas 
+proses pendaftaran dan pengelolaan magang secara online. 
+3. Hasil pengujian sistem menunjukkan bahwa aplikasi ini mampu meningkatkan 
+aksesibilitas informasi, mempercepat proses seleksi dan persetujuan magang, serta 
+memperkuat hubungan antara BPJS, peserta magang, dan mentor. 
+4. Keseluruhan proses ini memberikan kontribusi signifikan dalam meningkatkan mutu 
+layanan informasi dan administrasi magang di BPJS Ketenagakerjaan 
+ 
+5.2 Saran 
+Berdasarkan sistem informasi yang dirancang dan dibangun, penulis memberikan beberapa 
+saran untuk meningkatkan proses pengembangan sistem: 
+1. BPJS Ketenagakerjaan perlu terus mengupdate konten dan informasi di aplikasi agar selalu 
+relevan dan up-to-date. 
+2. Pelatihan bagi staf yang mengelola aplikasi perlu dilakukan secara berkala untuk 
+memastikan mereka memahami semua fitur dan fungsionalitas yang ada. 
+3. BPJS ketengakerjaan mempertimbangkan untuk menambahkan fitur -fitur tambahan 
+seperti forum diskusi atau ruang tanya jawab untuk meningkatkan interaksi antara peserta 
+magang dan mentor. 
+ 
+  
+
+==================== PAGE 16 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              125 
+ 
+ 
+DAFTAR PUSTAKA 
+ 
+Luhur Sanitya Pambudi, “Pelaksanaan Program Jaminan Sosial Ketenagakerjaan Bagi Pekerja Bukan 
+Penerima Upah di Wilayah Kota Semarang Ditinjau Dari Permenaker nomor 1 Tahun 2016 ,” 
+Indonesian State Law Review, vol. 1, 2019. 
+H. Purwanto and N. Yuanita, “Penerapan Framework Cobit 5 Pada Tata Kelola Teknologi Informasi 
+Pt Pindad (Persero) (Studi Kasus : Domain Apo 11 & Apo 12),” 2019. 
+Ardian, Z., Santosa, P. I., & Sunarfrihantono, B. (2014). Analisis dan Evaluasi Kemampuan Sistem 
+Pendeteksian Teks Secara Real Time Berbasis Augmented Reality Pada Vuforia SDK Berbasis 
+Android. SEMNASTEKNOMEDIA ONLINE, 2(1), 1-10. 
+Ardian, Z., & Tombeng, M. T. (2020). Penerapan Teknologi Internet of Things sebagai Sistem 
+Monitoring pada Media Tanaman Menggunakan Cloud Terintegrasi dan Smartphone. Journal 
+Of Informatics And Computer Science, 6(1), 23-25. 
+Ardian, Z., & Rahmayani, S. (2021). Perancangan Dan Pengembangan Sistem Informasi Manajemen 
+Masjid Oman Al-Makmur Berbasis Web Dan Android. Journal Of Informatics And Computer 
+Science, 7(1), 1-9. 
+Armia, A., & Ardian, Z. (2021). Perancangan Augmented Reality Sebagai Media Promosi Gedung 
+Kampus Universitas Ubudiyah Indonesia. Journal Of Informatics And Computer Science, 7(1), 
+10-16 
+A. , & S. R. Wardani, “Perancangan Sistem Informasi Penjualan Suku Cadang Mobil Berbasis Web 
+(Studi Kasus : Kreasi Auto Parts),” .Ilmu Pengetahuan dan Teknologi Komputer, p. 142 -252, 
+2017. 
+
+==================== PAGE 17 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              126 
+ 
+ 
+Kraugusteeliana, K., Nasution, H. A., Triwahyono, B., Ikhwani, M., Ardian, Z., & Bintoro, A. (2023). 
+Aplikasi Pemilihan Lapangan Futsal Menggunakan Mobile -GIS dan GPS Dengan Metode 
+Algoritma Dijkstra. Jurnal Informasi Dan Teknologi, 5(4), 59 -66. 
+https://doi.org/10.60083/jidt.v5i4.417 
+M. Audrilia and A. Budiman, “Perancangan Sistem Informasi Manajemen Bengkel Berbasis Web 
+(Studi Kasus : Bengkel Anugrah),” Jurnal Madani : Ilmu Pengetahuan, Teknologi, dan 
+Humaniora, vol. 3, no. 1, pp. 1–12, Mar. 2020, doi: 10.33753/madani.v3i1.78. 
+T. Tukino, “Perancangan Sistem Informasi Pelaporan Gangguan Dan Restitusi Pelanggan Internet 
+Corporate Berbasis Web (Studi Kasus Di PT. Indosat Mega Media West Regional),” JURNAL 
+ILMIAH INFORMATIKA, vol. 6, no. 01, pp. 1–10, Mar. 2018, doi: 10.33884/jif.v6i01.324. 
+“Mulyani, Sri. 2016. Analsis dan Perancangan Sistem Informasi Manajemen Keuangan Daerah. Edisi 
+Kedua. Bandung: Abdi Sistematika”. 
+H. K. S. J. Sihombing, “ ‘ I N F O R M A T I K A Sistem Informasi Penjualan Game Pc Berbasis Web 
+Pada Toko Oe Games Menggunakan Php,’ ,” Jurnal Informatika, vol. 8, no. 2, 2016. 
+G. C. , R. Y. D. , N. X. B. N. , E. T. , S. U. , & M. J. K. B. Pinaria, “ Web Based E- Commerce Application 
+Buying and Selling Food Ingredients for Manado City., .,” Jurnal Teknik Informatika, , pp. 1 –
+8, 2021. 
+D. (2018). Saepuloh, . “Pembuatan Sistem Informasi Surat Perintah Perjalanan Dinas Pada Pusat Riset 
+Kelautan.,” Jurnal Pari, 3(2), 89. 
+T. Siti, M. Lestari, and S. M. Jaya, “ Perancangan Sistem Informasi Berbasis Web Melalui Whatsapp 
+Gateway Studi Kasus Sekolah Luar  Biasa -Bc  Nurani ,”  2021. [Online]. Available: 
+http://jurnal.unnur.ac.id/index.php/jurnalfiki 
+
+==================== PAGE 18 ====================
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330 
+ 
+ 
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024) 
+ 
+              127 
+ 
+ 
+Payana, M. D., Musliyana, Z., Ardian, Z., Wibawa, M. B., & TB, D. R. Y. (2023). Sistem Pendajadwalan 
+Dokter Dan Fasilitas Poli Pada Rumah Sakit Sultan Iskandar Muda Nagan Raya Berbasis 
+Android Menggunakan Flutter. Journal Of Informatics And Computer Science, 9(1), 27-33. 
+

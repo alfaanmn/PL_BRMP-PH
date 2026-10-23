@@ -15,10 +15,10 @@ import {
 } from '@/components/ui/admin-icons'
 
 const DEFAULT_OPTIONS: [SKMQuestionOption, SKMQuestionOption, SKMQuestionOption, SKMQuestionOption] = [
-  { skor: 1, label: 'Tidak Sesuai' },
-  { skor: 2, label: 'Kurang Sesuai' },
-  { skor: 3, label: 'Sesuai' },
-  { skor: 4, label: 'Sangat Sesuai' },
+  { skor: 1, label: 'Tidak Baik' },
+  { skor: 2, label: 'Kurang Baik' },
+  { skor: 3, label: 'Baik' },
+  { skor: 4, label: 'Sangat Baik' },
 ]
 
 export default function AdminSKMPertanyaanPage() {
@@ -43,7 +43,7 @@ export default function AdminSKMPertanyaanPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
   const [editingQuestion, setEditingQuestion] = useState<AdminSKMPertanyaanItem | null>(null)
-  const [selectedPresetId, setSelectedPresetId] = useState<string>('kesesuaian')
+  const [selectedPresetId, setSelectedPresetId] = useState<string>('kualitas_pelayanan')
   const [formData, setFormData] = useState({
     unsur: '',
     pertanyaan: '',

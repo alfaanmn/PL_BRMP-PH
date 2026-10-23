@@ -1,0 +1,361 @@
+=== FULL TEXT OF 4_Rian (File: jurnall/02_BAB_II_TINJAUAN_PUSTAKA/2.1_Sistem_Informasi_Manajemen_Magang/2.1.2_Pengelolaan_Pengajuan_Magang/ojs_thamrin,+Artikel+Hesti+Handa.pdf) ===
+Total Pages: 9
+
+==================== PAGE 1 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  734 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Perancangan Sistem Informasi Manajemen  
+Recruitment Magang Berbasis Web 
+ 
+Hesti Rian1), Handa Gustiawan2)*), Angga Setianto3) 
+1)3) Program Studi Manajemen Informatika, Politeknik LP3I Jakarta 
+2) Program Studi Sistem Informasi, Universitas Mohammad Husni Thamrin 
+*)Correspondence Author: handagustiawan@gmail.com, Jakarta, Indonesia 
+DOI: https://doi.org/10.37012/jtik.v9i2.1857  
+Abstrak 
+ 
+Proses rekrutmen magang adalah serangkaian langkah yang dilakukan oleh perusahaan untuk merekrut siswa, 
+mahasiswa atau fresh graduate yang ingin mendapatkan pengalaman kerja dalam bentuk magang. Pada saat 
+melaksanakan magang , mahasiswa dapat melihat serta mendapat arahan langsung dan mampu beradaptasi 
+dengan dunia kerja. Di lain pihak, bagi instansi / perusahaan dengan adanya program magang dapat memantau 
+kualitas kinerja yang dimiliki oleh calon SDM. Proses recruitment ini biasanya melibatkan posting daftar 
+pekerjaan, meninjau resume dan surat lamaran, melakukan wawancara, dan memilih kandidat yang paling 
+memenuhi syarat untuk mengisi posisi yang tersedia. Tujuan dari proses rekrutmen magang adalah untuk 
+mengidentifikasi kandidat yang memiliki keterampilan dan kualifikasi yang dibutuhkan untuk berhasil dalam 
+program magang. Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web diperlukan 
+untuk menyimpan berkas dan menyeleksi calon pelamar. Metode pengembangan system yang digunakan yaitu 
+metode waterfall. Metode waterfall terdiri dari tahapan analisis, perancangan, pengkodean, pengujian dan 
+implementasi. Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web ini akan 
+mempermudah dalam mengelola rekrutmen magang melalui sistem dan menghasilkan informasi sebagai acuan 
+dalam hal merekrut calon peserta magang. Dengan sistem informasi manajemen recruitment magang berbasis 
+web ini data tersimpan dengan baik, proses pemasukan lamaran dan seleksi calon peserta magang juga menjadi 
+lebih cepat dan mudah dengan program aplikasi online yang dibangun. 
+Kata Kunci : Sistem Informasi, Manajemen, Recruitment, Magang, Web 
+Abstract  
+The internship recruitment process is a series of steps taken by companies to recruit students, students or fresh 
+graduates who want to gain work experience in the form  of an internship. When carrying out an internship, 
+students can see and receive direct direction and are able to adapt to the world of work. On the other hand, 
+agencies/companies with an internship program can monitor the quality of performance of prospective human 
+resources. The recruitment process usually involves posting job listings, reviewing resumes and cover letters, 
+conducting interviews, and selecting the most qualified candidates to fill available positions. The goal of the 
+internship recruitment process is to identify candidates who have the skills and qualifications needed to be 
+successful in the internship program. Designing a Web -Based Internship Recruitment Management 
+Information System is needed to store files and select prospective applicants. The system development method 
+used is the waterfall method. The waterfall method consists of analysis, design, coding, testing and 
+implementation stages. Designing a Web-Based Internship Recruitment Management Information System will 
+make it easier to manage internship recruitment through the system and produce information as a reference in 
+recruiting prospective internship participants. With this web -based internship recruitment management 
+information system, data is stored properly, the process of sub mitting applications and selecting prospective 
+internship participants is also faster and easier with the online application program that has been built.  
+ 
+Keywords: Information Systems, Management, Recruitment, Internship, Web 
+ 
+ 
+
+==================== PAGE 2 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  735 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PENDAHULUAN  
+Undang-undang ketenagakerjaan No 6 tahun 2020, Pasal 1 Bab 1 (1) menjelaskan 
+bahwa pemagangan adalah bagian dari sistem pelatihan kerja yang diselenggarakan secara 
+terpadu anta ra pelatihan di lembaga pelatihan dengan bekerja secara langsung di bawah 
+bimbingan dan pengawasan instruktur atau pekerja yang berkompeten  dalam proses 
+produksi barang dan/atau jasa di perusahaan dalam rangka menguasai keterampilan atau 
+keahlian tertentu. Dalam proses program magang terdapat tahapan-tahapan mulai dari proses 
+informasi pembukaan program magang, posisi yang tersedia, jobdesk yang dibutuhkan serta 
+alur rekrutmen yang jelas. Rekrutmen magang adalah proses perekrutan individu untuk 
+program magang. Proses ini biasanya melibatkan posting daftar pekerjaan, meninjau resume 
+dan surat lamaran, melakukan wawancara, dan memilih kandidat yang paling memenuhi 
+syarat untuk mengisi posisi yang tersedia. Tujuan dari proses rekrutmen magang adalah 
+untuk men gidentifikasi kandidat yang memiliki keterampilan dan kualifikasi yang 
+dibutuhkan untuk berhasil dalam program magang. 
+METODE  
+Metode penelitian yang digunakan yaitu  metode waterfall, dengan tahapan sebagai 
+berikut: 
+1. Analisis, kegiatan menganalisa data yang didapatkan dari permasalahan perekrutan 
+magang. 
+2. Desain Sistem, kegiatan membuat desain sistem sesuai kebutuhan menggunakan UML. 
+3. Pengkodean, kegiatan pembangunan aplikasi program sesuai desain sistem yang sudah 
+dibuat. 
+4. Pengujian, kegiatan uji coba sistem aplikasi untuk melihat apakah sistem sudah dapat 
+berjalan dengan baik tanpa ada kesalahan. 
+5. Implementasi, kegiatan program aplikasi sudah dapat digunakan oleh user. 
+Analisis kebutuhan software dengan prosedur seperti: 
+Halaman HRD: 
+1. HRD dapat melakukan login 
+2. HRD dapat mengelola lowongan magang 
+
+==================== PAGE 3 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  736 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3. HRD dapat melakukan pengecekan registrasi pelamar 
+4. HRD dapat melakukan pengecekan data pelamar 
+5. HRD dapat melakukan persetujuan pelamar 
+6. HRD dapat memberikan informasi pengumuman 
+Halaman Pelamar: 
+1. Pelamar dapat melakukan login 
+2. Pelamar dapat melakukan registrasi 
+3. Pelamar dapat melihat informasi lowongan magang 
+4. Pelamar dapat memilih lowongan magang 
+5. Pelamar dapat melengkapi persyaratan lamaran 
+6. Pelamar dapat melihat informasi atau pengumuman 
+ 
+HASIL DAN PEMBAHASAN 
+Desain sistem usulan digambarkan menggunakan Use Case diagram di bawah ini:  
+ 
+Gambar 1. Use Case Diagram 
+
+
+==================== PAGE 4 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  737 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Pada Use case Diagram ini terdapat dua user yaitu HRD dengan beberapa use case 
+yang dapat diakses melalui login terlebih dahulu yaitu seperti mengelola lowongan magang, 
+pengecekan registrasi pelamar dan data pelamar, persetujuan pelamar dan memberikan 
+informasi pengumuman. User kedua yaitu Pelamar. Pelamar dapat mengakses beberapa use 
+case melalui login terlebih dahulu yaitu seperti registrasi, melihat dan memilih lowongan 
+magang, melengkapi persyaratan lamaran dan melihat informasi pengumuman. 
+       
+Gambar 2. Class Diagram 
+ 
+Class Diagram terdiri dari class lowongan magang, pelamar, registrasi, persyaratan 
+lamaran dan pengumuman. 
+
+
+==================== PAGE 5 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  738 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 3. Entity Relationship Diagram 
+ 
+Entity-entity dalam Entity Relationship Diagram  terdiri dari Pelamar dan 
+Lowongan yang dihubungkan dengan relasi Registrasi dengan cardinality rasio adalah many 
+to many. 
+ 
+ 
+Gambar 4. Perancangan User Interface Form Login 
+Gambar 4 menampilkan user interfa ce yang digunakan oleh user untuk melakukan 
+login ke sistem. 
+
+
+==================== PAGE 6 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  739 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 5. Perancangan User Interface Form Lowongan Magang 
+Perancangan User Interface  dibuat mulai dari login, form -form master sampai 
+dengan form pengumuman seleksi. 
+ 
+Tabel 1. Hasil Pengujian Black Box Testing Form Login 
+No. Fungsi Yang 
+Diuji 
+Kondisi Hasil Yang Diharapkan Hasil 
+Pengujian 
+Kesimpulan 
+1 Login Username dan 
+Password 
+kosong 
+Sistem menolak akses 
+login lalu menampilkan 
+pesan “silahkan isi 
+username/password” 
+Sesuai Valid 
+2 Login Username dan 
+Password benar 
+Sistem menerima akses 
+login lalu masuk ke 
+halaman dashboard 
+Sesuai Valid 
+3 Login Username salah Sistem menolak akses 
+login lalu menampilkan 
+pesan “Login tidak 
+valid” 
+Sesuai Valid 
+4 Login Username benar 
+dan password 
+salah 
+Sistem menolak akses 
+login lalu menampilkan 
+pesan “Password salah” 
+Sesuai Valid 
+ 
+Hasil pengujian dari form login dengan empat kondisi, kondisi pertama Username 
+dan Password kosong , kondisi kedua Username dan Password benar , kondisi ketiga 
+Username salah dan kondisi keempat Username benar dan password salah. 
+Kebutuhan Infrastruktur : 
+1. Sistem Operasi Windows 10 
+2. Kebutuhan Hardware 
+Laptop/Komputer dengan RAM 4 GB 
+
+
+==================== PAGE 7 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  740 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3. Kebutuhan Software 
+a. Text Editor   : Visual Studio Code 
+b. Web Browser : Google Chrome 
+c. Web server  : Xampp 
+d. Database  : Mysql 
+e. Program  : PHP versi 7.0 
+ 
+KESIMPULAN DAN REKOMENDASI 
+Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web ini 
+akan mempermudah dalam mengelola rekrutmen magang melalui sistem dan menghasilkan 
+informasi sebagai acuan dalam hal merekrut calon peserta magang. Dengan sistem informasi 
+manajemen recruitment magang berbasis web ini data tersimpan dengan baik, proses 
+pemasukan lamaran dan seleksi calon peserta magang jug a menjadi lebih cepat dan mudah 
+dengan program aplikasi online yang dibangun.  
+ 
+REFERENSI  
+ 
+Agustiani-UBSI, AD (2020). Perancangan Sistem Informasi E-Recruitment Karyawan Studi 
+Kasus PT. Wahana Kasih Mulia Kedungreja. SPEED-Sentra Penelitian Engineering 
+dan …, speed.web.id, http://speed.web.id/jurnal/index.php/speed/article/view/644 
+Agustina, E (2021). Pengembangan Sist em Informasi Recruitment Tenaga Kerja Sukarela 
+Pada Kantor Badan Kepegawaian Daerah Kabupaten Tulang Bawang. Jurnal Dunia 
+Bisnis, duniabisnis.org, http://duniabisnis.org/index.php/duniabisnis/article/view/8 
+Apriliyani, A, & Agung, AI (2023). Sistem Informasi Recruitment Karyawan Pada Human 
+Resouce Departement Berbasis Web Metode Analytic Hierarchy Process (AHP). … 
+Ilmiah Inovasi Teknologi Informasi , ejournal.unhasy.ac.id, 
+https://ejournal.unhasy.ac.id/index.php/inovate/article/view/4118 
+Arsanti, TA (2023). Analisis Sistem Teknologi Informasi Untuk Meningkatkan Proses E-
+Recruitment Berbasis Platform: A Literature Review. Prosiding Seminar Nasional 
+
+==================== PAGE 8 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  741 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+UNARS, unars.ac.id, 
+http://unars.ac.id/ojs/index.php/prosidingSDGs/article/view/3259 
+Febriyani, D, Ipnuwati, S, Aggraini, H, & ... ( 2022). Pengembangan Sistem Informasi E -
+Recruitment Untuk Seleksi Penerimaan Karyawan Baru Berbasis Web. Jurnal 
+Teknologi dan … , jurnal.umitra.ac.id, 
+https://jurnal.umitra.ac.id/index.php/JEDA/article/view/995 
+Gusmawati, I, Yandani, E, & ... (2020). … Decision System for Recruitment of New 
+Employees in the Department of Communication and Information of Dharmasraya 
+District Using the AHP Method: Sistem …. Journal of Vocational … , 
+ejournal.undhari.ac.id, http://ejournal.undhari.ac.id/index.php/jveit/article/view/50 
+Irsan, M, & Budiman, J (2018). Analisis SWOT pada disain prototype sistem informasi e -
+recruitment. Jutis (Jurnal Teknik  Informatika), ejournal.unis.ac.id, 
+http://ejournal.unis.ac.id/index.php/jutis/article/download/35/28 
+Isral, I, Sutarman, S, & Asih, ES (2019). Sistem Informasi E-Recruitment pada PT Gandum 
+Mas Kencana Tangerang. JURNAL SISFOTEK GLOBAL , core.ac.uk, 
+https://core.ac.uk/download/pdf/288089035.pdf 
+Letare, RS, Septiana, L, & Haryanti, TH (2022). Perancangan Sistem Informasi E -
+Recruitment Berbasis Website. … FOR EDUCATORS AND … , 101.255.92.196, 
+http://101.255.92.196/index.php/ITBI/article/view/1766 
+Nurmaesah, N, Tobing, FAT, & Andari, W (2019). Perancangan Sistem Informasi E -
+Recruitment Karyawan di PT Far East Conmix Indonesia. JURNAL SISFOTEK 
+GLOBAL, core.ac.uk, https://core.ac.uk/download/pdf/288089207.pdf 
+Rahayu, S, Azizah, N, & Ferly, R (2018). Implementasi Sistem Informasi Pada E -
+recruitment Calon Karyawan. Journal Sensi , core.ac.uk, 
+https://core.ac.uk/download/pdf/285996083.pdf 
+Sidik, A, Mariana, AR, & Anggr aeny, AR (2018). Perancangan Sistem Informasi E -
+Recruitment Guru Studi Kasus di SMK Kusuma Bangsa. Jurnal Sisfotek Global , 
+journal.global.ac.id, https://journal.global.ac.id/index.php/sisfotek/article/view/173 
+Supriyanta, ADA (2020). Perancangan Sistem Informasi E -Recruitment Karyawan Studi 
+Kasus PT. Wahana Kasih Mulia Kedungreja ., repository.bsi.ac.id, 
+
+==================== PAGE 9 ====================
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475 
+Volume 9 No 2; September 2023 
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  742 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+https://repository.bsi.ac.id/index.php/repo/viewitem/25695 
+Wahyudi, D, & Sobari, IA (2021). Rancangan Sistem Informasi E -Recruitment Berbasis 
+Web Pada Unit Pengelola Rumah Susun Tambora. Simpatik: Jurnal Sistem Informasi 
+dan …, jurnal.bsi.ac.id, http://jurnal.bsi.ac.id/index.php/simpatik/article/view/87 
+Yanto, ABH, Fauzi, A, & Jariyah, FA (2018). Sistem Informasi E-Recruitment Karyawan 
+Berbasis Web Pada Pt. Jasa Swadayautama (Jayatama). Jurnal Teknologi 
+Informatika dan Komputer, journal.thamrin.ac.id, 
+http://journal.thamrin.ac.id/index.php/jtik/article/download/254/204 
+ 
+

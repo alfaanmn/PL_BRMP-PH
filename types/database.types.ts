@@ -108,6 +108,47 @@ export type Database = {
           created_at?: string | null
         }
       }
+      sertifikats: {
+        Row: {
+          id: number
+          pengajuan_id: number
+          file_path: string
+          file_name: string
+          mime_type: string
+          file_size: number
+          uploaded_by: string | null
+          uploaded_at: string
+          notified_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          pengajuan_id: number
+          file_path: string
+          file_name: string
+          mime_type: string
+          file_size: number
+          uploaded_by?: string | null
+          uploaded_at?: string
+          notified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          pengajuan_id?: number
+          file_path?: string
+          file_name?: string
+          mime_type?: string
+          file_size?: number
+          uploaded_by?: string | null
+          uploaded_at?: string
+          notified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

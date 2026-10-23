@@ -59,6 +59,17 @@ export interface SKMPresetTemplate {
  */
 export const SKM_PRESET_TEMPLATES: SKMPresetTemplate[] = [
   {
+    id: 'kualitas_pelayanan',
+    name: 'Kualitas Pelayanan (IKM 2026)',
+    deskripsi: 'Standar IKM 2026: Tidak Baik, Kurang Baik, Baik, Sangat Baik',
+    options: [
+      { skor: 1, label: 'Tidak Baik' },
+      { skor: 2, label: 'Kurang Baik' },
+      { skor: 3, label: 'Baik' },
+      { skor: 4, label: 'Sangat Baik' },
+    ],
+  },
+  {
     id: 'kesesuaian',
     name: 'Kesesuaian (Sesuai)',
     deskripsi: 'Persyaratan, produk layanan, kesesuaian kebutuhan',

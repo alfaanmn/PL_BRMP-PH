@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Navbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 import { AppLogo } from '@/components/shared/app-logo'
 import type { AppRole } from '@/types/auth.types'
 import {
@@ -229,7 +230,7 @@ export default async function KontakPage() {
               </strong>
 
               <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
-                Kompleks Balai Standardisasi Instrumen Pascapanen Pertanian, Kementerian Pertanian RI
+                Jl. Salak Kel No.22, RT.03/RW.04, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128
               </p>
             </div>
 
@@ -528,7 +529,7 @@ export default async function KontakPage() {
                     margin: '0 0 1.25rem 0',
                   }}
                 >
-                  Kompleks Balai Standardisasi Instrumen Pascapanen Pertanian, Kementerian Pertanian RI.
+                  Jl. Salak Kel No.22, RT.03/RW.04, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128
                 </p>
 
                 <a
@@ -559,118 +560,8 @@ export default async function KontakPage() {
         </div>
       </main>
 
-      {/* 3. Footer Resmi */}
-      <footer
-        style={{
-          backgroundColor: '#064e3b',
-          color: '#d1fae5',
-          padding: '2.5rem 1.5rem 2rem 1.5rem',
-          marginTop: 'auto',
-          borderTop: '1px solid #047857',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1140px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '2rem',
-            marginBottom: '2rem',
-          }}
-        >
-          {/* Info Balai */}
-          <div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.625rem',
-                marginBottom: '0.75rem',
-              }}
-            >
-              <AppLogo size={32} />
-              <span
-                style={{
-                  fontSize: '16px',
-                  fontWeight: 800,
-                  color: '#ffffff',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                SIM-Magang BRMP
-              </span>
-            </div>
-            <p
-              style={{
-                fontSize: '12px',
-                color: '#a7f3d0',
-                lineHeight: 1.5,
-                margin: 0,
-              }}
-            >
-              Portal Sistem Informasi Manajemen Magang Badan Riset dan Manajemen Pertanian
-              Pengelola Hasil Kementerian Pertanian Republik Indonesia.
-            </p>
-          </div>
-
-          {/* Navigasi Cepat */}
-          <div>
-            <h4
-              style={{
-                fontSize: '12px',
-                fontWeight: 800,
-                color: '#ffffff',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                margin: '0 0 0.875rem 0',
-              }}
-            >
-              Navigasi
-            </h4>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                fontSize: '13px',
-              }}
-            >
-              <Link href={berandaUrl} style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Beranda Utama
-              </Link>
-              <Link href="/#bidang" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Bidang Magang
-              </Link>
-              <Link href="/kontak" style={{ color: '#ffffff', fontWeight: 600, textDecoration: 'none' }}>
-                Kontak &amp; Informasi
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div
-          style={{
-            maxWidth: '1140px',
-            margin: '0 auto',
-            paddingTop: '1.25rem',
-            borderTop: '1px solid #047857',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            fontSize: '12px',
-            color: '#6ee7b7',
-          }}
-        >
-          <div>
-            &copy; {new Date().getFullYear()} BRMP Pengelola Hasil Kementerian Pertanian RI. Hak
-            Cipta Dilindungi.
-          </div>
-        </div>
-      </footer>
+      {/* 3. Footer Global SIMPUL BRMP-PH */}
+      <Footer berandaUrl={berandaUrl} />
     </div>
   )
 }

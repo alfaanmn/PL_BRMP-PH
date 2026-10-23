@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { bidangService } from '@/lib/services/bidang.service'
 import { Navbar } from '@/components/layout/navbar'
 import { AppLogo } from '@/components/shared/app-logo'
+import { SKMReminderModal } from '@/components/pengguna/skm-reminder-modal'
 import type { AppRole } from '@/types/auth.types'
 
 export const dynamic = 'force-dynamic'
@@ -96,6 +97,36 @@ export default async function PenggunaDashboardPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(3)
+
+  // Cek apakah ada pengajuan berstatus 'Selesai' yang belum mengisi SKM
+  // Diurutkan ascending berdasarkan created_at agar menampilkan pop up untuk yang paling lama (tertua)
+  const { data: completedPengajuans } = await supabase
+    .from('pengajuans')
+    .select('id, public_id, status, created_at, bidangs(nama)')
+    .eq('user_id', user.id)
+    .eq('status', 'Selesai')
+    .order('created_at', { ascending: true })
+
+  let pendingSKMPengajuan: { id: number; public_id: string | null; bidang_nama: string } | null = null
+
+  if (completedPengajuans && completedPengajuans.length > 0) {
+    const completedIds = completedPengajuans.map((p) => p.id)
+    const { data: answeredRows } = await supabase
+      .from('skm_jawaban')
+      .select('pengajuan_id')
+      .in('pengajuan_id', completedIds)
+
+    const answeredSet = new Set((answeredRows || []).map((r) => r.pengajuan_id))
+    const oldestUnanswered = completedPengajuans.find((p) => !answeredSet.has(p.id))
+
+    if (oldestUnanswered) {
+      pendingSKMPengajuan = {
+        id: oldestUnanswered.id,
+        public_id: oldestUnanswered.public_id,
+        bidang_nama: (oldestUnanswered.bidangs as any)?.nama || 'Bidang Magang BRMP',
+      }
+    }
+  }
 
   // Ambil daftar bidang magang real-time dari Supabase
   const bidangResult = await bidangService.getPublicBidangs()
@@ -289,6 +320,11 @@ export default async function PenggunaDashboardPage() {
       {/* Header & Navbar Resmi BRMP Kementan */}
       <Navbar user={user} profile={profile} activeKey="beranda" />
 
+      {/* Pop Up Pengingat Survei Kepuasan Masyarakat (SKM) Otomatis */}
+      {pendingSKMPengajuan && (
+        <SKMReminderModal pengajuan={pendingSKMPengajuan} />
+      )}
+
       {/* 1. HERO SECTION FULL-BLEED DARK GREEN (Konsisten dengan Homepage) */}
       <section className="hero-section" style={{
         backgroundColor: '#064e3b',
@@ -329,7 +365,7 @@ export default async function PenggunaDashboardPage() {
                 letterSpacing: '-0.03em',
                 lineHeight: 1.15
               }}>
-                SIM (Sistem Informasi Magang)
+                SIMPUL BRMP-PH
               </div>
             </div>
 
@@ -511,7 +547,7 @@ export default async function PenggunaDashboardPage() {
               zIndex: 1
             }}>
               <Image
-                src="/g1_smooth.png"
+                src="/siswa.png"
                 alt="Peserta Magang BRMP Kementan"
                 width={684}
                 height={684}

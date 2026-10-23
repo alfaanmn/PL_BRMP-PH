@@ -9,6 +9,11 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+  // Kecualikan endpoint Cron API dari otentikasi session middleware
+  if (pathname.startsWith('/api/cron/')) {
+    return NextResponse.next()
+  }
+
   const isAuthPage =
     pathname === '/login' ||
     pathname === '/register' ||

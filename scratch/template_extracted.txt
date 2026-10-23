@@ -1,0 +1,514 @@
+--- PAGE 1 ---
+LAPORAN PRAKTIK LAPANG (CAPITAL BOLD 14) 
+JUDUL PRAKTIK LAPANG (CAPITAL BOLD 14) 
+(Studi Kasus: Tempat Instanasi) 
+ 
+ 
+ 
+ 
+ 
+Disusun Oleh: 
+Nama Mahasiswa 
+NPM 06511__________ 
+ 
+ 
+ 
+ 
+ 
+PROGRAM STUDI ILMU KOMPUTER 
+FAKULTAS MATEMATIKA DAN ILMU PENGETAHUAN ALAM 
+UNIVERSITAS PAKUAN 
+BOGOR 
+2023
+
+--- PAGE 2 ---
+HALAMAN PENGESAHAN 
+ 
+ 
+Judul : Sistem Pelayanan Surat Rekomendasi Berbasis Website 
+Nama : Ristina Eka Salsabila 
+NPM : 065119116 
+ 
+ 
+ Mengesahkan, 
+  
+Pembimbing II Pembimbing I 
+Divisi - Instansi Program Studi Ilmu Komputer 
+FMIPA - UNPAK 
+    
+    
+    
+    
+    
+ 
+Nama Pemb. Lapang. 
+ 
+Nama Dosen Pemb. 
+   
+  
+ Mengetahui,  
+Ketua Program Studi Ilmu Komputer 
+FMIPA - UNPAK 
+    
+    
+    
+    
+    
+  
+Arie Qur’ania, M.Kom.  
+  
+--- PAGE 3 ---
+HALAMAN PENGESAHAN 
+KONFIRMASI REVISI 
+ 
+ 
+Judul :  
+Nama :  
+NPM : 06511 
+ 
+ 
+ Mengesahkan,  
+Penguji II Penguji I 
+Program Studi Ilmu Komputer 
+FMIPA - UNPAK 
+Program Studi Ilmu Komputer 
+FMIPA - UNPAK 
+    
+    
+    
+    
+    
+ 
+Dosen Pembimbing. 
+ 
+Dosen Penguji. 
+  
+--- PAGE 4 ---
+KATA PENGANTAR 
+ 
+Puji syukur penulis panjatkan atas kehadirat Allah SWT yang telah memberikan 
+rahmat dan petunjuk, sehingga penulis dapat menyelesaikan Laporan Praktek Lapang 
+yang berujudul “Judul” dan sebagai suatu tanda bukti bahwa penulis telah 
+melaksanakan Praktek Lapang di Instansi….  
+Laporan ini tidak akan selesai tanpa dukungan dan doa dari orang tua dan 
+bimbingan dari berbagai pihak. Dan tidak lupa saya mengucapkan banyak terima 
+kasih kepada: 
+1. Yth 
+2. 2 
+3. 3 
+4. 4 
+5. Dst.. 
+Dalam mengisi laporan ini saya menyadari bahwa laporan ini masih jauh dari 
+kesempurnaan dan masih banyak kekurangan, oleh karenanya diharapkan kepada 
+pembaca untuk memberikan masukan -masukan berupa saran dan kritik yang bersifat 
+membangun demi kesempurnaan laporan ini.  
+Akhir kata saya ucapkan terima kasih kepada semua pihak yang telah berusaha 
+membantu dalam penyusunan laporan ini, dan penulis berharap laporan ini membantu 
+menambah pengetahuan dan pengalaman bagi para pembaca, sehingga kami dapat 
+memperbaiki bentuk maupun isi laporan ini sehingga kedepannya dapat lebih baik. 
+ 
+Bogor, tanggal 2023 
+ 
+ 
+Nama Mahasiswa 
+NPM 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 5 ---
+DAFTAR ISI 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 6 ---
+DAFTAR GAMBAR 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 7 ---
+DAFTAR TABEL 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 8 ---
+DAFTAR LAMPIRAN 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 9 ---
+BAB I 
+PENDAHULUAN 
+ 
+1.1 Latar Belakang 
+ 
+Terdiri dari minimal 4 Alinea yang terdiri dari Kondisi Instansi, Masalah yang 
+anda temukan pada Instansi tersebut, problem solving atau cara anda memecahkan 
+masalah dari kasus yang anda temukan  dan metode apa yang anda rencanakan dalam 
+melakukan pemecahan masalah tersebut. 
+ 
+1.2 Tujuan 
+ 
+Berisi tujuan dari Praktik Lapang anda (bukan judul dari Praktik Lapang). 
+ 
+1.3 Ruang Lingkup 
+ 
+Berisi cakupan yang anda kerjakan saat melaksanakan Praktik Lapang, mulai dari 
+lingkup sistem yang anda kerjakan dan lingkup divisi atau tempat anda melakukan 
+Praktik Lapang. 
+ 
+1.4 Manfaat 
+ 
+Terdiri dari 2 bagian, Manfaat bagi Mahasiswa dan bagi Instansi tempat anda 
+melakukan Praktik Lapang. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 10 ---
+BAB II 
+TINJAUAN PUSTAKA 
+ 
+2.1 Landasan Teori 
+2.1.1 Sub dari landasan teori 
+2.1.2 Dst. 
+2.2 Landasan Teori ke 2 
+2.3 Landasan Teori ke 3 
+2.4 Tinjauan Instansi 
+2.4.1 Sejarah Instansi/Visi Misi 
+2.4.2 Data/Struktural Instansi. 
+Struktur organisasi/pimpinan di Perusahaan/Instansi. 
+2.5 Lokasi Praktik Lapang 
+Lampirkan Google Maps sebagai titik lokasi yang disertakan keterangan. 
+2.6 Dokumentasi Praktik Lapang. 
+ 
+Gambar 1. Diskusi Praktik Lapang (Keterangan Gambar dibawah) 
+ 
+2.7 Penelitian Terdahulu 
+Tabel 1. Penelitian Terdahulu (Keterangan Tabel dikiri atas) 
+Penelitian 1 Penelitian 2 Penelitian 3 
+   
+   
+   
+ 
+ 
+
+--- PAGE 11 ---
+BAB III 
+METODE PENELITIAN 
+ 
+ 
+3.1 Metode Penelitian 
+Paparkan terkait apa yang menjadi metode, terkait penelitian yang anda 
+pakai/gunakan selama proses create/development system di instansi Praktik Lapang 
+anda. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 2. Model System Development Life Cycle 
+ 
+3.1.1 Requirement 
+3.1.2 Feasibility Study 
+3.1.3 Design/Analysis 
+3.1.4 Coding 
+3.1.5 Testing 
+3.1.6 Installation 
+3.1.6 Maintenance 
+ 
+3.2 Waktu dan Tempat Praktik Lapang 
+3.3 Alat dan Bahan Penelitian 
+3.3.1 Alat Penelitian 
+Software dan Hardware 
+Data Collection 
+Feasibility Study 
+Testing 
+Coding 
+Design 
+Maintenance 
+Implementation 
+True/Yes 
+False/No 
+--- PAGE 12 ---
+3.3.2 Bahan Penelitian 
+1. Data 
+2. Referensi 
+3. Dan lainnya yang menyangkut penelitian anda. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 13 ---
+BAB IV 
+PERANCANGAN DAN IMPLEMENTASI 
+ 
+ 
+4.1 Tahap dari metode penelitian yang anda gunakan. 
+4.2 Feasibility Study 
+4.3 dst.. 
+ 
+ 
+ 
+Gambar 3. Analisis Sistem Berjalan 
+ 
+ 
+ 
+Gambar 4. Analisis Sistem yang Dikembangkan 
+
+--- PAGE 14 ---
+4.4 Implementasi Sistem 
+ 
+Implementasi sistem dilakukan dengan pembuatan perintah-perintah (source code) 
+menggunakan Visual Studio Code. Implementasi sistem dapat dilihat pada gambar 5. 
+ 
+ 
+ 
+Gambar 5. Implementasi Sistem 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PAGE 15 ---
+BAB V 
+HASIL DAN PEMBAHASAN 
+ 
+ 
+5.1 Hasil 
+Tahap ini akan membahas mengenai hasil dari pengembangan Sistem Pelayanan 
+Surat Rekomendasi Berbasis Website. Sistem yang dibuat dapat diakses oleh siapapun 
+yang memiliki akun atau hal lainnya dari fungsi sistem anda. 
+ 
+5.2 Pembahasan 
+ 
+5.2.1 Tahap Uji Coba Struktural 
+5.2.2 Tahap Uji Coba Fungsional 
+5.2.3 Tahap Uji Coba Validasi 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 16 ---
+BAB VI 
+KESIMPULAN DAN SARAN 
+ 
+ 
+6.1 Kesimpulan 
+Kesimpulan dari sistem, metode dan hasil dari penelitian anda yang dapat 
+mewakili konsep dan hasil dari praktik lapang anda. 
+ 
+6.2 Saran 
+Saran/masukan anda untuk peneliti selanjutnya atau pembaca laporan anda 
+sehingga pembaca dapat melakukan imporvisasi terhadap sistem dan penelitian anda 
+kedepannya. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- PAGE 17 ---
+DAFTAR PUSTAKA 
+ 
+Almira Mayangky, N., BSI Bandung, A., & Studi Manajemen Informatika, P. (2018). 
+Perancangan Sistem Informasi Sentra Pelayanan Kepolisian Terpadu pada Polsek 
+Citeureup Cimahi. In Jurnal SISFOKOM (V ol. 07). 
+Dara, D. H. L., & Liza fitria. (2021). Sistem Informasi Pengelolaan Arsip Surat Berbasis 
+Web di Kantor Badan Pertanahan Nasional Kota Langsa. J-ICOM - Jurnal 
+Informatika Dan Teknologi Komputer , 2(2), 62 –69. https://doi.org/10.33059/j -
+icom.v2i2.3795 
+Fathoni, W. N., & Maryam, M. (2021). Rancang Bangun Sistem Informasi Pelayanan Surat 
+Keterangan Berbasis Web (Studi Kasus : Desa Dawungan Kecamatan Masaran 
+Kabupaten Sragen ). Jurnal Pendidikan Dan Teknologi Indonesia , 1(5). 
+https://doi.org/10.52436/1.jpti.38 
+ 
+Minimal 15 Daftar Pustaka 
+ 
+HALAMAN LAMPIRAN 
+Merupakan lampiran surat menyurat, desain, absensi dll terkait Praktik Lapang anda. 

@@ -152,7 +152,7 @@ export function UserDetailModal({
               Detail Informasi Pengguna
             </h2>
             <p style={{ margin: '0.2rem 0 0 0', fontSize: '12px', color: '#64748b' }}>
-              Profil akun dan rekam jejak pengajuan magang di SIM-Magang
+              Profil akun dan rekam jejak pengajuan magang di SIMPUL BRMP-PH
             </p>
           </div>
           <button

@@ -1,0 +1,838 @@
+=== FULL TEXT OF 2_Gumelta (File: jurnall/02_BAB_II_TINJAUAN_PUSTAKA/2.1_Sistem_Informasi_Manajemen_Magang/2.1.2_Pengelolaan_Pengajuan_Magang/admin,+Riyang+Gumelta+OK.pdf) ===
+Total Pages: 9
+
+==================== PAGE 1 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4157 
+ 
+SISTEM INFORMASI PENERIMAAN PESERTA MAGANG BERBASIS 
+WEB MENGGUNAKAN LARAVEL DI PT SEMEN PADANG  
+Riyang Gumelta1, Diana Rahayu2, Yulia Jihan Sy3,  
+Muhammad Ibrahim Nasution4 
+Politeknik Negeri Padang 
+e-mail: 1riyang@pnp.ac.id, 2dianarahayu130102@gmail.com, 3Yulia@pnp.ac.id, 
+4udabaimnst90@gmail.com 
+ 
+ 
+Abstract: The internship recruitment process at PT Semen Padang was previously 
+conducted manually, leading to issues such as data duplication, delays in selection, and 
+limited information transparency. This study aims to design and implement a web -based 
+information system to digitalize the entire internship registration and selection process. 
+The system was developed using the Laravel framework and MySQL database, adopting 
+the waterfall development method consisting of requirements analysis, system design 
+(using Figma and Draw.io), implementation, and black -box testing. The results show that 
+the system effectively improves the registration process, expedites document verificat ion, 
+and provides real -time selection status updates for applicants. Key features include 
+online registration, document upload, status monitoring, admin verification, and 
+automated report generation. Based on the testing results, all features function as 
+intended without significant issues. In conclusion, the system contributes to enhanced 
+data accuracy, operational efficiency, and transparency in the internship admission 
+process. The system also has potential for future enhancements, such as automated 
+notifications and academic system integration. 
+ 
+Keywords: Information system, internship, Laravel, MySQL, waterfall, digitalization, 
+transparency, efficiency 
+ 
+Abstrak: Proses penerimaan peserta magang di PT Semen Padang sebelumnya dilakukan 
+secara manual, yang menimbulkan berbagai kendala seperti duplikasi data, keterlambatan 
+proses seleksi, dan minimnya transparansi informasi. Penelitian ini bertujuan untuk 
+merancang dan mengimplementasikan sistem informasi berbasis web untuk 
+mendigitalisasi proses seleksi mag ang secara menyeluruh. Sistem dikembangkan 
+menggunakan framework Laravel dan database MySQL, dengan pendekatan metode 
+pengembangan waterfall yang terdiri atas tahapan analisis kebutuhan, perancangan sistem 
+(menggunakan Figma dan Draw.io), implementasi, ser ta pengujian menggunakan metode 
+black-box. Hasil penelitian menunjukkan bahwa sistem mampu meningkatkan efisiensi 
+proses pendaftaran, mempercepat verifikasi dokumen oleh admin, serta memberikan 
+akses informasi seleksi secara real -time kepada peserta. Fitur  utama sistem meliputi 
+pendaftaran online, unggah dokumen persyaratan, pemantauan status seleksi, verifikasi 
+data oleh admin, dan cetak laporan otomatis. Berdasarkan hasil pengujian, seluruh fitur 
+berfungsi sesuai kebutuhan tanpa ditemukan kendala signifik an. Kesimpulannya, sistem 
+ini berkontribusi dalam meningkatkan akurasi data, efisiensi operasional, dan transparansi 
+proses penerimaan peserta magang. Sistem ini juga memiliki potensi untuk 
+dikembangkan lebih lanjut dengan penambahan notifikasi otomatis da n integrasi sistem 
+akademik kampus. 
+ 
+Kata kunci:  Sistem informasi, magang, Laravel, MySQL, waterfall, digitalisasi, 
+transparansi, efisiensi. 
+ 
+
+==================== PAGE 2 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4158 
+ 
+ 
+ 
+PENDAHULUAN 
+ 
+Transformasi digital dalam dunia 
+industri telah mendorong berbagai 
+organisasi untuk mengadopsi sis tem 
+informasi guna menunjang operasional 
+dan pelayanan internal, termasuk dalam 
+proses rekrutmen peserta magang. 
+Program magang kini menjadi bagian 
+penting dalam pengembangan kompetensi 
+mahasiswa maupun lulusan baru, sebagai 
+jembatan antara teori di bangku  kuliah 
+dan praktik kerja nyata. Di PT Semen 
+Padang, proses penerimaan peserta 
+magang selama ini masih bersifat manual, 
+mulai dari pengumpulan berkas fisik 
+hingga seleksi administratif yang belum 
+terintegrasi dalam sistem digital. Kondisi 
+ini menimbulkan k endala signifikan 
+seperti keterlambatan proses, redundansi 
+data, serta kurangnya transparansi 
+informasi kepada peserta magang. 
+Dalam beberapa studi, sistem 
+informasi berbasis web terbukti 
+meningkatkan efisiensi dan akurasi dalam 
+pengelolaan data administra tif. Penelitian 
+Rahmadani dan Kusuma (2021) 
+menunjukkan bahwa sistem online 
+mempercepat proses verifikasi dan 
+menyederhanakan alur kerja pendaftaran 
+siswa baru [1]. Rahayu dan Arief (2020) 
+menyarankan Laravel sebagai framework 
+pengembangan sistem informasi  karena 
+strukturnya yang modular dan ramah 
+pengembang [2]. Di sisi lain, metode 
+waterfall masih menjadi pendekatan 
+umum dalam pengembangan perangkat 
+lunak berskala kecil -menengah seperti 
+ditunjukkan dalam studi Sari dan 
+Hendrawan (2019) [3]. 
+Studi lain men ekankan pentingnya 
+digitalisasi di institusi pendidikan dan 
+lembaga pelatihan. Pratiwi (2021) 
+membahas keberhasilan sistem berbasis 
+web dalam mengelola administrasi siswa 
+praktik kerja industri secara efisien [4]. 
+Sedangkan Utami dan Hidayat (2020) 
+menemukan bahwa sistem e -rekrutmen 
+berbasis PHP dan MySQL dapat 
+mengefektifkan pengelolaan data pelamar 
+kerja secara real -time [5]. Sementara itu, 
+Wicaksono dan Supriyanto (2020) 
+membuktikan bahwa integrasi cetak 
+laporan otomatis dalam sistem dapat 
+meningkatkan d okumentasi dan 
+akuntabilitas proses seleksi [6]. 
+Dalam konteks lembaga pelatihan 
+di sektor industri, Sutanto (2020) 
+menunjukkan bahwa pengelolaan data 
+peserta pelatihan yang terdigitalisasi 
+mampu menekan kesalahan input dan 
+meningkatkan kecepatan pencarian  data 
+[7]. Fitriyani dan Santosa (2019) juga 
+menyebutkan bahwa penggunaan sistem 
+digital dapat meningkatkan akuntabilitas 
+dan efisiensi dalam sistem informasi 
+kepegawaian [8]. Sistem berbasis web 
+juga mendukung fleksibilitas akses, 
+sebagaimana diungkapkan oleh 
+Nurhidayat (2020), yang menyatakan 
+bahwa akses multi -platform menjadi 
+keunggulan penting dalam sistem 
+manajemen pendidikan modern [9]. 
+Terakhir, studi dari Lestari dan Suryani 
+(2021) menyoroti potensi integrasi sistem 
+informasi dengan fitur notifikasi  dan 
+validasi otomatis untuk meningkatkan 
+pelayanan pengguna [10]. 
+Berdasarkan latar belakang dan 
+studi-studi tersebut, penelitian ini 
+bertujuan untuk merancang dan 
+membangun sistem informasi penerimaan 
+peserta magang berbasis web 
+menggunakan framework Lar avel dan 
+database MySQL. Sistem ini dirancang 
+untuk memungkinkan calon peserta 
+mendaftar secara daring, mengunggah 
+dokumen persyaratan, memantau status 
+seleksi secara real -time, serta 
+memudahkan pihak HRD atau Pusdiklat 
+dalam memverifikasi dan mencetak 
+laporan. Sistem juga diharapkan dapat 
+meningkatkan akurasi data, mempercepat 
+proses rekrutmen, serta menciptakan 
+transparansi yang lebih baik antara 
+peserta dan penyelenggara magang. 
+Penelitian ini disusun dalam bentuk 
+artikel ilmiah dengan judul "Sistem 
+Informasi Penerimaan Peserta Magang 
+
+==================== PAGE 3 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4159 
+ 
+Berbasis Web Menggunakan Laravel di 
+PT Semen Padang." 
+ 
+ 
+METODE 
+ 
+Penelitian ini menggunakan metode 
+pengembangan sistem dengan model 
+waterfall, yang terdiri dari tahapan -
+tahapan berurutan dan sistematis. Model 
+ini dipilih kare na sesuai dengan 
+kebutuhan sistem yang bersifat terstruktur 
+dan memiliki alur kerja yang jelas, mulai 
+dari perencanaan hingga tahap evaluasi 
+akhir. Tahapan dalam model ini meliputi 
+analisis kebutuhan, perancangan sistem, 
+implementasi, dan pengujian. 
+Pada t ahap analisis kebutuhan, 
+dilakukan observasi langsung terhadap 
+proses penerimaan peserta magang di PT 
+Semen Padang serta wawancara dengan 
+pihak Pusat Pendidikan dan Pelatihan 
+(Pusdiklat). Tujuannya adalah untuk 
+mengidentifikasi masalah utama dari 
+sistem ma nual, seperti penumpukan 
+berkas fisik, kesulitan dalam pelacakan 
+status pendaftaran, serta potensi 
+terjadinya redundansi data. Hasil analisis 
+ini menjadi dasar dalam merumuskan 
+kebutuhan fungsional dan non -fungsional 
+sistem. 
+Tahap berikutnya adalah 
+perancangan sistem, yang mencakup 
+perancangan antarmuka pengguna (user 
+interface), perancangan basis data, dan 
+diagram alur sistem. Alat bantu yang 
+digunakan dalam tahap ini antara lain 
+Figma untuk mendesain tampilan 
+halaman serta Draw.io untuk membuat 
+diagram alir, seperti diagram konteks dan 
+diagram use case. Desain sistem berfokus 
+pada kemudahan penggunaan bagi peserta 
+magang dan efisiensi akses data oleh 
+admin. 
+Implementasi sistem dilakukan 
+menggunakan bahasa pemrograman PHP 
+dengan framework Laravel karena 
+fleksibilitasnya dalam mengelola struktur 
+MVC (Model -View-Controller) serta 
+kemudahan integrasi dengan basis data. 
+Database yang digunakan adalah MySQL 
+karena sifatnya yang open -source dan 
+stabil dalam mengelola data skala 
+menengah. Sistem dikembangkan dalam 
+lingkungan lokal menggunakan XAMPP 
+sebagai web server simulator. 
+Setelah implementasi, dilakukan 
+tahap pengujian menggunakan metode 
+black-box testing yang bertujuan untuk 
+menguji fungsi-fungsi utama sistem tanpa 
+melihat kode program secara langsung. 
+Pengujian ini mencakup fitur login, 
+registrasi peserta, unggah dokumen, 
+validasi data oleh admin, dan cetak 
+laporan. Semua fitur diuji berdasarkan 
+input yang diberikan dan output yang 
+dihasilkan apakah sudah sesuai dengan 
+spesifikasi awal. 
+Perangkat keras yang d igunakan 
+dalam pengembangan sistem meliputi 
+laptop dengan prosesor Intel Core i5, 
+RAM 8 GB, serta penyimpanan minimal 
+256 GB SSD. Perangkat lunak pendukung 
+yang digunakan antara lain Windows 10, 
+browser Google Chrome, Visual Studio 
+Code, dan aplikasi datab ase management 
+seperti phpMyAdmin. 
+Pendekatan ini diharapkan 
+menghasilkan sistem yang tidak hanya 
+fungsional, tetapi juga mampu diterapkan 
+secara langsung dan mudah digunakan 
+oleh stakeholder yang terlibat [1], [2]. 
+ 
+HASIL DAN PEMBAHASAN 
+ 
+Sistem informasi penerimaan 
+peserta magang berbasis web yang 
+dikembangkan dalam penelitian ini 
+merupakan solusi digital untuk 
+meningkatkan efisiensi dan transparansi 
+proses administrasi di PT Semen Padang. 
+Sistem ini dirancang menggunakan 
+framework Laravel dan database MyS QL, 
+dengan tampilan berbasis web yang 
+responsif dan mudah diakses oleh calon 
+peserta maupun pihak administrator. 
+Struktur sistem dirancang dengan 
+pendekatan fungsional yang jelas, 
+sebagaimana tergambar dalam diagram 
+use case. Terdapat dua aktor utama dalam  
+sistem ini, yaitu administrator dan peserta 
+magang. Administrator bertugas 
+mengelola data pendaftaran, 
+memverifikasi dokumen, dan mencetak 
+
+==================== PAGE 4 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4160 
+ 
+laporan. Sementara peserta magang 
+memiliki akses untuk mendaftar, 
+mengunggah dokumen, dan memantau 
+status pendaftara n secara real -time. Alur 
+interaksi antar aktor dan fungsionalitas 
+sistem dirangkum pada Gambar 1. 
+ 
+Gambar 1. Diagram Use Case Sistem 
+Penerimaan Peserta Magang 
+Selanjutnya, untuk menggambarkan 
+jalannya proses pendaftaran, digunakan 
+diagram alur proses (flo wchart) yang 
+menjelaskan tahapan -tahapan mulai dari 
+akses awal, pengisian formulir, unggah 
+dokumen, validasi oleh admin, hingga 
+cetak laporan hasil seleksi. Visualisasi 
+alur ini membantu dalam memahami 
+logika sistem dan skenario operasional di 
+lapangan. 
+Tabel 1. Deskripsi Aktor 
+No Aktor Deskripsi 
+1 Admin Admin memiliki 
+wewenang dalam 
+mengelola (melihat, 
+mengedit, menghapus) 
+data user, data lowongan 
+magang, dan mencetak 
+dokumen. 
+2 Peserta Peserta dapat mengisi 
+form pengajuan dan 
+mencetak bukti 
+pendaftaran atau hasil 
+seleksi. 
+ 
+ 
+ 
+ 
+Tabel 2. Deskripsi Use Case Admin 
+No Use Case Deskripsi 
+1 Login 
+Admin 
+Login ke sistem 
+dengan memasukkan 
+email dan password. 
+2 Kelola 
+Tanggapan 
+Pengajuan 
+Admin dapat 
+mengelola tanggapan 
+pengajuan magang 
+yang merupakan 
+hasil seleksi 
+penerimaan peserta 
+magang. 
+3 Kelola 
+Data User 
+Admin dapat 
+mengelola data user 
+(peserta magang) 
+meliputi menambah, 
+mengubah, dan 
+menghapus data. 
+4 Kelola 
+Lowongan 
+Magang 
+Admin dapat 
+mengelola data 
+lowongan magang 
+meliputi menambah, 
+mengubah, dan 
+menghapus data 
+lowongan magang. 
+5 Cetak 
+Laporan 
+Magang 
+Admin dapat 
+mencetak data-data 
+peserta yang telah 
+mengajukan magang 
+di PT. Semen Padang 
+dalam bentuk 
+dokumen laporan. 
+Tabel 3. Deskripsi Use Case Peserta 
+No Use Case Deskripsi 
+1 Login Peserta login ke 
+sistem dengan 
+memasukkan email 
+dan password. 
+2 Pengisian 
+Form 
+Pengajuan 
+Peserta mengisi 
+form pengajuan 
+yang berisi data 
+pribadi peserta. 
+3 Cetak 
+Tanggapan 
+Pengajuan 
+Peserta dapat 
+mencetak 
+tanggapan dari 
+perusahaan yang 
+merupakan hasil 
+seleksi atau bukti 
+pendaftaran dari 
+proses pengajuan 
+magang. 
+
+==================== PAGE 5 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4161 
+ 
+Antarmuka pengguna dirancang 
+sederhana namun intuitif, menggunakan 
+komponen desain yang memudahkan 
+navigasi dan interaksi. Pada halaman 
+utama, pengguna dapat mengakses menu 
+pendaftaran, membaca informasi seleksi, 
+dan mengisi formulir online. Proses 
+unggah dokumen dilakukan melalui form 
+terstruktur, dan peserta akan mendapatkan 
+informasi status seleksi secara otomatis. 
+Hal ini membuat peserta tidak perlu lagi 
+menghubungi admin secara manual, 
+karena status dapat dimonito r langsung 
+pada dashboard pengguna. 
+ 
+Gambar 2. Tampilan Halaman 
+Pendaftaran Peserta Magang 
+Di sisi admin, dashboard yang 
+tersedia menyajikan data pendaftar dalam 
+format tabel yang dapat difilter 
+berdasarkan status, tanggal, atau nama. 
+Admin juga memiliki  hak akses untuk 
+memverifikasi data peserta, mengubah 
+status seleksi, serta mencetak data peserta 
+dalam format PDF. Tampilan dashboard 
+ini didesain untuk memudahkan 
+pengambilan keputusan dan dokumentasi 
+kegiatan magang. 
+ 
+ 
+ 
+ 
+ 
+Gambar 3. Tampilan Dashboard 
+Admin untuk Verifikasi Data Peserta 
+Magang 
+Salah satu fitur penting yang 
+dikembangkan adalah kemampuan 
+mencetak laporan pendaftaran secara 
+otomatis. Fitur ini memungkinkan admin 
+menghasilkan dokumen dalam format 
+PDF untuk disimpan atau dikirimkan ke 
+unit terkait. Hal ini mengurangi 
+
+==================== PAGE 6 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4162 
+ 
+kebutuhan dokumen fisik serta 
+meminimalisir risiko kehilangan arsip. 
+ 
+Gambar 4. Tampilan Fitur Cetak 
+Laporan Peserta Magang 
+Setelah implementasi sistem selesai 
+dilakukan, proses pengujian dilakukan 
+menggunakan metode black -box testing 
+yang berfokus pada pengujian fungsional 
+sistem berdasarkan masukan dan 
+keluaran. Pengujian dilakukan terhadap 
+fitur-fitur utama, mulai dari login 
+hingga proses cetak laporan. Hasil 
+pengujian dirangkum dalam Tabel 4 
+berikut. 
+Tabel 4. Hasil Pengujian Sistem Menggunakan Metode Black-Box 
+No Fitur / 
+Halaman 
+Deskripsi 
+Pengujian 
+Hasil Pengujian Status 
+1 Halaman 
+Register 
+User mengakses 
+halaman register 
+Tampil halaman Register Sesuai 
+2 Proses 
+Register 
+User memasukkan 
+data pribadi 
+1. Register berhasil jika data valid. 
+2. Gagal jika data ganda atau NIM 
+sama. 
+Sesuai 
+3 Halaman 
+Login 
+User mengakses 
+halaman login 
+Tampil halaman login Sesuai 
+4 Proses 
+Login 
+User memasukkan 
+username dan 
+password 
+1. Admin ke dashboard admin. 2. 
+Peserta ke dashboard peserta. 3. 
+Salah password tetap di halaman 
+login. 
+Sesuai 
+5 Halaman 
+Data 
+Pengajuan 
+Admin memilih 
+menu Pengajuan 
+Magang 
+1. Menu dapat diakses. 2. List data 
+muncul. 
+Sesuai 
+6 Halaman 
+Detail 
+Pengajuan 
+Admin memilih 
+tombol detail pada 
+tabel Pengajuan 
+Admin berhasil melihat detail 
+pengajuan. 
+Sesuai 
+7 Halaman 
+Tanggapan 
+Pengajuan 
+Admin menekan 
+tombol Berikan 
+Tanggapan 
+1. Akses berhasil. 2. Admin 
+memberikan keterangan. 
+Sesuai 
+8 Halaman 
+Data User 
+Admin memilih 
+menu User 
+1. Menu dapat diakses. 2. List data 
+user tampil. 
+Sesuai 
+9 Hapus 
+Data User 
+Admin menekan 
+tombol hapus pada 
+data user 
+Data user berhasil dihapus. Sesuai 
+10 Halaman 
+Peserta 
+Admin memilih 
+menu Peserta dan 
+dropdown Unit 
+1. Menu dapat diakses. 2. 
+Dropdown Unit tampil. 3. List 
+peserta tampil. 
+Sesuai 
+11 Tambah 
+Data 
+Peserta 
+Admin menekan 
+tombol Tambah 
+Data Peserta 
+1. Form input muncul. 2. Data 
+peserta ditambahkan. 
+Sesuai 
+12 Edit Data 
+Peserta 
+Admin menekan 
+tombol Edit 
+1. Form edit muncul. 2. Data 
+peserta diperbarui. 
+Sesuai 
+13 Hapus 
+Data 
+Peserta 
+Admin menekan 
+tombol Hapus pada 
+data peserta 
+Data peserta berhasil dihapus. Sesuai 
+14 Halaman 
+Lowongan 
+Magang 
+Admin memilih 
+menu Lowongan 
+Magang 
+1. Menu dapat diakses. 2. List 
+lowongan tampil. 
+Sesuai 
+
+==================== PAGE 7 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4163 
+ 
+15 Tambah 
+Lowongan 
+Magang 
+Admin menekan 
+tombol Tambah 
+Lowongan 
+1. Form input muncul. 2. Data 
+lowongan ditambahkan. 
+Sesuai 
+16 Edit Data 
+Lowongan 
+Admin menekan 
+tombol Edit pada 
+data lowongan 
+1. Form edit muncul. 2. Data 
+lowongan diperbarui. 
+Sesuai 
+17 Hapus 
+Lowongan 
+Magang 
+Admin menekan 
+tombol Hapus pada 
+data lowongan 
+Data lowongan berhasil dihapus. Sesuai 
+18 Halaman 
+Laporan 
+Magang 
+Admin memilih 
+menu Laporan 
+Magang 
+1. Menu dapat diakses. 2. List data 
+peserta magang muncul. 
+Sesuai 
+19 Cetak 
+Laporan 
+Magang 
+Admin menekan 
+tombol Cetak pada 
+Halaman Laporan 
+Laporan magang berhasil dicetak. Sesuai 
+20 Halaman 
+Form 
+Pengajuan 
+Peserta mengakses 
+dan mengisi form 
+pengajuan 
+1. Form muncul. 2. Data pengajuan 
+berhasil dikirim. 
+Sesuai 
+21 Detail 
+Pengajuan 
+Peserta 
+Peserta melihat 
+detail pengajuan 
+dari dashboard 
+Peserta berhasil melihat detail 
+pengajuan. 
+Sesuai 
+ 
+Hasil di atas menunjukkan bahwa 
+seluruh fungsi sistem bekerja dengan baik 
+dan sesuai dengan kebutuhan yang telah 
+ditentukan. Tidak ditemukan kendala 
+signifikan saat dilakukan pengujian di 
+lingkungan pengembangan lokal. 
+Secara umum, sistem in i 
+memberikan solusi terhadap 
+permasalahan administrasi magang yang 
+selama ini dilakukan secara manual. 
+Proses pendaftaran yang sebelumnya 
+mengharuskan peserta datang langsung ke 
+kantor, kini dapat dilakukan secara 
+daring. Hal ini sangat membantu peserta 
+dari luar daerah serta mengurangi beban 
+administratif pada staf Pusdiklat. Proses 
+validasi dokumen juga menjadi lebih 
+cepat dan transparan karena dilakukan 
+secara digital dan terdokumentasi. 
+Jika dibandingkan dengan 
+penelitian serupa, seperti sistem 
+pendaftaran peserta didik baru berbasis 
+web yang dikembangkan oleh Rahmadani 
+dan Kusuma (2021), sistem ini 
+menunjukkan keunggulan dari sisi fitur 
+pelaporan otomatis dan sistem verifikasi 
+dokumen yang lebih terstruktur [1]. 
+Dalam konteks organisasi berskala besar 
+seperti PT Semen Padang, dokumentasi 
+digital yang terorganisir sangat penting 
+untuk audit dan pelaporan berkala. Selain 
+itu, penelitian Rahayu dan Arief (2020) 
+turut mendukung penggunaan Laravel 
+sebagai framework pengembangan karena 
+kemampuannya dalam memba ngun 
+sistem berskala menengah hingga besar 
+secara modular [2]. 
+Kemampuan sistem untuk 
+diintegrasikan dengan teknologi lain juga 
+menjadi nilai tambah. Ke depannya, 
+sistem ini dapat dikembangkan dengan 
+penambahan notifikasi otomatis melalui 
+email atau WhatsA pp, serta integrasi 
+dengan sistem akademik untuk verifikasi 
+NIM atau data mahasiswa secara 
+langsung. Bahkan, teknologi kecerdasan 
+buatan (AI) dapat diterapkan untuk 
+membaca dokumen peserta secara 
+otomatis dan melakukan validasi awal, 
+sehingga mengurangi be ban kerja admin 
+dan meminimalisasi kesalahan manusia. 
+Selain keunggulan teknis, desain 
+antarmuka yang responsif membuat 
+sistem dapat digunakan melalui perangkat 
+seluler maupun desktop tanpa kehilangan 
+fungsionalitas. Ini sejalan dengan tren 
+kebutuhan digit al saat ini yang 
+mengedepankan fleksibilitas, 
+aksesibilitas, dan user experience. 
+Dengan demikian, sistem informasi 
+ini telah terbukti tidak hanya fungsional, 
+tetapi juga adaptif terhadap kebutuhan 
+
+==================== PAGE 8 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4164 
+ 
+pengguna dan potensi ekspansi ke 
+teknologi yang lebih maju  di masa 
+mendatang. Implementasi sistem ini 
+menjadi bukti konkret bahwa transformasi 
+digital di bidang manajemen SDM 
+perusahaan dapat memberikan dampak 
+signifikan terhadap efisiensi operasional 
+dan kepuasan pengguna akhir. 
+ 
+ 
+SIMPULAN 
+ 
+Sistem informasi pene rimaan 
+peserta magang berbasis web yang 
+dikembangkan dalam penelitian ini 
+berhasil menjawab permasalahan utama 
+dalam proses pendaftaran magang di PT 
+Semen Padang yang sebelumnya 
+dilakukan secara manual. Sistem ini 
+menyediakan fitur pendaftaran online, 
+unggah dokumen, pemantauan status 
+seleksi, validasi data oleh admin, serta 
+pencetakan laporan dalam format digital, 
+yang secara keseluruhan meningkatkan 
+efisiensi dan transparansi proses seleksi. 
+Penggunaan framework Laravel dan 
+database MySQL memungkinkan 
+pengelolaan data yang lebih terstruktur 
+dan mudah diakses, baik oleh peserta 
+maupun pihak pengelola magang. Hasil 
+pengujian menunjukkan bahwa sistem 
+berjalan sesuai dengan fungsi yang 
+dirancang dan dapat digunakan secara 
+efektif dalam lingkungan kerja. Secara  
+praktis, sistem ini memberikan 
+kemudahan bagi peserta dari berbagai 
+lokasi untuk mendaftar tanpa harus datang 
+langsung, serta memudahkan admin 
+dalam mengelola data secara akurat dan 
+terdokumentasi. Untuk pengembangan 
+selanjutnya, sistem ini dapat ditingka tkan 
+dengan integrasi notifikasi email atau 
+WhatsApp untuk pemberitahuan hasil 
+seleksi, pengembangan versi mobile, serta 
+dukungan fitur AI untuk validasi 
+dokumen secara otomatis guna  
+meningkatkan efisiensi dan keamanan 
+sistem. 
+ 
+ 
+ 
+ 
+DAFTAR PUSTAKA 
+ 
+Rahmadani, R., & Kusuma, D. A. (2021). 
+Sistem Informasi Penerimaan Siswa 
+Baru Berbasis Web pada SMK 
+Negeri 1 Batang. Jurnal Teknologi 
+Informasi dan Ilmu Komputer, 8(2), 
+110–116. 
+Rahayu, D., & Arief, M. R. (2020). 
+Penerapan Framework Laravel dalam 
+Pengembangan Siste m Informasi 
+Mahasiswa. Jurnal Teknologi dan 
+Sistem Informasi, 6(1), 45–52. 
+Sari, P. A., & Hendrawan, D. (2019). 
+Implementasi Model Waterfall dalam 
+Pengembangan Aplikasi Sistem 
+Informasi. Jurnal Riset Informatika, 
+4(3), 210–218. 
+Pratiwi, N. A. (2021). Siste m Informasi 
+Praktik Kerja Industri Siswa Berbasis 
+Web. Jurnal Sistem Informasi 
+Pendidikan, 9(2), 98–104. 
+Utami, A. D., & Hidayat, S. (2020). 
+Sistem E -Rekrutmen Berbasis PHP 
+dan MySQL pada Perusahaan 
+Swasta. Jurnal Informatika dan 
+Komputer, 5(1), 23–30. 
+Wicaksono, R. A., & Supriyanto, H. 
+(2020). Penerapan Cetak Otomatis 
+Laporan Peserta Seleksi Magang. 
+Jurnal Pengembangan Teknologi 
+Informasi, 8(1), 65–71. 
+Sutanto, A. (2020). Sistem Informasi 
+Manajemen Peserta Pelatihan 
+Berbasis Web. Jurnal Teknologi 
+Informasi dan Komunikasi, 5(2), 87 –
+93. 
+Fitriyani, D., & Santosa, P. I. (2019). 
+Sistem Informasi Kepegawaian 
+Digital Berbasis Laravel dan 
+MySQL. Jurnal Sistem Informasi 
+Akuntansi dan Keuangan, 6(1), 14 –
+20. 
+Nurhidayat, T. (2020). Akses Multi -
+Platform pada Sistem Info rmasi 
+Akademik Berbasis Web. Jurnal 
+Ilmiah Teknologi dan Informatika, 
+4(3), 58–63. 
+Lestari, F., & Suryani, N. (2021). 
+Integrasi Notifikasi Otomatis dalam 
+Sistem Informasi Layanan 
+Mahasiswa. Jurnal Aplikasi 
+
+==================== PAGE 9 ====================
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print) 
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online) 
+Available online at http://jurnal.goretanpena.com/index.php/JSSR 
+ 
+4165 
+ 
+Teknologi dan Sistem Informasi, 7(2), 122–128. 
+ 
+ 
+

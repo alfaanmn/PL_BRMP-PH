@@ -1,0 +1,614 @@
+============================================================
+ANALYZING: 1_Maulida_Sari (Total Pages: 18)
+============================================================
+--- PAGE 1 HEADER & INFO ---
+SISFO : Jurnal Ilmiah Sistem Informasi ISSN P : 2598-599X; E: 2599-0330
+SISFO : Jurnal Ilmiah Sistem Informasi. Vol 8, No 1 (2024)
+110
+SISTEM INFORMASI MAGANG BERBASIS WEBSITE PADA KANTOR
+CABANG BPJS KETENAGAKERJAAN LHOKSEUMAWE
+Indah Maulida Sari1 , Zalfie Ardian 2 , Ilham Sahputra3 , Veri Ilhadi4
+Sistem Informasi Universitas Malikussaleh
+Jl. Kampus Unimal Bukit Indah, Blang Pulo, Kec. Muara Satu,
+Kabupaten Aceh Utara, Aceh, 24355
+E-mail: indah.210180153@mhs.unimal.ac.id1
+Abstrak
+Sistem Informasi Magang Berbasis Website pada Kantor Cabang BPJS Ketenagakerjaan
+Lhokseumawe bertujuan untuk meningkatkan efisiensi dan efektivitas proses pendaftaran serta
+pengelolaan magang. Sistem ini memungkinkan calon peserta magang untuk mendaftar se cara
+online, mengunggah dokumen -dokumen yang diperlukan, dan memantau status lamaran mereka
+secara real -time. Hasil dari perancangan sistem ini menunjukkan peningkatan signifikan dalam
+efisiensi operasional, transparansi dalam proses seleksi, dan peningkat an kualitas layanan kepada
+calon peserta magang. Dengan adanya sistem ini, BPJS Ketenagakerjaan dapat memberikan
+pelayanan yang lebih responsif dan profesional, sesuai dengan kebutuhan dan harapan pengguna.
+Selain itu, sistem ini memungkinkan integrasi den gan database internal BPJS Ketenagakerjaan,
+sehingga memudahkan pengambilan keputusan berbasis data dan pelaporan yang lebih akurat. Fitur
+analisis data membantu mengidentifikasi tren dan kebutuhan pelatihan yang lebih spesifik,
+meningkatkan pengembangan keterampilan peserta magang sesuai dengan kebutuhan industri.
+Kata kunci :Sistem Informasi, website, BPJS Ketenagakerjaan, Efesiensi Proses, Mnajemen Data
+Abstract
+The Internship Information System based on a Website at the Branch Office of BPJS Ketenagakerjaan
+Lhokseumawe aims to enhance  the efficiency and effectiveness of internship registration and management
+processes. This system enables prospective interns to register online, upload necessary documents, and monitor
+the status of their applications in real-time. The results of this system design demonstrate significant
+improvements in operational efficiency, transparency in selection processes, and enhanced service quality for
+prospective interns. With this system, BPJS Ketenagakerjaan can deliver more responsive and professional
+services, meeting user needs and expectations. Furthermore, the system integrates with BPJS
+Ketenagakerjaan's internal database, facilitating data-driven decision-making and accurate reporting. Data
+analysis features aid in identifying trends and specific training needs, fostering the development of intern skills
+aligned with industry requirements
+...
+
+--- KEYWORD FINDINGS ---
+[survei]: TIDAK DITEMUKAN
+[kepuasan]: TIDAK DITEMUKAN
+[skm]: TIDAK DITEMUKAN
+[ikm]: TIDAK DITEMUKAN
+[otp]: TIDAK DITEMUKAN
+[one-time password]: TIDAK DITEMUKAN
+[verifikasi email]: TIDAK DITEMUKAN
+[status]: 17 occurrence(s)
+   Page 1: , mengunggah dokumen -dokumen yang diperlukan, dan memantau status lamaran mereka secara real -time. Hasil
+   Page 1: gister online, upload necessary documents, and monitor the status of their applications in real-time. The
+   Page 2: n magang, serta proses seleksi yang lebih sederhana dengan status persetujuan atau pending yang dapat
+   Page 6: ar 3. Activity Diagram Lamar Magang C. Activity Diagram Status Lamaran Gambar 4. Activity Diagram
+   Page 6: tivity Diagram Status Lamaran Gambar 4. Activity Diagram Status Lamaran
+   Page 7: Diagram Kelola Lowongan E. Activity Diagram Konfirmasi Status Lamaran Gambar 6. Activity Diagram Konfirmasi Status
+   Page 7: rmasi Status Lamaran Gambar 6. Activity Diagram Konfirmasi Status Lamaran E. Activity Diagram Lihat Data
+   Page 11: kukan berbagai fungsi manajemen. 4.4 Tampilan Konfirmasi Status Pelamar Gambar 14. Halaman Konfirmasi Status Pelamar
+   Page 11: an Konfirmasi Status Pelamar Gambar 14. Halaman Konfirmasi Status Pelamar Gambar diatas adalah tampilan dari
+   Page 11: ar Gambar diatas adalah tampilan dari halaman konfirmasi status pelamar. Halaman ini digunakan oleh admin
+   Page 11: mar. Halaman ini digunakan oleh admin untuk mengkonfirmasi status pelamar magang apakah ditolak atau diterima.
+   Page 14: . Vol 8, No 1 (2024) 123 4.11 Halaman Status Lamaran Gambar 21. Halaman Status
+   Page 14: 123 4.11 Halaman Status Lamaran Gambar 21. Halaman Status Lamaran Gambar diatas merupakan halaman status
+   Page 14: . Halaman Status Lamaran Gambar diatas merupakan halaman status lamaran. Pada halaman tersebut user dapat
+   Page 14: aran. Pada halaman tersebut user dapat melihat riwayat dan status dari lamaran yang telah mereka
+   Page 14: gkap, jenis kelamin, bidang pekerjaan, nama perusahaan, dan status lamaran (seperti Pending, Diterima, atau Ditolak).
+   Page 14: stikan bahwa mereka mendapatkan informasi terbaru mengenai status aplikasi magang mereka. User dapat mengakses halaman
+[pending]: 2 occurrence(s)
+   Page 2: seleksi yang lebih sederhana dengan status persetujuan atau pending yang dapat diakses langsung oleh peserta.Selain
+   Page 14: ng pekerjaan, nama perusahaan, dan status lamaran (seperti Pending, Diterima, atau Ditolak). Halaman ini memudahkan
+[tracking]: TIDAK DITEMUKAN
+[pelacakan]: TIDAK DITEMUKAN
+
+--- SECTIONS SEARCH ---
+   [Page 4] Section hit: g merupakan Teknik pengujian perangkat lunak yang berfokus pada spesifikasi fungsional dari perangkat lunak. Blackbox Te...
+   [Page 4] Section hit: ri perangkat lunak. Blackbox Testing bekerja dengan mengabaikan struktur kontrol sehingga perhatiannya difokuskan pada i...
+   [Page 4] Section hit: istem, merencanakan arsitektur, da n memastikan bahwa produk akhir sesuai dengan spesifikasi dan kebutuhan pengguna. Sal...
+   [Page 9] Section hit: em beserta atribut, metode dan hubungan antar kelas yang ada. Gambar 10. Class Diagram Sistem 4. HASIL DAN PEMBAHASAN P...
+   [Page 9] Section hit: agram Sistem 4. HASIL DAN PEMBAHASAN Perancangan sebuah sistem memiliki langkah - langkah tertentu. Sistem informasi mag...
+   [Page 14] Section hit: belah kiri. 4.11 Black Box Testing Pengujian black box, juga dikenal sebagai pengujian berbasis fungsional, adalah metod...
+   [Page 14] Section hit: Black Box Testing Pengujian black box, juga dikenal sebagai pengujian berbasis fungsional, adalah metode pengujian di ma...
+   [Page 14] Section hit: Testing Pengujian black box, juga dikenal sebagai pengujian berbasis fungsional, adalah metode pengujian di mana penguji...
+   [Page 14] Section hit: uga dikenal sebagai pengujian berbasis fungsional, adalah metode pengujian di mana penguji mengevaluasi perangkat lunak ...
+   [Page 14] Section hit: fungsional, adalah metode pengujian di mana penguji mengevaluasi perangkat lunak berdasarkan spesifikasi dan kebutuhan f...
+   [Page 14] Section hit: nal, adalah metode pengujian di mana penguji mengevaluasi perangkat lunak berdasarkan spesifikasi dan kebutuhan fungsion...
+   [Page 14] Section hit: di mana penguji mengevaluasi perangkat lunak berdasarkan spesifikasi dan kebutuhan fungsional tanpa memperhatikan strukt...
+   [Page 14] Section hit: mber sistem. Ha sil pengujian Blackbox ditunjukkan pada tabel: Gambar 22. Pengujian Pada Black Box...
+   [Page 14] Section hit: . Ha sil pengujian Blackbox ditunjukkan pada tabel: Gambar 22. Pengujian Pada Black Box...
+   [Page 14] Section hit: abel: Gambar 22. Pengujian Pada Black Box...
+   [Page 14] Section hit: 22. Pengujian Pada Black Box...
+   [Page 15] Section hit: 124 5. KESIMPULAN DAN SARAN 5.1 Kesimpulan Berdasarkan hasil kerja praktik di Kantor Cabang BPJS Ketenagakerjaan L...
+   [Page 15] Section hit: 5. KESIMPULAN DAN SARAN 5.1 Kesimpulan Berdasarkan hasil kerja praktik di Kantor Cabang BPJS Ketenagakerjaan Lhokseumawe...
+   [Page 15] Section hit: ULAN DAN SARAN 5.1 Kesimpulan Berdasarkan hasil kerja praktik di Kantor Cabang BPJS Ketenagakerjaan Lhokseumawe berupa p...
+   [Page 15] Section hit: diperoleh beberapa kesimpulan sebagai berikut. 1. Pengembangan aplikasi sistem informasi magang berbasis web di BPJS Ket...
+   [Page 15] Section hit: a online. 3. Hasil pengujian sistem menunjukkan bahwa aplikasi ini mampu meningkatkan aksesibilitas informasi, mempercep...
+   [Page 15] Section hit: enagakerjaan 5.2 Saran Berdasarkan sistem informasi yang dirancang dan dibangun, penulis memberikan beberapa saran untuk...
+   [Page 15] Section hit: emberikan beberapa saran untuk meningkatkan proses pengembangan sistem: 1. BPJS Ketenagakerjaan perlu terus mengupdate k...
+   [Page 16] Section hit: 2014). Analisis dan Evaluasi Kemampuan Sistem Pendeteksian Teks Secara Real Time Berbasis Augmented Reality Pada Vuforia...
+   [Page 17] Section hit: -GIS dan GPS Dengan Metode Algoritma Dijkstra. Jurnal Informasi Dan Teknologi, 5(4), 59 -66. https://doi.org/10.60083/ji...
+============================================================
+ANALYZING: 2_Gumelta (Total Pages: 9)
+============================================================
+--- PAGE 1 HEADER & INFO ---
+Journal of Science and Social Research                          ISSN 2615 – 4307  (Print)
+August 2025, VIII (3): 4157 – 4165                  ISSN 2615 – 3262  (Online)
+Available online at http://jurnal.goretanpena.com/index.php/JSSR
+4157
+SISTEM INFORMASI PENERIMAAN PESERTA MAGANG BERBASIS
+WEB MENGGUNAKAN LARAVEL DI PT SEMEN PADANG
+Riyang Gumelta1, Diana Rahayu2, Yulia Jihan Sy3,
+Muhammad Ibrahim Nasution4
+Politeknik Negeri Padang
+e-mail: 1riyang@pnp.ac.id, 2dianarahayu130102@gmail.com, 3Yulia@pnp.ac.id,
+4udabaimnst90@gmail.com
+Abstract: The internship recruitment process at PT Semen Padang was previously
+conducted manually, leading to issues such as data duplication, delays in selection, and
+limited information transparency. This study aims to design and implement a web -based
+information system to digitalize the entire internship registration and selection process.
+The system was developed using the Laravel framework and MySQL database, adopting
+the waterfall development method consisting of requirements analysis, system design
+(using Figma and Draw.io), implementation, and black -box testing. The results show that
+the system effectively improves the registration process, expedites document verificat ion,
+and provides real -time selection status updates for applicants. Key features include
+online registration, document upload, status monitoring, admin verification, and
+automated report generation. Based on the testing results, all features function as
+intended without significant issues. In conclusion, the system contributes to enhanced
+data accuracy, operational efficiency, and transparency in the internship admission
+process. The system also has potential for future enhancements, such as automated
+notifications and academic system integration.
+Keywords: Information system, internship, Laravel, MySQL, waterfall, digitalization,
+transparency, efficiency
+Abstrak: Proses penerimaan peserta magang di PT Semen Padang sebelumnya dilakukan
+secara manual, yang menimbulkan berbagai kendala seperti duplikasi data, keterlambatan
+proses seleksi, dan minimnya transparansi informasi. Penelitian ini bertujuan untuk
+merancang dan mengimplementasikan sistem informasi berbasis web untuk
+mendigitalisasi proses seleksi mag ang secara menyeluruh. Sistem dikembangkan
+menggunakan framework Laravel dan database MySQL, dengan pendekatan metode
+pengembangan waterfall yang terdiri atas tahapan analisis kebutuhan, perancangan sistem
+...
+
+--- KEYWORD FINDINGS ---
+[survei]: TIDAK DITEMUKAN
+[kepuasan]: 1 occurrence(s)
+   Page 8: ikan dampak signifikan terhadap efisiensi operasional dan kepuasan pengguna akhir. SIMPULAN Sistem informasi pene rima
+[skm]: TIDAK DITEMUKAN
+[ikm]: TIDAK DITEMUKAN
+[otp]: TIDAK DITEMUKAN
+[one-time password]: TIDAK DITEMUKAN
+[verifikasi email]: TIDAK DITEMUKAN
+[status]: 12 occurrence(s)
+   Page 1: document verificat ion, and provides real -time selection status updates for applicants. Key features include
+   Page 1: Key features include online registration, document upload, status monitoring, admin verification, and automated report gener
+   Page 1: pendaftaran online, unggah dokumen persyaratan, pemantauan status seleksi, verifikasi data oleh admin, dan cetak laporan
+   Page 2: ar secara daring, mengunggah dokumen persyaratan, memantau status seleksi secara real -time, serta memudahkan pihak
+   Page 3: eperti penumpukan berkas fisik, kesulitan dalam pelacakan status pendaftaran, serta potensi terjadinya redundansi data. Has
+   Page 4: i akses untuk mendaftar, mengunggah dokumen, dan memantau status pendaftara n secara real -time. Alur
+   Page 5: form terstruktur, dan peserta akan mendapatkan informasi status seleksi secara otomatis. Hal ini membuat peserta
+   Page 5: tidak perlu lagi menghubungi admin secara manual, karena status dapat dimonito r langsung pada dashboard
+   Page 5: daftar dalam format tabel yang dapat difilter berdasarkan status, tanggal, atau nama. Admin juga memiliki
+   Page 5: iki hak akses untuk memverifikasi data peserta, mengubah status seleksi, serta mencetak data peserta dalam
+   Page 6: No Fitur / Halaman Deskripsi Pengujian Hasil Pengujian Status 1 Halaman Register User mengakses halaman
+   Page 8: iakan fitur pendaftaran online, unggah dokumen, pemantauan status seleksi, validasi data oleh admin, serta pencetakan
+[pending]: TIDAK DITEMUKAN
+[tracking]: TIDAK DITEMUKAN
+[pelacakan]: 1 occurrence(s)
+   Page 3: ma nual, seperti penumpukan berkas fisik, kesulitan dalam pelacakan status pendaftaran, serta potensi terjadinya redundansi
+
+--- SECTIONS SEARCH ---
+   [Page 1] Section hit: , dengan pendekatan metode pengembangan waterfall yang terdiri atas tahapan analisis kebutuhan, perancangan sistem (meng...
+   [Page 1] Section hit: erdiri atas tahapan analisis kebutuhan, perancangan sistem (menggunakan Figma dan Draw.io), implementasi, ser ta penguji...
+   [Page 1] Section hit: mplementasi, ser ta pengujian menggunakan metode black-box. Hasil penelitian menunjukkan bahwa sistem mampu meningkatkan...
+   [Page 1] Section hit: ngujian menggunakan metode black-box. Hasil penelitian menunjukkan bahwa sistem mampu meningkatkan efisiensi proses pend...
+   [Page 1] Section hit: . Berdasarkan hasil pengujian, seluruh fitur berfungsi sesuai kebutuhan tanpa ditemukan kendala signifik an. Kesimpulann...
+   [Page 1] Section hit: endala signifik an. Kesimpulannya, sistem ini berkontribusi dalam meningkatkan akurasi data, efisiensi operasional, dan ...
+   [Page 2] Section hit: [2]. Di sisi lain, metode waterfall masih menjadi pendekatan umum dalam pengembangan perangkat lunak berskala kecil -men...
+   [Page 3] Section hit: Semen Padang." METODE Penelitian ini menggunakan metode pengembangan sistem dengan model waterfall, yang terdiri dar...
+   [Page 3] Section hit: ian ini menggunakan metode pengembangan sistem dengan model waterfall, yang terdiri dari tahapan - tahapan berurutan dan...
+   [Page 3] Section hit: canaan hingga tahap evaluasi akhir. Tahapan dalam model ini meliputi analisis kebutuhan, perancangan sistem, implementas...
+   [Page 3] Section hit: model ini meliputi analisis kebutuhan, perancangan sistem, implementasi, dan pengujian. Pada t ahap analisis kebutuhan, ...
+   [Page 3] Section hit: implementasi, dan pengujian. Pada t ahap analisis kebutuhan, dilakukan observasi langsung terhadap proses penerimaan pes...
+   [Page 3] Section hit: ujian. Pada t ahap analisis kebutuhan, dilakukan observasi langsung terhadap proses penerimaan peserta magang di PT Seme...
+   [Page 3] Section hit: i, dilakukan tahap pengujian menggunakan metode black-box testing yang bertujuan untuk menguji fungsi-fungsi utama siste...
+   [Page 3] Section hit: ngujian menggunakan metode black-box testing yang bertujuan untuk menguji fungsi-fungsi utama sistem tanpa melihat kode ...
+   [Page 3] Section hit: m secara langsung. Pengujian ini mencakup fitur login, registrasi peserta, unggah dokumen, validasi data oleh admin, dan...
+   [Page 3] Section hit: rlibat [1], [2]. HASIL DAN PEMBAHASAN Sistem informasi penerimaan peserta magang berbasis web yang dikembangkan dalam pe...
+   [Page 6] Section hit: dilakukan, proses pengujian dilakukan menggunakan metode black -box testing yang berfokus pada pengujian fungsional sist...
+   [Page 6] Section hit: akukan menggunakan metode black -box testing yang berfokus pada pengujian fungsional sistem berdasarkan masukan dan kelu...
+   [Page 6] Section hit: yang berfokus pada pengujian fungsional sistem berdasarkan masukan dan keluaran. Pengujian dilakukan terhadap fitur-fitu...
+   [Page 6] Section hit: ukan dan keluaran. Pengujian dilakukan terhadap fitur-fitur utama, mulai dari login hingga proses cetak laporan. Hasil p...
+   [Page 6] Section hit: tak laporan. Hasil pengujian dirangkum dalam Tabel 4 berikut. Tabel 4. Hasil Pengujian Sistem Menggunakan Metode Black-B...
+   [Page 6] Section hit: ut. Tabel 4. Hasil Pengujian Sistem Menggunakan Metode Black-Box No Fitur / Halaman Deskripsi Pengujian Hasil Pengujian ...
+   [Page 6] Section hit: Sistem Menggunakan Metode Black-Box No Fitur / Halaman Deskripsi Pengujian Hasil Pengujian Status 1 Halaman Register...
+   [Page 6] Section hit: Halaman Deskripsi Pengujian Hasil Pengujian Status 1 Halaman Register User mengakses halaman register Tampil halaman Reg...
+   [Page 6] Section hit: i Pengujian Hasil Pengujian Status 1 Halaman Register User mengakses halaman register Tampil halaman Register Sesuai 2 P...
+   [Page 7] Section hit: ikan saat dilakukan pengujian di lingkungan pengembangan lokal. Secara umum, sistem in i memberikan solusi terhadap perm...
+   [Page 8] Section hit: lola magang. Hasil pengujian menunjukkan bahwa sistem berjalan sesuai dengan fungsi yang dirancang dan dapat digunakan s...
+============================================================
+ANALYZING: 3_Zikri (Total Pages: 16)
+============================================================
+--- PAGE 1 HEADER & INFO ---
+Jurnal Tekno Insentif   | Vol. 20 | No.  1 | Juli 2026
+DOI : http://dx.doi.org/10.36787/jti.v20i1.2089 Halaman 18 - 33
+Jurnal Tekno Insentif – 18
+Sistem Informasi Magang Mahasiswa Berbasis
+Web sebagai Pendukung Pengelolaan Kegiatan
+Magang
+Arifin Zikri1, Riki Afriansyah2, Eko Sulistyo3
+Politenik Manufaktur Negeri Bangka Belitung, Indonesia
+arifin.zikri182@gmail.com
+ABSTRAK
+Program magang di Politeknik Manufaktur Negeri Bangka Belitung sebelumnya masih dikelola
+secara konvensional sehingga menimbulkan kendala dalam administrasi, pemantauan
+mahasiswa, dan komunikasi antar pihak terkait. Penelitian ini bertujuan untuk
+mengimplementasikan dan mengevaluasi sistem magang mahasiswa berbasis web guna
+mendukung pengelolaan kegiatan magang. Sistem dikembangkan menggunakan metode
+Extreme Programming (XP), yaitu metode pengembangan perangkat lunak berbasis agile yang
+menekankan proses it eratif, umpan balik berkelanjutan, dan kemampuan beradaptasi
+terhadap perubahan kebutuhan pengguna.  Sistem menyediakan fitur logbook digital,
+penjadwalan sidang daring, serta fasilitas unggah dan unduh dokumen. Evaluasi dilakukan
+melalui Blackbox Testing dan User Acceptance Testing (UAT). Hasil pengujian menunjukkan
+seluruh fungsi sistem berjalan dengan baik dengan tingkat kepuasan pengguna sebesar
+86,4%, sehingga sistem mampu meningkatkan efisiensi administrasi, transparansi, dan
+kemudahan pemantauan kegiatan magang secara real -time di Politeknik Manufaktur Negeri
+Bangka Belitung.
+Kata kunci : Magang, Sistem Pengelolaan, Website, Extreme Programming , Monitoring,
+Pembaruan.
+ABSTRACT
+The internship program at the Bangka Belitung State Manufacturing Polytechnic was previously
+managed conventionally, which caused obstacles in administration, student monitoring, and
+communication between related parties. This study aims to implement and e valuate a web-
+based student internship system to support the management of internship activities. The
+system was developed using the Extreme Programming (XP) method, which is an agile
+software development method that emphasizes iterative processes, continuous feedback, and
+the ability to adapt to changing user needs. The system provides digital logbook features,
+online meeting scheduling, and document upload and download facilities. The evaluation was
+...
+
+--- KEYWORD FINDINGS ---
+[survei]: TIDAK DITEMUKAN
+[kepuasan]: 6 occurrence(s)
+   Page 1: seluruh fungsi sistem berjalan dengan baik dengan tingkat kepuasan pengguna sebesar 86,4%, sehingga sistem mampu
+   Page 4: ptance Testing (UAT) untuk mengukur tingkat penerimaan dan kepuasan pengguna terhadap sistem. Tahap terakhir adalah
+   Page 14: nggunaan, tampi lan antarmuka, fungsi sistem, serta tingkat kepuasan selama sistem digunakan. Penilaian dilakukan menggunakan
+   Page 14: m dalam mendukung pelaporan dan pemantauan magang 83% 5 Kepuasan Pengguna Kemudahan penggunaan sistem dalam
+   Page 15: 32 dan menjalankan fitur yang tersedia. Selain itu, aspek kepuasan pengguna memperoleh nilai yang baik,
+   Page 15: h fungsi utama sistem berjalan dengan baik, dengan tingkat kepuasan pengguna mencapai 86,4%. Secara keseluruhan,
+[skm]: TIDAK DITEMUKAN
+[ikm]: TIDAK DITEMUKAN
+[otp]: TIDAK DITEMUKAN
+[one-time password]: TIDAK DITEMUKAN
+[verifikasi email]: TIDAK DITEMUKAN
+[status]: 1 occurrence(s)
+   Page 9: kan pengguna mendaftar, mengunggah dokumen, serta memantau status secara online sesuai kebutuhan sistem magang modern
+[pending]: TIDAK DITEMUKAN
+[tracking]: TIDAK DITEMUKAN
+[pelacakan]: TIDAK DITEMUKAN
+
+--- SECTIONS SEARCH ---
+   [Page 1] Section hit: ementasikan dan mengevaluasi sistem magang mahasiswa berbasis web guna mendukung pengelolaan kegiatan magang. Sistem dik...
+   [Page 1] Section hit: bangkan menggunakan metode Extreme Programming (XP), yaitu metode pengembangan perangkat lunak berbasis agile yang menek...
+   [Page 1] Section hit: ramming (XP), yaitu metode pengembangan perangkat lunak berbasis agile yang menekankan proses it eratif, umpan balik ber...
+   [Page 1] Section hit: dan unduh dokumen. Evaluasi dilakukan melalui Blackbox Testing dan User Acceptance Testing (UAT). Hasil pengujian menunj...
+   [Page 1] Section hit: dilakukan melalui Blackbox Testing dan User Acceptance Testing (UAT). Hasil pengujian menunjukkan seluruh fungsi sistem ...
+   [Page 1] Section hit: esting (UAT). Hasil pengujian menunjukkan seluruh fungsi sistem berjalan dengan baik dengan tingkat kepuasan pengguna se...
+   [Page 1] Section hit: conducted through Blackbox Testing and User Acceptance T esting (UAT). The test results showed that all system functions...
+   [Page 2] Section hit: ada pemanfaatan dan evaluasi sistem informasi magang berbasis website dalam mendukung pelaksanaan kegiatan magang di Pol...
+   [Page 3] Section hit: ka Belitung. 1. METODE 2.1 Diagram Alur Gambar 1. Diagram Alur Berdasarkan Gambar 1, alur flowchart menggambarkan pro...
+   [Page 3] Section hit: ses pengumpulan dan analisis kebutuhan pengguna terhadap sistem magang mahasiswa berbasis web. Kebutuhan ini diperoleh d...
+   [Page 4] Section hit: anjutnya, dilakukan evaluasi sistem untuk menilai kinerja dan fungsi sistem selama digunakan. Evaluasi dilakukan melalui...
+   [Page 4] Section hit: selama digunakan. Evaluasi dilakukan melalui pengujian Blackbox untuk memastikan fungsi sistem berjalan dengan baik, ser...
+   [Page 4] Section hit: i dilakukan melalui pengujian Blackbox untuk memastikan fungsi sistem berjalan dengan baik, serta User Acceptance Testin...
+   [Page 4] Section hit: n melalui pengujian Blackbox untuk memastikan fungsi sistem berjalan dengan baik, serta User Acceptance Testing (UAT) un...
+   [Page 4] Section hit: alah analisis hasil evaluasi, yaitu proses pengolahan dan pembahasan hasil pengujian dan penilaian pengguna untuk menget...
+   [Page 4] Section hit: n pembahasan hasil pengujian dan penilaian pengguna untuk mengetahui tingkat efektivitas sistem dalam mendukung pengelol...
+   [Page 4] Section hit: ilaksanakan. 2.2 Metode Extreme Programming (XP) Gambar 2. Metode Extreme Programming Metode yang digunakan dalam pe...
+   [Page 4] Section hit: XP) Gambar 2. Metode Extreme Programming Metode yang digunakan dalam penelitian sistem Pengelolaan Kegiatan Magang di P...
+   [Page 4] Section hit: xtreme Programming Metode yang digunakan dalam penelitian sistem Pengelolaan Kegiatan Magang di Polman Negeri Bangka Bel...
+   [Page 4] Section hit: uk mendukung proses evaluasi, penyempurnaan, dan adaptasi sistem berdasarkan umpan balik pengguna (Zaidir & Listiawan, 2...
+   [Page 4] Section hit: lus kerja iteratif, pengujian berkelanjutan, dan perbaikan sistem secara bertahap (Dewi et al., 2022) . Dengan karakter ...
+   [Page 5] Section hit: UML tanpa disertai evaluasi penggunaan sistem secara langsung. 2. HASIL DAN PEMBAHASAN 2.1. Identifikasi Kebutuhan Pengg...
+   [Page 5] Section hit: ra langsung. 2. HASIL DAN PEMBAHASAN 2.1. Identifikasi Kebutuhan Pengguna dalam Implementasi Sistem Pengumpulan data pad...
+   [Page 5] Section hit: serta melihat hasil evaluasi selama proses magang berlangsung. Dosen berperan dalam memantau perkembangan mahasiswa sert...
+   [Page 5] Section hit: poran sebagai bahan evaluasi pelaksanaan magang. Use case diagram pada penelitian ini disajikan untuk menggambarkan fung...
+   [Page 5] Section hit: ung pengelolaan dan evaluasi kegiatan magang mahasiswa secara terintegrasi, bukan sebagai representasi detail proses per...
+   [Page 5] Section hit: m digunakan sebagai sarana pendukung alur magang yang terstruktur dan efisien (Maulida Sari et al., 2024)....
+   [Page 6] Section hit: an, verifikasi, dan evaluasi aktivitas magang....
+   [Page 9] Section hit: pada sisi frontend. Metode Extreme Programming dipilih karena telah te rbukti mampu meningkatkan integrasi dan efisiensi...
+   [Page 9] Section hit: & Hardiani, 2024). Metode Extreme Programming (XP) dimanfaatkan sebagai kerangka kerja iteratif untuk mendukung proses e...
+   [Page 9] Section hit: uk mendukung proses evaluasi, penyesuaian, dan penyempurnaan sistem berdasarkan umpan balik pengguna selama sistem digun...
+   [Page 9] Section hit: k memudahkan proses evaluasi fungsi, pemeliharaan sistem, serta penyesuaian fitur berdasarkan kebutuhan pengguna, dengan...
+   [Page 9] Section hit: an pengguna melalui pengujian rutin selama penggunaan sistem. 1. Tampilan Halaman Home Gambar 6. Tampilan Halaman Home 2...
+   [Page 12] Section hit: Sidang Magang 2.3. Evaluasi Sistem Evaluasi sistem dilakukan melalui Blackbox Testing pada fitur login, logbook, unggah ...
+   [Page 12] Section hit: 3. Evaluasi Sistem Evaluasi sistem dilakukan melalui Blackbox Testing pada fitur login, logbook, unggah dokumen, dan ver...
+   [Page 12] Section hit: m dilakukan melalui Blackbox Testing pada fitur login, logbook, unggah dokumen, dan verifikasi mitra untuk memastikan fu...
+   [Page 12] Section hit: omisi magang. Hasil pengujian menunjukkan tingkat penerimaan pengguna yang sangat baik, sehingga sistem dinilai layak da...
+   [Page 12] Section hit: egiatan magang. 1. Blackbox Testing Hasil Black Box Testing menunjukkan semua fitur sistem berfungsi sesuai peran penggu...
+   [Page 12] Section hit: kbox Testing Hasil Black Box Testing menunjukkan semua fitur sistem berfungsi sesuai peran pengguna. Mahasiswa dapat log...
+   [Page 12] Section hit: ., 2023). Tabel 1. Blackbox Testing No Pengguna Fitur Sistem Tujuan Evaluasi Hasil Penggunaan Keterangan 1 Mahasiswa Aks...
+   [Page 12] Section hit: Fitur Sistem Tujuan Evaluasi Hasil Penggunaan Keterangan 1 Mahasiswa Akses sistem dan dashboard Menilai kemudahan penggu...
+   [Page 14] Section hit: Tidak Setuju (1). Pengujian ini berfokus pada persepsi pengguna akhir terhadap kinerja sistem dalam penggunaan nyata, gu...
+   [Page 14] Section hit: Penilaian Deskripsi Evaluasi Persentase 1 Fungsional Pemanfaatan fitur logbook, absensi, dan penjadwalan sidang selama...
+   [Page 15] Section hit: aan langsung. 3. KESIMPULAN Sistem informasi magang berbasis website yang diterapkan di Politeknik Manufaktur Negeri Ban...
+   [Page 15] Section hit: imanfaatkan sebagai sarana pendukung pelaksanaan kegiatan magang, mulai dari pengajuan, pencatatan logbook, absensi, hin...
+   [Page 15] Section hit: an responsif. Hasil pengujian Black Box dan User Acceptance Testing (UAT) menunjukkan bahwa seluruh fungsi utama sistem ...
+   [Page 15] Section hit: if. Hasil pengujian Black Box dan User Acceptance Testing (UAT) menunjukkan bahwa seluruh fungsi utama sistem berjalan d...
+   [Page 15] Section hit: atasari, H. (2023). Pengujian Aplikasi Absensi dan Kegiatan Magang Mahasiswa Menggunakan Metode BlackBox Testing. Aura W...
+   [Page 15] Section hit: hasiswa Menggunakan Metode BlackBox Testing. Aura Wansa, N. (2023). Sistem Pengelolaan Kerja Praktik Mahasiswa Berbasis ...
+   [Page 15] Section hit: Menggunakan Metode BlackBox Testing. Aura Wansa, N. (2023). Sistem Pengelolaan Kerja Praktik Mahasiswa Berbasis Website ...
+   [Page 16] Section hit: DENGAN MENGGUNAKAN METODE EXTREME PROGRAMMING. JIPI (Jurnal Ilmiah Penelitian Dan Pembelajaran Informatika), 9(1), 284–2...
+============================================================
+ANALYZING: 4_Rian (Total Pages: 9)
+============================================================
+--- PAGE 1 HEADER & INFO ---
+Jurnal Teknlogi Informatika dan Komputer MH. Thamrin                 p -ISSN  2656-9957; e-ISSN  2622-8475
+Volume 9 No 2; September 2023
+http://journal.thamrin.ac.id/index.php/jtik/article/view/1857/pdf  734
+Perancangan Sistem Informasi Manajemen
+Recruitment Magang Berbasis Web
+Hesti Rian1), Handa Gustiawan2)*), Angga Setianto3)
+1)3) Program Studi Manajemen Informatika, Politeknik LP3I Jakarta
+2) Program Studi Sistem Informasi, Universitas Mohammad Husni Thamrin
+*)Correspondence Author: handagustiawan@gmail.com, Jakarta, Indonesia
+DOI: https://doi.org/10.37012/jtik.v9i2.1857
+Abstrak
+Proses rekrutmen magang adalah serangkaian langkah yang dilakukan oleh perusahaan untuk merekrut siswa,
+mahasiswa atau fresh graduate yang ingin mendapatkan pengalaman kerja dalam bentuk magang. Pada saat
+melaksanakan magang , mahasiswa dapat melihat serta mendapat arahan langsung dan mampu beradaptasi
+dengan dunia kerja. Di lain pihak, bagi instansi / perusahaan dengan adanya program magang dapat memantau
+kualitas kinerja yang dimiliki oleh calon SDM. Proses recruitment ini biasanya melibatkan posting daftar
+pekerjaan, meninjau resume dan surat lamaran, melakukan wawancara, dan memilih kandidat yang paling
+memenuhi syarat untuk mengisi posisi yang tersedia. Tujuan dari proses rekrutmen magang adalah untuk
+mengidentifikasi kandidat yang memiliki keterampilan dan kualifikasi yang dibutuhkan untuk berhasil dalam
+program magang. Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web diperlukan
+untuk menyimpan berkas dan menyeleksi calon pelamar. Metode pengembangan system yang digunakan yaitu
+metode waterfall. Metode waterfall terdiri dari tahapan analisis, perancangan, pengkodean, pengujian dan
+implementasi. Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web ini akan
+mempermudah dalam mengelola rekrutmen magang melalui sistem dan menghasilkan informasi sebagai acuan
+dalam hal merekrut calon peserta magang. Dengan sistem informasi manajemen recruitment magang berbasis
+web ini data tersimpan dengan baik, proses pemasukan lamaran dan seleksi calon peserta magang juga menjadi
+lebih cepat dan mudah dengan program aplikasi online yang dibangun.
+Kata Kunci : Sistem Informasi, Manajemen, Recruitment, Magang, Web
+Abstract
+The internship recruitment process is a series of steps taken by companies to recruit students, students or fresh
+graduates who want to gain work experience in the form  of an internship. When carrying out an internship,
+students can see and receive direct direction and are able to adapt to the world of work. On the other hand,
+agencies/companies with an internship program can monitor the quality of performance of prospective human
+resources. The recruitment process usually involves posting job listings, reviewing resumes and cover letters,
+conducting interviews, and selecting the most qualified candidates to fill available positions. The goal of the
+...
+
+--- KEYWORD FINDINGS ---
+[survei]: TIDAK DITEMUKAN
+[kepuasan]: TIDAK DITEMUKAN
+[skm]: TIDAK DITEMUKAN
+[ikm]: TIDAK DITEMUKAN
+[otp]: TIDAK DITEMUKAN
+[one-time password]: TIDAK DITEMUKAN
+[verifikasi email]: TIDAK DITEMUKAN
+[status]: TIDAK DITEMUKAN
+[pending]: TIDAK DITEMUKAN
+[tracking]: TIDAK DITEMUKAN
+[pelacakan]: TIDAK DITEMUKAN
+
+--- SECTIONS SEARCH ---
+   [Page 1] Section hit: eksi calon pelamar. Metode pengembangan system yang digunakan yaitu metode waterfall. Metode waterfall terdiri dari taha...
+   [Page 1] Section hit: ng digunakan yaitu metode waterfall. Metode waterfall terdiri dari tahapan analisis, perancangan, pengkodean, pengujian ...
+   [Page 1] Section hit: metode waterfall. Metode waterfall terdiri dari tahapan analisis, perancangan, pengkodean, pengujian dan implementasi. P...
+   [Page 1] Section hit: cangan, pengkodean, pengujian dan implementasi. Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web i...
+   [Page 1] Section hit: ive applicants. The system development method used is the waterfall method. The waterfall method consists of analysis, d...
+   [Page 2] Section hit: am program magang. METODE Metode penelitian yang digunakan yaitu metode waterfall, dengan tahapan sebagai berikut: 1. An...
+   [Page 2] Section hit: m magang. METODE Metode penelitian yang digunakan yaitu metode waterfall, dengan tahapan sebagai berikut: 1. Analisis, k...
+   [Page 2] Section hit: ng digunakan yaitu metode waterfall, dengan tahapan sebagai berikut: 1. Analisis, kegiatan menganalisa data yang didapat...
+   [Page 2] Section hit: sudah dibuat. 4. Pengujian, kegiatan uji coba sistem aplikasi untuk melihat apakah sistem sudah dapat berjalan dengan ba...
+   [Page 2] Section hit: gunakan oleh user. Analisis kebutuhan software dengan prosedur seperti: Halaman HRD: 1. HRD dapat melakukan login 2. HRD...
+   [Page 3] Section hit: atau pengumuman HASIL DAN PEMBAHASAN Desain sistem usulan digambarkan menggunakan Use Case diagram di bawah ini: Gambar ...
+   [Page 6] Section hit: . Tabel 1. Hasil Pengujian Black Box Testing Form Login No. Fungsi Yang Diuji Kondisi Hasil Yang Diharapkan Hasil Penguj...
+   [Page 6] Section hit: 1. Hasil Pengujian Black Box Testing Form Login No. Fungsi Yang Diuji Kondisi Hasil Yang Diharapkan Hasil Pengujian Kesi...
+   [Page 6] Section hit: g Diharapkan Hasil Pengujian Kesimpulan 1 Login Username dan Password kosong Sistem menolak akses login lalu menampilkan...
+   [Page 6] Section hit: n Hasil Pengujian Kesimpulan 1 Login Username dan Password kosong Sistem menolak akses login lalu menampilkan pesan “sil...
+   [Page 6] Section hit: suai Valid Hasil pengujian dari form login dengan empat kondisi, kondisi pertama Username dan Password kosong , kondisi ...
+   [Page 7] Section hit: : PHP versi 7.0 KESIMPULAN DAN REKOMENDASI Perancangan Sistem Informasi Manajemen Recruitment Magang Berbasis Web ini ak...
+   [Page 7] Section hit: tement Berbasis Web Metode Analytic Hierarchy Process (AHP). … Ilmiah Inovasi Teknologi Informasi , ejournal.unhasy.ac.i...
+============================================================
+ANALYZING: 5_Zaidir (Total Pages: 12)
+============================================================
+--- PAGE 1 HEADER & INFO ---
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen
+Vol 20, No 2, Mei 2022                                  ◼    1
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan)
+Implementasi Extreme Programming untuk Rancang Bangun Aplikasi
+Pengelolaan PKL-KTI  Berbasis Web
+Zaidir1, Indra Listiawan2
+1,2Prodi Teknologi Informasi Program Diploma, FST,  Universitas Respati Yogyakarta
+*1zaidirtan@respati.ac.id, 2indra.unriyo@yahoo.com
+Abstrak
+Kegiatan Praktek Kerja Lapangan (PKL) dan Karya Tulis Ilmiah (KTI) pada program studi Teknologi
+Informasi Program Diploma, Fakultas Sains dan Teknolog i (FST) Universitas Respati Yogyakarta
+(UNRIYO) merupakan tahapan kegiatan untuk mendapatkan pengalaman nyata terkait keilmuan yang
+ditekuni. Pengelolaan administrasi PKL dan KTI mahasiswa saat ini masih dilakukan secara manual.
+Masalah yang ditemukan adalah proses administrasi PKL dan KTI tidak efisien, program studi kesulitan
+untuk melacak judul PKL dan judul KTI yang diusulkan, dosen pembimbing kesulitan melakukan
+monitoring kemajuan mahasiswa dalam melakukan PKL dan KTI, mahasiswa mengalami kendala untu k
+proses pengajuan proposal dan mendapatkan informasi tentang jadwal seminar PKL maupun ujian
+pendadaran serta dosen penguji tidak efektif dalam pemberian nilai. Penelitian ini bertujuan untuk
+menghasilkan sistem informasi pengelolaan PKL -KTI  dengan fitu r yang sesuai kebutuhan program
+studi. Sistem yang dihasilkan dapat digunakan untuk mempermudah layanan kepada mahasiswa terkait
+PKL-KTI mulai dari  pegajuan proposal sampai penyerahan dokumen PKL -KTI. Sistem yang dihasilkan
+dapat meningkat kan kinerja prog ram studi karena beberapa proses dilakukan secara otomatis dan
+pengolahan data tidak hanya tersentral di prodi. Ketersediaan informasi sangat memadai baik dari segi
+kuantitas maupun kualitas sehingga sangat membantu dalam pengambilan keputusan .
+Kata Kunci: Extreme Programming, Praktek Kerja Lapangan, Karya Tulis Ilmiah
+Abstrack
+The Field Work Practice (PKL) and Scientific Writing (KTI) activities at the Information Technology
+Diploma Program, Faculty of Science and Technology (FST) Universitas Respati Yogy akarta (UNRIYO)
+are stages of activities to get real experience related to the science they are engaged in. The
+administrative management of PKL and KTI students is currently still done manually. The problems
+found were that the PKL and KTI administration processes were inefficient, the study program had
+difficulty tracking the proposed PKL and KTI titles, the supervisors had difficulty monitoring student
+progress in conducting PKL and KTI, students had problems with the proposal submission process and
+getting information about the schedule. PKL seminars as well as self -assessment exams as well as
+examining lecturers are not effective in giving grades. This study aims to produce a PKL -KTI
+...
+
+--- KEYWORD FINDINGS ---
+[survei]: TIDAK DITEMUKAN
+[kepuasan]: TIDAK DITEMUKAN
+[skm]: TIDAK DITEMUKAN
+[ikm]: TIDAK DITEMUKAN
+[otp]: TIDAK DITEMUKAN
+[one-time password]: TIDAK DITEMUKAN
+[verifikasi email]: TIDAK DITEMUKAN
+[status]: 1 occurrence(s)
+   Page 10: Dengan tahap ini maka selesai sudah proses layanan PKL dan status mahasiswa untuk PKL akan
+[pending]: TIDAK DITEMUKAN
+[tracking]: 1 occurrence(s)
+   Page 1: ocesses were inefficient, the study program had difficulty tracking the proposed PKL and KTI titles,
+[pelacakan]: TIDAK DITEMUKAN
+
+--- SECTIONS SEARCH ---
+   [Page 2] Section hit: ommerce menggunakan metodologi Extreme Programming, yang dianggap tepat saat ini karena semuanya membutuhkan waktu yang ...
+   [Page 3] Section hit: an menujukkan bahwa metode extreme programming mampu menghasilkan sistem informasi yan g berfungsi secara baik. Samsuri ...
+   [Page 3] Section hit: ya [10] mengatakan Metode Extreme Programming (XP) ini digunakan karena kesederhanaanya dan hasil penelitian menunjukkan...
+   [Page 3] Section hit: an mahasiswa. 2. METODE PENELITIAN Jenis penelitian yang digunakan adalah penelitian kualitatif yaitu menggunakan pendek...
+   [Page 3] Section hit: asil PKL-KTI, dll. Metode pengembangan sistem menggunakan metode Extreme Programming terdiri atas 6 tahap [11], seperti ...
+   [Page 3] Section hit: sistem menggunakan metode Extreme Programming terdiri atas 6 tahap [11], seperti terlihat pada Gambar 1....
+   [Page 3] Section hit: Gambar 1. Metode extreme programming [10] Exploration Planning Death Maintenance Iteration to Release Produc...
+   [Page 4] Section hit: an pada pembangunan arsitektur sistem sebagai pondasi sehingga akan dipilih requirement yang memberlakukan pembangunan s...
+   [Page 4] Section hit: tahap ini dilakukan pengujian ekstra dan pemeriksaan kinerja sistem. Kegiatan tersebut kemungkinan ditemukannya perubaha...
+   [Page 4] Section hit: erlalu mahal. 3. HASIL DAN PEMBAHASAN Berdasarkan pengumpulan data terkait dokumen PKL -KTI dan mengimplementasikan taha...
+   [Page 10] Section hit: alui beberapa tahap pengujian. Pengujian awal dilakukan secara whitebo x test mulai dari awal implementasi sampai selesa...
+   [Page 10] Section hit: pa tahap pengujian. Pengujian awal dilakukan secara whitebo x test mulai dari awal implementasi sampai selesainya semua ...
+   [Page 10] Section hit: lah diintegrasikan. Pengujian berikutnya dilakukan dengan car a blackbox test dengan melibatkan bagian administrasi faku...
+   [Page 10] Section hit: akukan dengan car a blackbox test dengan melibatkan bagian administrasi fakultas dan mahasiswa yang dipilih secara acak....
+   [Page 10] Section hit: pilih secara acak. Pengujian tahap akhir dilakukan dengan metode alpha test dengan melibatkan semua stakeholder. Penggun...
+   [Page 10] Section hit: ir dilakukan dengan metode alpha test dengan melibatkan semua stakeholder. Pengguna yang telah memakai aplikasi diberika...
+   [Page 10] Section hit: 1. Hasil kuisioner pengujian sistem No Pernyataan SS S KS TS Total 1 Aplikasi memberikan kemudahan bagi bagian administr...
+   [Page 11] Section hit: kolom (KS + TS). Besaran persentase untuk nilai positif/layak adalah sebesar 59% dan rata -rata nilai negative/tidak lay...
+   [Page 11] Section hit: penyesuaian. 4. KESIMPULAN Rancang bangun aplikasi pengelolaan PKL -KTI berbasis web dapat dihasilkan dengan waktu yang ...
+   [Page 11] Section hit: at karena penerapan metode extareme programming yang sangat tepat. Sistem yang dihasilkan dapat digunakan untuk mempermu...
+   [Page 11] Section hit: n keputusan. 5. SARAN Sistem ini akan lebih berdaya guna lagi jika dimasa yang akan da tang ditambahkan fitur-fitur p...
+   [Page 12] Section hit: awan, "Implementasi Metode Extreme Programming dalam Pengembangan Sistem Informasi Izin Produk Makanan," Jurnal SISFOKOM...
+   [Page 12] Section hit: enda, "Implementasi Metode Extreme Programming pada Aplikasi Biro Jodoh Syari’ah Berbasis Mobile Android," JTERA (Jurnal...
+============================================================
+ANALYZING: 6_Zulfikar (Total Pages: 8)
+============================================================
+--- PAGE 1 HEADER & INFO ---
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)
+Vol. 11 No. 3, pISSN: 2303-0577 eISSN: 2830-7062     DOI: https://doi.org/10.23960/ jitet.v11i3.3138
+401
+PERANCANGAN SISTEM INFORMASI INDEKS
+KEPUASAN MASYARAKAT BERBASIS WEB DI UPTD
+PUSKESMAS PANJALU
+Fikri Muhamad Zulfikar1*, Ari Sukawan2, Andi Suhenda3, Fery Fadly4
+1,2,3,4 Program Studi DIII Rekam Medis dan Informasi Kesehatan, Jurusan Rekam Medis dan Informasi
+Kesehatan, Poltekkes Kemenkes Tasikmalaya; Jl. Cilolohan No. 35, Kota Tasikmalaya, Jawa Barat
+46115; Telepon (0265) 340186
+Riwayat artikel:
+Received: 8 Juni 2023
+Accepted: 10 Juli 2023
+Published: 1 Agustus 2023
+Keywords:
+Community Satisfaction
+Index; Information System;
+Prototype; Health
+Application
+Corespondent Email:
+direktorat@poltekkestasikmal
+aya.ac.id
+© 2023 JITET (Jurnal Informatika
+dan Teknik Elektro Terapan). This
+article is an open-access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY NC)
+Abstrak. Kepuasan pasien dapat diartikan sebagai suatu sikap konsumen
+yakni beb erapa derajat kesukaan atau ketidaksukaanya terhadap pelayanan
+yang diberikan. Kepuasan pasien diperoleh dengan melakukan survei
+kepuasan masyarakat yang disebut dengan indeks kepuasan masyarakat. Pusat
+Kesehetan Masyarakat (Puskesmas) Panjalu, merupakan salah satu Puskesmas
+yang sudah menerapkan Indeks Kepuasan Masyarakat secara manual untuk
+menunjang mutu pelayanan kesehatan. Penilitian ini betunjuan untuk
+...
+
+--- KEYWORD FINDINGS ---
+[survei]: 18 occurrence(s)
+   Page 1: yang diberikan. Kepuasan pasien diperoleh dengan melakukan survei kepuasan masyarakat yang disebut dengan indeks kepuasan
+   Page 2: asien . Kepuasan pasien diperoleh dengan melakukan survei kepuasan masyarakat. Menurut Peraturan Menteri Pendayaguna
+   Page 2: eri Pendayagunaan Aparatur Negara dan Reformasi Birokrasi Survei Kepuasan Masyarakat merupakan suatu rangkaian kegiatan ya
+   Page 2: puasan masyarakat terhadap pelayanan yang diberikan. Hasil survei kepuasan dengan menggunakan skala likert ini nantinya
+   Page 2: ng memungkinkan pengguna untuk melakukan pengambilan data survei, pengolahan data dan laporan yang terkomputerisasi. Siste
+   Page 2: ndeks Kepuasan Masyarakat merupakan nilai akhir dari hasil survei kepuasan. Nilai ini nantinya menjadi informasi
+   Page 4: n atau petugas pertama kali mengakses sistem. 2. Halaman Survei Pasien melakukan pengisian survei indeks
+   Page 4: ses sistem. 2. Halaman Survei Pasien melakukan pengisian survei indeks kepuasan masyarakat di halaman ini.
+   Page 4: yang akan diberi penilaiain lalu pasien mengisi kuisioner survei kepuasan pasien. B. Petugas 1. Halaman
+   Page 4: onden Halaman tabel responden menyediakan informasi hasil survei dan data pasien yang masuk kedalam sistem.
+   Page 4: k Tabel Responden Petugas dapat mencetak info rmasi hasil survei kepuasan pasien yang tersedia di
+   Page 4: tatistik Halaman statistik ini memberikan informasi hasil survei kepuasan pasien dalam bentuk persentase dan grafik.
+   Page 4: ran indeks kepuasan masyarakat dari hasil pengolahan data survei kepuasan pasien di menu cetak laporan
+   Page 6: as Panjalu secara umum. Gambar 9 Dashboard B. Halaman Survei Kepuasan Halaman ini dibuat untuk
+   Page 6: enggunakan kuisioner berskala likert. Gambar 10 Tampilan Survei Kepuasan C. Halaman Validasi Halaman ini dibuat
+   Page 6: alidasi Halaman ini dibuat untuk memvalidasi apakah hasil survei sudah terkirim ke sistem atau tidak.
+   Page 7: l Responden Halaman ini berisi data responden dan jawaban survei yang masuk kedalam sistem. Petugas
+   Page 8: Negara Dan Reformasi Birokrasi Tentang Pedoman Penyusunan Survei Kepuasan Masyarakat Unit Penyelenggara Pelayanan Publik. 2
+[kepuasan]: 51 occurrence(s)
+   Page 1: .v11i3.3138 401 PERANCANGAN SISTEM INFORMASI INDEKS KEPUASAN MASYARAKAT BERBASIS WEB DI UPTD PUSKESMAS PANJALU Fikri
+   Page 1: s of the Creative Commons Attribution (CC BY NC) Abstrak. Kepuasan pasien dapat diartikan sebagai
+   Page 1: an atau ketidaksukaanya terhadap pelayanan yang diberikan. Kepuasan pasien diperoleh dengan melakukan survei kepuasan masyarak
+   Page 1: berikan. Kepuasan pasien diperoleh dengan melakukan survei kepuasan masyarakat yang disebut dengan indeks kepuasan masyarakat.
+   Page 1: ukan survei kepuasan masyarakat yang disebut dengan indeks kepuasan masyarakat. Pusat Kesehetan Masyarakat (Puskesmas) Panjalu
+   Page 1: erupakan salah satu Puskesmas yang sudah menerapkan Indeks Kepuasan Masyarakat secara manual untuk menunjang mutu
+   Page 1: ntu meningkatkan tingkat efisiensi dalam pengukuran Indeks Kepuasan Masyarakat dengan melakukan perancangan aplikasi Indeks Ke
+   Page 1: an Masyarakat dengan melakukan perancangan aplikasi Indeks Kepuasan Masyarakat berbasis website. Perancangan aplikasi Indeks K
+   Page 1: n Masyarakat berbasis website. Perancangan aplikasi Indeks Kepuasan Masyarakat diawali dengan melakukan observasi dan wawancara
+   Page 1: g dipakai penulis yaitu metode Prototipe. Aplikasi Indeks Kepuasan Masyarakat dirancang sesuai dengan kebutuhan di
+   Page 2: langgara jasa pelyanan merupakan sikap yang disebut dengan kepuasan pasien . Kepuasan pasien diperoleh dengan
+   Page 2: upakan sikap yang disebut dengan kepuasan pasien . Kepuasan pasien diperoleh dengan melakukan survei kepuasan
+   Page 2: Kepuasan pasien diperoleh dengan melakukan survei kepuasan masyarakat. Menurut Peraturan Menteri Pendayagunaan Aparat
+   Page 2: ayagunaan Aparatur Negara dan Reformasi Birokrasi Survei Kepuasan Masyarakat merupakan suatu rangkaian kegiatan yang diselen
+   Page 2: oleh fasilitas pelayanan Kesehatan untuk mengukur derajat kepuasan masyarakat terhadap pelayanan yang diberikan. Hasil survei
+   Page 2: asyarakat terhadap pelayanan yang diberikan. Hasil survei kepuasan dengan menggunakan skala likert ini nantinya akan
+   Page 2: akan skala likert ini nantinya akan diolah menjadi indeks kepuasan masyarakat. Indeks kepuasan masyarakat ini
+   Page 2: nya akan diolah menjadi indeks kepuasan masyarakat. Indeks kepuasan masyarakat ini menentukan apakah suatu layanan
+   Page 2: kurang dalam memberikan pelayanan [3]. Pengukuran Indeks Kepuasan Masyarakat yang dilakukan UPTD Puskesmas Pan jalu
+   Page 2: poran. Maka dari itu, untuk melancarkan pengukuran Indeks Kepuasan Masyrakat di UPTD Puskesmas Panjalu, dirancanglah
+   Page 2: n dan pembuatan laporan agar lebih efisien. Sistem Indeks Kepuasan Masyarakat berbasis website merupakan sebuah
+   Page 2: yang dibutuhkan[4]. Tujuan dirancangnya aplikasi Indeks Kepuasan Masyarakat adalah untuk meningkatkan efisiensi dan efektiv
+   Page 2: n efisiensi dan efektivitas dalam proses pengukuran Indeks Kepuasan Masyarakat di UPTD Puskesmas Panjalu sebagai
+   Page 2: uk digunakan dalam pengambilan keputusan[4]. 2.2 Indeks Kepuasan Masyarakat Indeks Kepuasan Masyarakat merupakan nilai akh
+   Page 2: lan keputusan[4]. 2.2 Indeks Kepuasan Masyarakat Indeks Kepuasan Masyarakat merupakan nilai akhir dari hasil survei
+   Page 2: epuasan Masyarakat merupakan nilai akhir dari hasil survei kepuasan. Nilai ini nantinya menjadi informasi sekaligus
+   Page 4: ehatan dan Pasien untuk mengetahui alur pengukuran Indeks Kepuasan Masyrakat dan kebutuhan apa saja yang
+   Page 4: ikasi Kebutuhan Sistem Perancangan aplikasi sistem indeks kepuasan masyarakat di UPTD Puskesmas Panjalu memiliki dua
+   Page 4: l penelitian didapatkan kebutuhan fungsional sistem indeks kepuasan masyarakat di UPTD Puskesmas Panjalu sebagai berikut
+   Page 4: . Halaman Survei Pasien melakukan pengisian survei indeks kepuasan masyarakat di halaman ini. Pasien mengisi
+   Page 4: kan diberi penilaiain lalu pasien mengisi kuisioner survei kepuasan pasien. B. Petugas 1. Halaman Masuk
+   Page 4: Responden Petugas dapat mencetak info rmasi hasil survei kepuasan pasien yang tersedia di menu tabel
+   Page 4: k Halaman statistik ini memberikan informasi hasil survei kepuasan pasien dalam bentuk persentase dan grafik.
+   Page 4: Menu Cetak Laporan Petugas dapat mencetak laporan indeks kepuasan masyarakat dari hasil pengolahan data survei
+   Page 4: deks kepuasan masyarakat dari hasil pengolahan data survei kepuasan pasien di menu cetak laporan 4.1.2
+   Page 4: rangkat lunak yang digunakan dalam merancang sistem indeks kepuasan masyarakat di UPTD Puskesmas Panjalu diantaranya
+   Page 4: keras yang akan digunakan untuk menjalankan sistem indeks kepuasan masyarakat di UPTD Puskesmas Panjalu ini
+   Page 4: dengan menggambarkan proses alur data pada sistem indeks kepuasan masyarakat di UPTD Puskesmas Panjalu. Gambar
+   Page 6: e Pada bagian ini merupakan tampilan dari aplikasi Indeks Kepuasan Masyarakat yang dibuat menggunakan bahasa
+   Page 6: dashboard utama ini dibuat untuk melihat informasi indeks kepuasan m asyarakat di UPTD Puskesmas Panjalu
+   Page 6: alu secara umum. Gambar 9 Dashboard B. Halaman Survei Kepuasan Halaman ini dibuat untuk pasien
+   Page 6: uat untuk pasien melakukan pengisian data diri dan surve i kepuasan menggunakan kuisioner berskala likert.
+   Page 6: kan kuisioner berskala likert. Gambar 10 Tampilan Survei Kepuasan C. Halaman Validasi Halaman ini dibuat
+   Page 7: nload atau print laporan yang sesuai dengan pedoman Indeks Kepuasan Pasien menurut peraturan Permenpan RB
+   Page 7: iantaranya sebagai berikut : a. Prosedur pengukuran indeks kepuasan masyarakat di UPTD Puskesmas Panjalu masih
+   Page 7: mempermudah proses peng olahan data dan pelaporan indeks kepuasan masyarakat di UPTD Puskesmas Panjalu. c.
+   Page 7: apat mengotomatisasi pengolahan data dan pelaporan indeks kepuasan masyarakat yang dapat membantu mengefektifkan proses peng
+   Page 7: ng dapat membantu mengefektifkan proses pengukuran indeks kepuasan masyarakat. d. Aplikasi ini dibuat dengan 2
+   Page 7: asilkan oleh rancangan aplikasi ini berupa laporan indeks kepuasan masyarakat di UPTD Puskesmas Panjalu. UCAPAN
+   Page 8: Dan Reformasi Birokrasi Tentang Pedoman Penyusunan Survei Kepuasan Masyarakat Unit Penyelenggara Pelayanan Publik. 2017. [4]
+   Page 8: Kesehatan. Gosyen, 2020. [5] M. Kurdi, “Pengukuran Indeks Kepuasan Masyarakat (I KM) Di Puskesmas Pamarayan
+[skm]: TIDAK DITEMUKAN
+[ikm]: 5 occurrence(s)
+   Page 4: arakat di UPTD Puskesmas Panjalu. Gambar 2 DFD Sistem IKM Level 0
+   Page 5: N: 2830-7062 Fikri et al 405 Gambar 3 DFD Sistem IKM Level 1 Gambar 4
+   Page 5: Gambar 3 DFD Sistem IKM Level 1 Gambar 4 DFD Sistem IKM Level 2 Proses
+   Page 5: 4 DFD Sistem IKM Level 2 Proses 1 Gambar 5 DFD Sistem IKM Level 2
+   Page 5: ar 5 DFD Sistem IKM Level 2 Proses 2 Gambar 6 DFD Sistem IKM Level
+[otp]: TIDAK DITEMUKAN
+[one-time password]: TIDAK DITEMUKAN
+[verifikasi email]: TIDAK DITEMUKAN
+[status]: TIDAK DITEMUKAN
+[pending]: TIDAK DITEMUKAN
+[tracking]: TIDAK DITEMUKAN
+[pelacakan]: TIDAK DITEMUKAN
+
+--- SECTIONS SEARCH ---
+   [Page 1] Section hit: asi dan wawancara. Metode perancangan sistem yang dipakai penulis yaitu metode Prototipe. Aplikasi Indeks Kepuasan Masya...
+   [Page 1] Section hit: akai penulis yaitu metode Prototipe. Aplikasi Indeks Kepuasan Masyarakat dirancang sesuai dengan kebutuhan di UPTD Puske...
+   [Page 2] Section hit: dengan menggunakan metode Prototipe. Prototipe merupakan metode yang dapat dengan cepat menyelesaikan pembangunan dan pe...
+   [Page 2] Section hit: rototipe merupakan metode yang dapat dengan cepat menyelesaikan pembangunan dan pengembangan suatu sistem dengan tujuan ...
+   [Page 2] Section hit: ai acuan untuk mengevaluasi mutu pelayanan kesehatan. 2. TINJAUAN PUSTAKA 2.1 Sistem Informasi Sistem informasi merupak...
+   [Page 2] Section hit: ncangan menggunakan metode perancangan prototipe, pada penelitian ini tahapan prototipe terdiri dari :...
+   [Page 3] Section hit: tahapan awal dari metode prototipe. Identifikasi kebutuhan sistem ini dilakukan dengan cara menganalisis kebutuhan fungs...
+   [Page 3] Section hit: an dengan cara menganalisis kebutuhan fungsional dan nonfungsional sistem yang akan dirancang[6]. 2.3.2 Perancangan Sist...
+   [Page 3] Section hit: si hasil. 2.3.3 Evaluasi Sistem Evaluasi sistem meru pakan proses mengevaluasi sistem yang sudah dirancang [9]. Evaluasi...
+   [Page 3] Section hit: .3 Evaluasi Sistem Evaluasi sistem meru pakan proses mengevaluasi sistem yang sudah dirancang [9]. Evaluasi sistem dilak...
+   [Page 3] Section hit: u pakan proses mengevaluasi sistem yang sudah dirancang [9]. Evaluasi sistem dilakukan dengan cara mendapatkan umpan bal...
+   [Page 3] Section hit: dah dirancang [9]. Evaluasi sistem dilakukan dengan cara mendapatkan umpan balik dari pengguna terhadap sistem yang tela...
+   [Page 3] Section hit: ai kebutuhanya. 3. METODE PENELITIAN 3.1 Metode Perancangan Sistem Prototipe merupakan metode perancangan dan perancang...
+   [Page 3] Section hit: PENELITIAN 3.1 Metode Perancangan Sistem Prototipe merupakan metode perancangan dan perancangan sistem yang dapat denga...
+   [Page 3] Section hit: Prototipe merupakan metode perancangan dan perancangan sistem yang dapat dengan cepat menyelesaikan proses pembangunan d...
+   [Page 3] Section hit: n pengembangannya. Metode Prototipe selain melibatkan ahli sistem (developer), pengembangan dan pembangunan sistem [9]. ...
+   [Page 3] Section hit: Tujuan utama dari metode Prototipe adalah melibatkan pengguna dalam mendesain sistem dan menanggapi umpan balik pengguna...
+   [Page 4] Section hit: kesmas Panjalu. 4. HASIL DAN PEMBAHASAN 4.1 Identifikasi Kebutuhan Sistem Perancangan aplikasi sistem indeks kepuasan ma...
+   [Page 4] Section hit: l sistem. 4.1.1 Analisis Kebutuhan Fungsional Berdasarkan hasil penelitian didapatkan kebutuhan fungsional sistem indeks...
+   [Page 4] Section hit: ak laporan 4.1.2 Analisis Kebutuhan Nonfungsional Kebutuhan nonfungsional merupakan kebutuhan perangkat keras ataupun pe...
+   [Page 7] Section hit: Halaman Laporan 5. KESIMPULAN Penulis membuat beberapa kesimpulan yang disimpulkan dari pembahasan sebelumnya, diantaran...
+   [Page 7] Section hit: is membuat beberapa kesimpulan yang disimpulkan dari pembahasan sebelumnya, diantaranya sebagai berikut : a. Prosedur pe...
+   [Page 8] Section hit: Strategi Merancang Arsitektur Sistem Informasi Masa Kini. 2019....

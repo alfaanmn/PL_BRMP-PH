@@ -21,6 +21,20 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
     setPengajuans(initialPengajuans || [])
   }, [initialPengajuans])
 
+  const handlePreviewSertifikat = async (pengajuanId: number, title: string) => {
+    try {
+      const res = await fetch(`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuanId}`)
+      const json = await res.json()
+      if (json.success && json.data?.signedUrl) {
+        setPreviewDoc({ url: json.data.signedUrl, title })
+      } else {
+        alert(json.error || 'Gagal memuat pratinjau sertifikat.')
+      }
+    } catch {
+      alert('Terjadi kesalahan saat memuat berkas sertifikat.')
+    }
+  }
+
   // Helper status badge styling
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -663,10 +677,10 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                           <button
                             type="button"
                             onClick={() =>
-                              setPreviewDoc({
-                                url: item.sertifikat_url,
-                                title: `Sertifikat Magang - ${item.bidangs?.nama || 'BRMP PH'}`,
-                              })
+                              handlePreviewSertifikat(
+                                item.id,
+                                `Sertifikat Magang - ${item.bidangs?.nama || 'BRMP PH'}`
+                              )
                             }
                             style={{
                               fontSize: '12px',

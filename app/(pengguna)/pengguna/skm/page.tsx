@@ -226,13 +226,13 @@ export default async function UserSKMPage({ searchParams }: UserSKMPageProps) {
           {/* Title & Description */}
           <div style={{ flex: 1 }}>
             <h1 style={{
-              fontSize: '20px',
-              fontWeight: 500,
+              fontSize: '18px',
+              fontWeight: 600,
               color: '#0f172a',
               margin: '0 0 0.35rem 0',
-              lineHeight: 1.3
+              lineHeight: 1.4
             }}>
-              Survei kepuasan masyarakat
+              Kuesioner Indeks Kepuasan Masyarakat (IKM) pada unit layanan Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian Tahun 2026
             </h1>
             <p style={{
               fontSize: '13px',

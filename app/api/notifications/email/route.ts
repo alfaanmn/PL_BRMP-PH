@@ -14,11 +14,22 @@ export async function POST(request: Request) {
   try {
     const payload: EmailNotificationPayload = await request.json()
 
+    // 0. Proteksi Keamanan: event 'sertifikat_available' HANYA boleh dipicu via pemanggilan internal server
+    if (payload.event === 'sertifikat_available') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Event sertifikat_available hanya dapat diproses melalui pemanggilan internal server.',
+        },
+        { status: 403 }
+      )
+    }
+
     const gmailUser = process.env.GMAIL_USER?.trim()
     const gmailAppPassword = process.env.GMAIL_APP_PASSWORD?.trim()
     const fromAddress =
       process.env.EMAIL_FROM?.trim() ||
-      (gmailUser ? `"SIM-MAGANG BRMP PH" <${gmailUser}>` : '"SIM-MAGANG BRMP PH" <no-reply@brmp.go.id>')
+      (gmailUser ? `"SIMPUL BRMP-PH" <${gmailUser}>` : '"SIMPUL BRMP-PH" <no-reply@brmp.go.id>')
 
     // 1. Validasi konfigurasi akun Gmail SMTP
     if (

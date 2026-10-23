@@ -45,6 +45,8 @@ export function getEmailSubject(payload: EmailNotificationPayload): string {
       return `[SIM-Magang] Pemberitahuan Status Pengajuan Magang (#${publicId})`
     case 'pengajuan_completed':
       return `[SIM-Magang] Selamat! Rangkaian Kegiatan Magang Anda Telah Selesai (#${publicId})`
+    case 'sertifikat_available':
+      return `[SIM-Magang] Sertifikat Magang Anda Telah Terbit (#${publicId})`
     default:
       return `[SIM-Magang] Update Status Pengajuan Magang (#${publicId})`
   }
@@ -90,9 +92,15 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
       body += `Mohon luangkan waktu 2 menit untuk mengisi Survei Kepuasan Masyarakat (SKM) guna penerbitan sertifikat magang:\n`
       body += `${baseUrl}/pengguna/skm\n`
       break
+
+    case 'sertifikat_available':
+      body += `Kabar baik! Sertifikat resmi kelulusan magang Anda untuk permohonan #${pengajuan.publicId} telah diterbitkan oleh BRMP PH.\n\n`
+      body += `Berkas sertifikat resmi telah kami lampirkan langsung pada email ini. Anda juga dapat melihat pratinjau dan mengunduh berkas kapan saja melalui portal pengguna:\n`
+      body += `${baseUrl}/pengguna/sertifikat\n`
+      break
   }
 
-  body += `\n--\nSIM-MAGANG BRMP PH\nBadan Perakitan dan Modernisasi Pertanian Pengelola Hasil\n`
+  body += `\n--\nSIM-MAGANG BRMP PH\nBalai Pengelola Hasil Perakitan dan Modernisasi Pertanian\n`
   return body
 }
 
@@ -207,14 +215,33 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
     badgeColor = '#2563eb'
     badgeText = 'MAGANG SELESAI'
     headingTitle = 'Selamat! Periode Magang Selesai'
-    leadText = `Terima kasih atas dedikasi dan kontribusi Anda selama menjalani kegiatan magang di <strong>BRMP PH</strong>.`
-    ctaLink = `${baseUrl}/pengguna/skm`
+    const pengajuanTargetId = payload.pengajuan?.id || payload.pengajuan?.publicId
+    ctaLink = pengajuanTargetId ? `${baseUrl}/pengguna/skm?pengajuan_id=${pengajuanTargetId}` : `${baseUrl}/pengguna/skm`
     ctaText = 'Isi Survei Kepuasan (SKM)'
 
     infoContent = `
       <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:22px 0;">
         <p style="margin:0 0 12px;font-size:14px;color:#334155;line-height:1.6;">
           Sebagai tahap akhir kegiatan magang, silakan mengisi <strong>Survei Kepuasan Masyarakat (SKM)</strong> untuk membantu kami meningkatkan kualitas pelayanan. Sertifikat magang Anda dapat diunduh melalui portal setelah pengisian survei.
+        </p>
+      </div>
+    `
+  } else if (payload.event === 'sertifikat_available') {
+    badgeBg = '#f0fdf4'
+    badgeColor = '#15803d'
+    badgeText = 'SERTIFIKAT TERBIT'
+    headingTitle = 'Sertifikat Magang Anda Telah Siap'
+    leadText = `Kabar baik! Sertifikat resmi kelulusan magang Anda di <strong>BRMP PH</strong> telah diterbitkan dan dilampirkan langsung pada email ini.`
+    ctaLink = `${baseUrl}/pengguna/sertifikat`
+    ctaText = 'Lihat di Portal SIM-Magang'
+
+    infoContent = `
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:18px 20px;margin:22px 0;">
+        <p style="margin:0 0 10px;font-size:14px;color:#166534;line-height:1.6;font-weight:600;">
+          Terima kasih atas dedikasi dan kontribusi Anda selama mengikuti program magang di BRMP PH.
+        </p>
+        <p style="margin:0;font-size:13px;color:#475569;line-height:1.5;">
+          Berkas resmi telah dilampirkan pada email ini. Sebagai cadangan, Anda juga dapat masuk ke portal SIM-Magang untuk melihat pratinjau dokumen dan mengunduh ulang sertifikat kapan saja.
         </p>
       </div>
     `
@@ -298,7 +325,7 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
         Email otomatis dari <strong style="color:#15803d;">SIM-MAGANG BRMP PH</strong>
       </p>
       <p style="margin:6px 0 0;color:#94a3b8;font-size:11px;">
-        Badan Perakitan dan Modernisasi Pertanian Pengelola Hasil
+        Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian
       </p>
     </div>
 

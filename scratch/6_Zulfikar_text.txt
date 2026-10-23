@@ -1,0 +1,661 @@
+=== FULL TEXT OF 6_Zulfikar (File: jurnall/01_BAB_I_PENDAHULUAN/01_Latar_Belakang/3138-Article Text-7346-1-10-20230717_SKM.pdf) ===
+Total Pages: 8
+
+==================== PAGE 1 ====================
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  
+Vol. 11 No. 3, pISSN: 2303-0577 eISSN: 2830-7062     DOI: https://doi.org/10.23960/ jitet.v11i3.3138 
+ 
+  401  
+PERANCANGAN SISTEM INFORMASI INDEKS 
+KEPUASAN MASYARAKAT BERBASIS WEB DI UPTD 
+PUSKESMAS PANJALU 
+Fikri Muhamad Zulfikar1*, Ari Sukawan2, Andi Suhenda3, Fery Fadly4  
+1,2,3,4 Program Studi DIII Rekam Medis dan Informasi Kesehatan, Jurusan Rekam Medis dan Informasi 
+Kesehatan, Poltekkes Kemenkes Tasikmalaya; Jl. Cilolohan No. 35, Kota Tasikmalaya, Jawa Barat 
+46115; Telepon (0265) 340186 
+ 
+  
+ 
+Riwayat artikel: 
+Received: 8 Juni 2023 
+Accepted: 10 Juli 2023 
+Published: 1 Agustus 2023 
+ 
+Keywords:  
+Community Satisfaction 
+Index; Information System; 
+Prototype; Health 
+Application  
+ 
+Corespondent Email: 
+direktorat@poltekkestasikmal
+aya.ac.id 
+ 
+ 
+© 2023 JITET (Jurnal Informatika 
+dan Teknik Elektro Terapan). This 
+article is an open-access article 
+distributed under the terms and 
+conditions of the Creative Commons 
+Attribution (CC BY NC) 
+Abstrak. Kepuasan pasien dapat diartikan sebagai suatu sikap konsumen 
+yakni beb erapa derajat kesukaan atau ketidaksukaanya terhadap pelayanan 
+yang diberikan. Kepuasan pasien diperoleh dengan melakukan survei 
+kepuasan masyarakat yang disebut dengan indeks kepuasan masyarakat. Pusat 
+Kesehetan Masyarakat (Puskesmas) Panjalu, merupakan salah satu Puskesmas 
+yang sudah menerapkan Indeks Kepuasan Masyarakat secara manual untuk 
+menunjang mutu pelayanan kesehatan. Penilitian ini betunjuan untuk 
+membantu meningkatkan tingkat efisiensi dalam pengukuran Indeks 
+Kepuasan Masyarakat dengan melakukan perancangan aplikasi Indeks 
+Kepuasan Masyarakat berbasis website. Perancangan aplikasi Indeks 
+Kepuasan Masyarakat diawali dengan melakukan observasi dan wawancara. 
+Metode perancangan sistem yang dipakai penulis yaitu  metode Prototipe. 
+Aplikasi Indeks Kepuasan Masyarakat dirancang sesuai dengan kebutuhan di 
+UPTD Puskesmas Panjalu sehingga nantinya dapat membantu meningkatkan 
+mutu pelayanan. 
+ 
+Abstract. Patient satisfaction can be interpreted as a consumer attitude, 
+namely several degrees of liking or disliking the services provided. Patient 
+satisfaction is obtained by conducting a community satisfaction survey called 
+the community satisfaction index. The  Panjalu Community Health Center 
+(Puskesmas) is one of the Puskesmas that has manually implemented the 
+Community Satisfaction Index to support the quality of health services. This 
+research is very important to help increase the level of efficiency in measuring 
+the Community Satisfaction Index by designing a website -based Community 
+Satisfaction Index application. The design of the Community Satisfaction 
+Index application begins with conducting observations and interviews. The 
+system design method used by the  author is the Prototype method. The 
+Community Satisfaction Index application is designed according to the needs 
+of the Panjalu Health Center UPTD so that later it can help improve service 
+quality.. 
+ 
+ 
+  
+
+==================== PAGE 2 ====================
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  
+Vol. 11 No. 3, pISSN: 2303-0577 eISSN: 2830-7062     DOI: https://doi.org/10.23960/ jitet.v11i3.3138 
+ 
+  402  
+1. PENDAHULUAN  
+Kesehatan pada masyarakat dapat 
+ditingkatkan dengan adanya fasilitas pelayanan 
+kesehatan yang baik. Menurut Permenkes 
+Nomor 43 Tahun 2019  sebagai penyelenggara 
+Fasilitas pelayanan kesehatan harus 
+memberikan impact dalam meningkatkan taraf 
+kesehatan di masyarakat. Penyelenggara 
+fasilitas pelayanan kesehatan harus memastikan 
+bisa memberikan upaya -upaya kesehatan 
+kepada masyarakat baik itu Upaya promot if, 
+preventif, kuratif hingga upaya rehabilitatif. 
+Upaya promotif dan prefentif lebih diutamakan 
+untuk meningkatkan taraf kesehatan di 
+masyarakat yang dilakukan oleh Pusat 
+Kesehatan Masyarakat sebagai layanan 
+kesehatan tingkat pertama [1].  
+Kualitas pelaya nan kesehatan yang baik 
+tentunya harus memenuhi aspek -apek mutu 
+pelayanan. Upaya peningkatan mutu pelayanan 
+terus dilakukan agar pemberina pelayanan 
+Kesehatan kepada masyarakat diberikan secara 
+optimal, ini sejalan dengan Peraturan Menteri 
+Kesehatan  Perme nkes RI Nomor 30 Tahun 
+2022. Maka dari itu, suatu fasilitas pelayanan 
+kesehatan harus melakukan penilaian mutu 
+yang diberi penilaian oleh pasien sebagai 
+pengguna jasa pelayanan dengan standar yang 
+ada. [2]. 
+Derajat kesukaan atau ketidakseukaan 
+pasien dal am diberikan pelayanan oleh 
+penyelanggara jasa pelyanan merupakan sikap 
+yang disebut dengan kepuasan pasien .        
+Kepuasan pasien diperoleh dengan melakukan 
+survei kepuasan masyarakat. Menurut 
+Peraturan Menteri Pendayagunaan Aparatur 
+Negara dan Reformasi  Birokrasi Survei 
+Kepuasan Masyarakat merupakan suatu 
+rangkaian kegiatan yang diselenggarakan oleh 
+fasilitas pelayanan Kesehatan untuk mengukur 
+derajat kepuasan masyarakat terhadap 
+pelayanan yang diberikan. Hasil survei 
+kepuasan dengan menggunakan skala likert  ini 
+nantinya akan diolah menjadi indeks kepuasan 
+masyarakat. Indeks kepuasan masyarakat ini 
+menentukan apakah suatu layanan itu baik atau 
+kurang dalam memberikan pelayanan [3]. 
+Pengukuran Indeks Kepuasan Masyarakat 
+yang dilakukan UPTD Puskesmas Pan jalu 
+masih secara manual yang kurang efektif dalam 
+pengolahan data dan laporan. Maka dari itu, 
+untuk melancarkan pengukuran Indeks 
+Kepuasan Masyrakat di UPTD Puskesmas 
+Panjalu, dirancanglah sebuah sistem informasi 
+berbasis website untuk pengukuran dan 
+pembuatan laporan agar lebih efisien. 
+Sistem Indeks Kepuasan Masyarakat 
+berbasis website merupakan sebuah sistem yang 
+memungkinkan pengguna untuk melakukan 
+pengambilan data survei, pengolahan data dan 
+laporan yang terkomputerisasi. 
+Sistem In deks Kepuasn Masyarakat di 
+UPTD Puskesmas Panjalu dirancang dengan 
+menggunakan metode Prototipe. Prototipe 
+merupakan metode yang dapat dengan cepat 
+menyelesaikan pembangunan dan 
+pengembangan suatu sistem dengan tujuan 
+melibatkan pengguna dalam mendesain si stem 
+yang dibutuhkan[4]. 
+Tujuan dirancangnya aplikasi Indeks 
+Kepuasan Masyarakat adalah untuk 
+meningkatkan efisiensi dan efektivitas dalam 
+proses pengukuran Indeks Kepuasan 
+Masyarakat di UPTD Puskesmas Panjalu 
+sebagai acuan  untuk mengevaluasi  mutu 
+pelayanan kesehatan. 
+2. TINJAUAN PUSTAKA 
+ 
+2.1 Sistem Informasi  
+Sistem informasi merupakan sebuah wadah 
+yang bertujuan melakukan pengolahan suatu 
+inputan data dan fakta menjadi sebuah keluaran 
+informasi yang mudah dibaca untuk digunakan 
+dalam pengambilan keputusan[4]. 
+ 
+2.2 Indeks Kepuasan Masyarakat 
+Indeks Kepuasan Masyarakat merupakan 
+nilai akhir dari hasil survei kepuasan. Nilai ini 
+nantinya menjadi informasi sekaligus acuan 
+terhadap perbaikan mutu pelayanan yang harus 
+dilakukan kedepanya oleh penyelanggara 
+pelayanan[5]. 
+ 
+2.3 Prototipe 
+Prototipe adalah versi awal sebuah sistem 
+informasi yang digunakan untuk mengkonsep, 
+mencari masalah dan melakukan percobaan 
+sistem yang akan dirancang. Sistem dengan 
+model prototipe memungkinkan pengguna ikut 
+terlibat dalam perancangan sistem yang akan 
+dibangun[4]. 
+Terdapat tahapan -tahapan dalam proses 
+perancangan menggunakan metode 
+perancangan prototipe, pada penelitian ini 
+tahapan prototipe terdiri dari : 
+
+==================== PAGE 3 ====================
+ 
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  pISSN: 2303-0577 eISSN: 2830-7062  Fikri et al  
+  403  
+2.3.1 Identifikasi Kebutuhan Sistem 
+Identifikasi kebutuhan sistem merupakan 
+tahapan awal dari metode prototipe. Identifikasi 
+kebutuhan sistem ini dilakukan dengan cara 
+menganalisis kebutuhan fungsional dan 
+nonfungsional sistem yang akan dirancang[6]. 
+ 
+2.3.2 Perancangan Sistem  
+Perancangan sistem  dimulai dengan 
+mengembangkan  hasil identifikasi kebutuhan 
+pengguna menjadi sebuah sistem dengan 
+tahapan perancangan sistem sebagai berikut : 
+A. Diagram Konteks 
+Diagram Konteks merupakan diagram yang 
+menggambarkan masukan dan keluaran sebuah 
+sistem secara sistematis. Diagram konteks 
+digunakan untuk mengetahui Batasan apa saja 
+yang bisa dilakukan oleh sistem baik dari pihak 
+luar ataupun internal[7]. 
+B. Data Flow Diagram 
+Data Flow Diagram  (DFD) yaitu runtutan 
+aliran seluruh data didalam sistem yang 
+digambarkan dengan bentuk diagram agar 
+mudah dipahami. Aliran data yang 
+digambarkan yaitu aliran yang lebih rinci dari 
+diagram konteks pada proses input, proses dan 
+output pada sistem[4]. 
+C. Entity Relationship Diagram  
+Entity Relationship Diagram  (ERD) yaitu 
+aliran data yang terdapat pada basis data di 
+database pada sistem yang dirancang. Diagram 
+ini menggambarkan pertukaran data dan relasi 
+data pada sistem. Entity Relationship Diagram 
+harus memuat tiga elemen basis data yaitu 
+atribut, entitas dan relasi antar entitas[4]. 
+D. Kamus Data 
+Kamus data (Data dictionary) merupakan 
+sekumpulan fakta dalam entitas yang 
+dijabarkan lebih dalam dan lebih rinci yang 
+disebut dengan atribut. 
+E. Design Interface 
+Design Interface merupakan kumpulan 
+pemodelan desain tampilan dari sebuah sistem 
+informasi yang  sudah dirancang untuk 
+diperlihatkan kepada pengguna. Tampilan 
+sistem ini membuat pengguna lebih mudah 
+mengerti dan melihat apa yang akan peneliti 
+rancang[8]. 
+F. Activity Diagram 
+Diagram  aktivitas  menyerupai   diagram  
+alur  horizontal  yang menunjukkan tindakan 
+serta peristiwa saat terjadi interaksi pada sistem. 
+Diagram aktivitas menunjukkan urutan  
+aktivitas dalam proses menjalankan sistem  
+serta mengidentifikasi  hasil. 
+ 
+2.3.3 Evaluasi Sistem 
+Evaluasi sistem meru pakan proses 
+mengevaluasi sistem yang sudah dirancang [9]. 
+Evaluasi sistem dilakukan dengan cara 
+mendapatkan umpan balik dari pengguna 
+terhadap sistem yang  telah dirancang penulis, 
+apakah rancangan aplikasi diterima atau tidak 
+oleh pengguna. 
+ 
+2.3.4 Produksi Akhir 
+Sistem yang sudah diterima oleh pengguna 
+selanjutnya di produksi secara final dan bisa 
+digunakan sesuai kebutuhanya. 
+3. METODE PENELITIAN  
+ 
+3.1 Metode Perancangan Sistem 
+Prototipe merupakan metode perancangan 
+dan perancangan sistem yang dapat dengan 
+cepat menyelesaikan proses pembangunan dan 
+pengembangannya. Metode Prototipe selain 
+melibatkan ahli sistem (developer), 
+pengembangan dan pembangunan sistem [9]. 
+Prototipe juga melibatkan peran serta 
+memperhatikan keinginan pengguna. Tujuan 
+utama dari metode Prototipe adalah melibatkan 
+pengguna dalam mendesain sistem dan 
+menanggapi umpan balik pengguna pada tahap 
+awal pengembangan sistem. 
+ 
+Gambar 1 Kerangka Teori 
+ 
+3.2 Teknik Pengumpulan Data 
+Berikut cara penulis mengumpulkan  data 
+yang akan digunakan pada penelitian yang 
+dilakukan : 
+A.  Wawancara 
+Penulis membuat pedoman wawancara yang 
+digunakan untuk  bertatap muka melakukan 
+wawancara mendalam dan tanya jawab dengan 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Ya 
+Tidak 
+Produksi  
+Akhir 
+
+==================== PAGE 4 ====================
+ 
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  pISSN: 2303-0577 eISSN: 2830-7062  Fikri et al  
+  404  
+responden yang terlibat seperti Kepala 
+Puskemas, Koordinator Bida ng Penjaminan 
+Mutu, Perekam Medis dan Informasi Kesehatan 
+dan Pasien untuk mengetahui alur pengukuran 
+Indeks Kepuasan Masyrakat dan kebutuhan apa 
+saja yang dibutuhkan pada sistem yang 
+dirancang penulis. 
+B.  Observasi 
+Penulis melakukan observasi atau 
+pengamatan secara langsung terhadap apa saja 
+kegiatan yang berhubungan dengan masalah 
+yang diambil . Pengamatan dilakukan secara 
+langsung di UPTD Puskesmas Panjalu. 
+4. HASIL DAN PEMBAHASAN  
+ 
+4.1 Identifikasi Kebutuhan Sistem 
+Perancangan aplikasi sistem indeks 
+kepuasan masyarakat di UPTD Puskesmas 
+Panjalu memiliki dua kebutuhan sistem, yaitu 
+kebutuhan fungsional dan nonfungsional 
+sistem. 
+ 
+4.1.1 Analisis Kebutuhan Fungsional 
+Berdasarkan hasil penelitian didapatkan 
+kebutuhan fungsional sistem indeks kepuasan 
+masyarakat di UPTD Puskesmas Panjalu 
+sebagai berikut : 
+A. Pasien 
+1. Homepage 
+Halaman homepage ini merupakan 
+dashboard utama ketika pasien atau 
+petugas pertama kali mengakses 
+sistem. 
+2. Halaman Survei 
+Pasien melakukan pengisian survei 
+indeks kepuasan masyarakat di 
+halaman ini. Pasien mengisi data diri 
+dan memilih unit pelayanan yang 
+akan diberi penilaiain lalu pasien 
+mengisi kuisioner survei kepuasan 
+pasien. 
+B. Petugas 
+1. Halaman Masuk 
+Menu ini dapat diakses  oleh petugas 
+untuk login ke dalam sistem berlevel 
+admin yang sudah memiliki 
+keamanan berupa username dan 
+password. 
+2. Halaman Tabel Responden 
+Halaman tabel responden 
+menyediakan informasi hasil survei 
+dan data pasien yang masuk kedalam 
+sistem. 
+3. Cetak Tabel Responden 
+Petugas dapat mencetak info rmasi 
+hasil survei kepuasan pasien yang 
+tersedia di menu tabel responden. 
+4. Halaman Statistik 
+Halaman statistik ini memberikan 
+informasi hasil survei kepuasan 
+pasien dalam bentuk persentase dan 
+grafik. 
+5. Menu Cetak Laporan 
+Petugas dapat mencetak laporan 
+indeks kepuasan masyarakat dari hasil 
+pengolahan data survei kepuasan 
+pasien di menu cetak laporan 
+ 
+4.1.2 Analisis Kebutuhan Nonfungsional 
+Kebutuhan nonfungsional merupakan 
+kebutuhan perangkat keras  ataupun perangkat 
+lunak  untuk menunjang kebutuhan fungsional. 
+A. Perangkat Lunak 
+Perangkat lunak yang digunakan dalam 
+merancang sistem indeks kepuasan 
+masyarakat di UPTD Puskesmas Panjalu 
+diantaranya adalah xampp, google chrome 
+dan visual studio code. 
+B. Perangkat Keras 
+Perangkat keras yang akan digunakan 
+untuk menjalankan sistem indeks kepuasan 
+masyarakat di UPTD Puskesmas Panjalu 
+ini adalah satu unit laptop yang terhubung 
+ke jaringan internet (Wireless Fidelty)    
+Wi-fi. 
+ 
+4.2 Perancangan Sistem 
+ 
+4.2.1 Data Flow Diagram 
+ Data flow diagram  disusun dengan 
+menggambarkan proses alur data pada sistem 
+indeks kepuasan masyarakat di UPTD 
+Puskesmas Panjalu. 
+ 
+ 
+Gambar 2 DFD Sistem IKM Level 0 
+
+
+==================== PAGE 5 ====================
+ 
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  pISSN: 2303-0577 eISSN: 2830-7062  Fikri et al  
+  405  
+ 
+ 
+Gambar 3 DFD Sistem IKM Level 1 
+ 
+ 
+Gambar 4 DFD Sistem IKM Level 2 Proses 1 
+ 
+ 
+Gambar 5 DFD Sistem IKM Level 2 Proses 2 
+ 
+Gambar 6 DFD Sistem IKM Level 2 Proses 3 
+ 
+4.2.2 Entity Relationship Diagram 
+ ERD yang di buat oleh peneliti merupakan 
+kumpulan tabel  data dalam Phpmyadmin, 
+dimana hubungan antara tabel diatur melalui 
+bahasa pemrograman SQL. 
+ 
+Gambar 7 Entity Relationship Diagram 
+ 
+4.2.3 Kamus Data 
+Kamus data yang digunakan peneliti 
+mengacu kepada standar Kamus Data 
+Kesehatan Indonesia (Kata Hat -I) yang dibuat 
+oleh Kemenkes RI. 
+A. Tabel User 
+Tabel 1 
+Kamus Data User 
+ 
+B. Tabel Jenis Pelayanan 
+Tabel 2 
+Kamus Data Jenis Pelayanan 
+ 
+ 
+C. Tabel Pertanyaan 
+Tabel 3 
+Kamus Data Pertanyaan 
+ 
+ 
+D. Tabel Pasien 
+Tabel 4 
+Kamus Data Pasien 
+ 
+ 
+ 
+ 
+ 
+Nama Field Type/size Keterangan 
+id_user Int(11) Primary Key 
+username Varchar(25) Identitas Login Petugas 
+password Varchar(50) Identitas Login Petugas 
+ 
+Nama Field Type/size Keterangan 
+id_pelayanan Int(11) Primary Key 
+jenis_pelayanan Varchar(25) Jenis Pelayanan 
+ 
+Nama Field Type/size Keterangan 
+id_pertanyaan Int(11) Primary Key 
+pertanyaan Varchar(250) Pertanyaan Kuisioner 
+ 
+Nama Field Type/size Keterangan 
+id_pasien Int(11) Primary Key 
+pekerjaan Number(6) Pekerjaan 
+pendidikan Number(1) Pendidikan Terakhir 
+jenis_kelamin Number(2) Jenis Kelamin 
+ 
+
+==================== PAGE 6 ====================
+ 
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  pISSN: 2303-0577 eISSN: 2830-7062  Fikri et al  
+  406  
+E. Tabel Kuisioner 
+Tabel 5 
+Kamus Data Kuisioner 
+ 
+ 
+4.2.4 Activity Diagram 
+Activity Diagram dibuat penulis berdasarkan 
+urutan peristiwa dan interaksi pengguna 
+terhadap sistem.  Activity diagram  dibuat agar 
+memudahkan pengguna dalam membaca alur 
+interaksi dengan sistem. 
+ 
+Gambar 8 Diagram Activity 
+ 
+4.2.5 Design Interface 
+Pada bagian ini merupakan tampilan dari 
+aplikasi Indeks Kepuasan Masyarakat yang 
+dibuat menggunakan bahasa pemrograman. 
+Hasil dari penelitian ini merupakan sebuah 
+aplikasi sistem yang sudah siap diuji dan 
+dijalankan. 
+A. Tampilan Dashboard 
+Halaman dashboard utama ini dibuat untuk 
+melihat informasi indeks kepuasan m asyarakat 
+di UPTD Puskesmas Panjalu secara umum. 
+ 
+Gambar 9 Dashboard 
+ 
+B. Halaman Survei Kepuasan 
+Halaman ini dibuat untuk pasien melakukan 
+pengisian data diri dan surve i kepuasan 
+menggunakan kuisioner berskala likert. 
+ 
+Gambar 10 Tampilan Survei Kepuasan 
+ 
+C. Halaman Validasi 
+Halaman ini dibuat untuk memvalidasi 
+apakah hasil survei sudah terkirim ke sistem 
+atau tidak. 
+ 
+Gambar 11 Halaman Validasi 
+ 
+D. Halaman Login Petugas 
+Halaman ini dibuat untuk membatasi pasien 
+dalam mengakses sistem. Petugas dapat login 
+ke sistem berlevel admin dengan memasukan 
+username dan password. 
+ 
+Gambar 12 Halaman Login Petugas 
+ 
+Nama Field Type/size Keterangan 
+id_kuisioner Int(11) Primary Key 
+id_pelayanan Int(11) Foreign Key 
+id_pertanyaan Int(11) Foreign Key 
+Id_pasien Int(11) Foreign Key 
+tanggal date Tanggal Mengisi 
+jawaban_1 Varchar(25) Jawaban Pertanyaan No.1 
+jawaban_2 Varchar(25) Jawaban Pertanyaan No.2 
+jawaban_3 Varchar(25) Jawaban Pertanyaan No.3 
+jawaban_4 Varchar(25) Jawaban Pertanyaan No.4 
+jawaban_5 Varchar(25) Jawaban Pertanyaan No.5 
+jawaban_6 Varchar(25) Jawaban Pertanyaan No.6 
+jawaban_7 Varchar(25) Jawaban Pertanyaan No.7 
+jawaban_8 Varchar(25) Jawaban Pertanyaan No.8 
+jawaban_9 Varchar(25) Jawaban Pertanyaan No.9 
+ 
+
+
+==================== PAGE 7 ====================
+ 
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  pISSN: 2303-0577 eISSN: 2830-7062  Fikri et al  
+  407  
+E. Menu Tabel Responden 
+Halaman ini berisi data responden dan 
+jawaban survei yang masuk kedalam sistem. 
+Petugas disini dapat memfilter  data dan 
+mendownload data untuk keperluan pelaporan. 
+ 
+Gambar 13 Halaman Tabel Responden 
+ 
+F. Menu Statistik Responden 
+Halaman ini berisi tentang statistik data yang 
+masuk kedalam sistem dalam bentuk grafik. 
+ 
+Gambar 14 Halaman Statistik 
+ 
+G. Menu Laporan 
+Halaman ini dibuat agar petugas dapat 
+mendownload atau print laporan yang sesuai 
+dengan pedoman Indeks Kepuasan Pasien 
+menurut peraturan Permenpan RB No. 14 
+Tahun 2017. 
+ 
+Gambar 15 Halaman Laporan 
+5. KESIMPULAN 
+ Penulis membuat beberapa kesimpulan 
+yang disimpulkan dari pembahasan 
+sebelumnya, diantaranya sebagai berikut : 
+a. Prosedur pengukuran indeks kepuasan 
+masyarakat di UPTD Puskesmas Panjalu 
+masih menggunakan cara manual. 
+b. Perancangan aplikasi yang dibuat 
+diharapkan peneliti dapat mempermudah 
+proses peng olahan data dan pelaporan 
+indeks kepuasan masyarakat di UPTD 
+Puskesmas Panjalu. 
+c. Aplikasi ini dapat mengotomatisasi 
+pengolahan data dan pelaporan indeks 
+kepuasan masyarakat yang dapat 
+membantu mengefektifkan proses 
+pengukuran indeks kepuasan masyarakat. 
+d. Aplikasi ini dibuat dengan 2 level hak 
+akses, diantaranya level admin dan level 
+pasien. 
+e. Keluaran yang dihasilkan oleh rancangan 
+aplikasi ini berupa laporan indeks 
+kepuasan masyarakat di UPTD Puskesmas 
+Panjalu.  
+ 
+UCAPAN TERIMA KASIH 
+ 
+Puji dan syukur penulis panjatkan pada 
+Allah SWT. berkat rahmat dan k ehendak-Nya, 
+penelitian ini dapat diselesaikan dengan tepat 
+waktu. Terima kasih kepada pihak UPTD 
+Puskesmas Panjalu yang telah mengizinkan 
+penulis melakukan penilitian ini. Terima kasih 
+sebesar-besarnya kepada Bapak Ari Sukawan, 
+S.St., M.Kes, selaku dosen pembimbing yang 
+selalu mendukung penulis dalam melakukan 
+penelitian. Terima kasih kepada rekan, teman 
+dan sahabat yang selalu membantu penulis. 
+Terima kasih kepada Nazwa Salsabila Azzahra 
+yang selalu mem beri dorongan semangat 
+kepada penulis. Terakhir, selaku penulis 
+mengucapkan banyak terima kasih kepada 
+Ayah dan Ibu selaku orang tua yang selalu 
+memberikan seluruh do’a dan dukungan kepada 
+penulis. 
+DAFTAR PUSTAKA 
+ 
+[1] Permenkes 43 Tahun 2019, “ Puskesmas 
+Pusat Kesehatan Masyarakat,” Jurnal 
+Keperawatan Dan Fisioterapi, Vol. 2, Pp. 1–
+3, 2019. 
+[2] Kemenkes Ri, Peraturan Menteri Kesehatan 
+Republik Indonesia Nomor 30 Tahun 2022 
+Tentang Indikator Nasional Mutu Pelayanan 
+Kesehatan Tempat Praktik Mandiri  Dokter 
+Dan Dokter Gigi, Klinik, Pusat Kesehatan 
+Masyarakat, Rumah Sakit, Laboratorium 
+Kesehatan, Dan Unit Transfusi Darah.  
+
+
+==================== PAGE 8 ====================
+ 
+JITET (Jurnal Informatika dan Teknik Elektro Terapan)  pISSN: 2303-0577 eISSN: 2830-7062  Fikri et al  
+  408  
+[3] Permenpan R B, Peraturan Menteri 
+Pendayagunaan Aparatur Negara Dan 
+Reformasi Birokrasi Tentang Pedoman 
+Penyusunan Survei Kepuasan Masyarakat 
+Unit Penyelenggara Pelayanan Publik. 2017. 
+[4] F. Hakam, Sistem Informasi Kesehatan. 
+Gosyen, 2020. 
+[5] M. Kurdi, “Pengukuran Indeks Kepuasan 
+Masyarakat (I KM) Di Puskesmas 
+Pamarayan Kabupaten Serang,” 2016. 
+[Online]. Available: Www.Juliwi.Com 
+[6] D. Barsasella, Sistem Informasi Kesehatan. 
+Mitra Wacana Medika, 2012. 
+[7] Dewi, “Perancangan Sistem Informasi 
+Puskesmas Berbasis Web,” Jurnal Ikra -Ith 
+Informatika, Vol. 4, No. 103, Pp. 12 –19, 
+2020. 
+[8] E. Y. Anggraeni And R. Irviani, Pengantar 
+Sistem Informasi. Yogyakarta: Cv. Andi 
+Offset, 2017. 
+[9] Sulianta, Strategi Merancang Arsitektur 
+Sistem Informasi Masa Kini. 2019. 
+  
+ 
+

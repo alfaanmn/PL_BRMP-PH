@@ -1,43 +1,61 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import {
   adminPengajuanService,
   type AdminPengajuanListItem,
 } from '@/lib/services/admin-pengajuan.service'
 import { PengajuanFilterBar } from '@/components/admin/pengajuan-filter-bar'
 
-export default function AdminRiwayatPengajuanPage() {
+function RiwayatPengajuanContent() {
+  const searchParams = useSearchParams()
   const [pengajuans, setPengajuans] = useState<AdminPengajuanListItem[]>([])
   const [bidangs, setBidangs] = useState<Array<{ id: number | string; nama: string }>>([])
+  const [pembimbings, setPembimbings] = useState<Array<{ id: number | string; nama: string }>>([])
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   // Filter & Pagination state
   const [statusFilter, setStatusFilter] = useState('semua')
   const [bidangFilter, setBidangFilter] = useState('semua')
-  const [searchKeyword, setSearchKeyword] = useState('')
+  const [pembimbingFilter, setPembimbingFilter] = useState('semua')
+  const [jenjangFilter, setJenjangFilter] = useState('semua')
+  const [startDateFilter, setStartDateFilter] = useState('')
+  const [endDateFilter, setEndDateFilter] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState(searchParams.get('search') || '')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const limit = 10
 
-  // Load Bidang list for dropdown
+  // Sinkronkan kata kunci saat parameter URL berubah dari Navbar Search
   useEffect(() => {
-    async function loadBidangs() {
+    const urlQuery = searchParams.get('search')
+    if (urlQuery !== null && urlQuery !== undefined) {
+      setSearchKeyword(urlQuery)
+      setCurrentPage(1)
+    }
+  }, [searchParams])
+
+  // Load Bidang & Pembimbing list for dropdowns
+  useEffect(() => {
+    async function loadMasterOptions() {
       try {
-        const res = await adminPengajuanService.getBidangList()
-        if (res.data) {
-          setBidangs(res.data)
-        }
+        const [bidangRes, pembimbingRes] = await Promise.all([
+          adminPengajuanService.getBidangList(),
+          adminPengajuanService.getPembimbingList(),
+        ])
+        if (bidangRes.data) setBidangs(bidangRes.data)
+        if (pembimbingRes.data) setPembimbings(pembimbingRes.data)
       } catch (err) {
-        console.warn('Gagal memuat daftar bidang:', err)
+        console.warn('Gagal memuat opsi master filter:', err)
       }
     }
-    loadBidangs()
+    loadMasterOptions()
   }, [])
 
-  // Load Pengajuans list
+  // Load Pengajuans list (Server-Side Filter)
   const loadPengajuans = useCallback(async () => {
     try {
       setLoading(true)
@@ -46,6 +64,10 @@ export default function AdminRiwayatPengajuanPage() {
       const res = await adminPengajuanService.getAdminPengajuans({
         status: statusFilter,
         bidangId: bidangFilter,
+        pembimbingId: pembimbingFilter,
+        jenjang: jenjangFilter,
+        startDate: startDateFilter || undefined,
+        endDate: endDateFilter || undefined,
         search: searchKeyword,
         page: currentPage,
         limit,
@@ -63,11 +85,31 @@ export default function AdminRiwayatPengajuanPage() {
     } finally {
       setLoading(false)
     }
-  }, [statusFilter, bidangFilter, searchKeyword, currentPage])
+  }, [
+    statusFilter,
+    bidangFilter,
+    pembimbingFilter,
+    jenjangFilter,
+    startDateFilter,
+    endDateFilter,
+    searchKeyword,
+    currentPage,
+  ])
 
   useEffect(() => {
     loadPengajuans()
   }, [loadPengajuans])
+
+  const handleResetFilters = () => {
+    setStatusFilter('semua')
+    setBidangFilter('semua')
+    setPembimbingFilter('semua')
+    setJenjangFilter('semua')
+    setStartDateFilter('')
+    setEndDateFilter('')
+    setSearchKeyword('')
+    setCurrentPage(1)
+  }
 
   const totalPages = Math.max(Math.ceil(totalCount / limit), 1)
 
@@ -133,6 +175,15 @@ export default function AdminRiwayatPengajuanPage() {
     }
   }
 
+  const hasActiveFilter =
+    statusFilter !== 'semua' ||
+    bidangFilter !== 'semua' ||
+    pembimbingFilter !== 'semua' ||
+    jenjangFilter !== 'semua' ||
+    startDateFilter !== '' ||
+    endDateFilter !== '' ||
+    searchKeyword.trim() !== ''
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '1200px' }}>
       {/* 1. Page Header */}
@@ -165,8 +216,13 @@ export default function AdminRiwayatPengajuanPage() {
       <PengajuanFilterBar
         selectedStatus={statusFilter}
         selectedBidang={bidangFilter}
+        selectedPembimbing={pembimbingFilter}
+        selectedJenjang={jenjangFilter}
+        startDate={startDateFilter}
+        endDate={endDateFilter}
         searchKeyword={searchKeyword}
         bidangs={bidangs}
+        pembimbings={pembimbings}
         onStatusChange={(st) => {
           setStatusFilter(st)
           setCurrentPage(1)
@@ -175,13 +231,30 @@ export default function AdminRiwayatPengajuanPage() {
           setBidangFilter(bd)
           setCurrentPage(1)
         }}
+        onPembimbingChange={(pb) => {
+          setPembimbingFilter(pb)
+          setCurrentPage(1)
+        }}
+        onJenjangChange={(jj) => {
+          setJenjangFilter(jj)
+          setCurrentPage(1)
+        }}
+        onStartDateChange={(sd) => {
+          setStartDateFilter(sd)
+          setCurrentPage(1)
+        }}
+        onEndDateChange={(ed) => {
+          setEndDateFilter(ed)
+          setCurrentPage(1)
+        }}
         onSearchChange={(kw) => {
           setSearchKeyword(kw)
           setCurrentPage(1)
         }}
+        onResetFilters={handleResetFilters}
       />
 
-      {/* 3. List Pengajuan Container (Single Container with Row Items) */}
+      {/* 3. List Pengajuan Container */}
       <div
         style={{
           backgroundColor: '#ffffff',
@@ -196,13 +269,32 @@ export default function AdminRiwayatPengajuanPage() {
             Memuat daftar pengajuan...
           </div>
         ) : pengajuans.length === 0 ? (
-          <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#9ca3af' }}>
-            <div style={{ fontWeight: 500, color: '#4b5563', fontSize: '13px' }}>
-              Belum ada pengajuan yang sesuai filter.
+          <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: '#64748b' }}>
+            <div style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px', marginBottom: '0.25rem' }}>
+              Tidak ada data yang sesuai dengan filter.
             </div>
-            <div style={{ fontSize: '11px', marginTop: '0.25rem' }}>
-              Coba ganti filter status atau kata kunci pencarian Anda.
+            <div style={{ fontSize: '12px', color: '#64748b', maxWidth: '400px', margin: '0 auto 1rem auto' }}>
+              Coba sesuaikan kata kunci pencarian, rentang tanggal, atau ganti parameter filter bidang dan status Anda.
             </div>
+            {hasActiveFilter && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                style={{
+                  padding: '5px 14px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#16a34a',
+                  backgroundColor: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease',
+                }}
+              >
+                Kembalikan semua filter
+              </button>
+            )}
           </div>
         ) : (
           <div>
@@ -342,5 +434,13 @@ export default function AdminRiwayatPengajuanPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AdminRiwayatPengajuanPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Memuat riwayat pengajuan...</div>}>
+      <RiwayatPengajuanContent />
+    </Suspense>
   )
 }

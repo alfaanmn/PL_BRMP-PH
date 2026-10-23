@@ -95,6 +95,16 @@ export function AdminSidebar({
             </svg>
           ),
         },
+        {
+          label: 'Sertifikat Magang',
+          href: '/admin/sertifikat',
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="6" />
+              <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+            </svg>
+          ),
+        },
       ],
     },
     {
@@ -259,23 +269,23 @@ export function AdminSidebar({
               minWidth: 0,
             }}
           >
-            {/* Logo Emblem SIM-Magang (smile.png) */}
+            {/* Logo Emblem SIMPUL BRMP-PH */}
             <div
               style={{
                 width: '36px',
                 height: '36px',
                 borderRadius: '8px',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '2px',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.2)',
+                padding: '3px',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
                 flexShrink: 0,
                 overflow: 'hidden',
               }}
             >
-              <AppLogo size={32} alt="Logo Admin SIM-Magang" />
+              <AppLogo size={30} alt="Logo Admin SIMPUL BRMP-PH" />
             </div>
 
             <div
@@ -289,7 +299,7 @@ export function AdminSidebar({
               className="admin-brand-text"
             >
               <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', lineHeight: 1.15 }}>
-                SIM BRMP PH
+                SIMPUL BRMP-PH
               </div>
               <div style={{ fontSize: '0.6875rem', color: '#6ee7b7', fontWeight: 500, letterSpacing: '0.02em', marginTop: '2px' }}>
                 Admin Portal

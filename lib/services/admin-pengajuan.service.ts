@@ -4,6 +4,10 @@ import { emailService } from '@/lib/services/email.service'
 export interface AdminPengajuanFilterParams {
   status?: string
   bidangId?: string | number
+  pembimbingId?: string | number
+  jenjang?: string
+  startDate?: string
+  endDate?: string
   search?: string
   page?: number
   limit?: number
@@ -149,20 +153,49 @@ export const adminPengajuanService = {
           )
         `, { count: 'exact' })
 
-      // Filter status
+      // 1. Filter status
       if (params.status && params.status !== 'semua' && params.status !== 'All') {
-        query = query.eq('status', params.status)
+        if (params.status === 'Sedang Magang') {
+          query = query.in('status', ['Sedang Magang', 'Disetujui'])
+        } else {
+          query = query.eq('status', params.status)
+        }
       }
 
-      // Filter bidang
+      // 2. Filter bidang
       if (params.bidangId && params.bidangId !== 'semua' && params.bidangId !== 'All') {
         query = query.eq('bidang_id', Number(params.bidangId))
       }
 
-      // Search keyword pada nama_lengkap, nim_nis, asal_instansi, nomor_surat
+      // 3. Filter pembimbing
+      if (params.pembimbingId && params.pembimbingId !== 'semua' && params.pembimbingId !== 'All') {
+        query = query.eq('pembimbing_id', Number(params.pembimbingId))
+      }
+
+      // 4. Filter jenjang
+      if (params.jenjang && params.jenjang !== 'semua' && params.jenjang !== 'All') {
+        query = query.eq('jenjang', params.jenjang)
+      }
+
+      // 5. Filter periode tanggal inklusif
+      if (params.startDate && params.endDate) {
+        const endInclusive = `${params.endDate}T23:59:59.999Z`
+        const startInclusive = `${params.startDate}T00:00:00.000Z`
+        query = query.or(
+          `and(created_at.gte.${startInclusive},created_at.lte.${endInclusive}),and(tanggal_mulai.lte.${params.endDate},tanggal_selesai.gte.${params.startDate})`
+        )
+      } else if (params.startDate) {
+        const startInclusive = `${params.startDate}T00:00:00.000Z`
+        query = query.or(`created_at.gte.${startInclusive},tanggal_selesai.gte.${params.startDate}`)
+      } else if (params.endDate) {
+        const endInclusive = `${params.endDate}T23:59:59.999Z`
+        query = query.or(`created_at.lte.${endInclusive},tanggal_mulai.lte.${params.endDate}`)
+      }
+
+      // 6. Multi-field Server-Side Search Keyword (nama, NIM, instansi, jurusan, no surat, public id)
       if (params.search && params.search.trim() !== '') {
         const term = params.search.trim()
-        query = query.or(`nama_lengkap.ilike.%${term}%,nim_nis.ilike.%${term}%,asal_instansi.ilike.%${term}%,nomor_surat.ilike.%${term}%,public_id.ilike.%${term}%`)
+        query = query.or(`nama_lengkap.ilike.%${term}%,nim_nis.ilike.%${term}%,asal_instansi.ilike.%${term}%,jurusan.ilike.%${term}%,nomor_surat.ilike.%${term}%,public_id.ilike.%${term}%`)
       }
 
       query = query.order('created_at', { ascending: false }).range(from, to)
@@ -527,38 +560,78 @@ export const adminPengajuanService = {
           const bidangInfo = (pData as any).bidangs
           const pembimbingInfo = (pData as any).pembimbings
 
-          let eventType: 'pengajuan_approved' | 'pengajuan_rejected' | 'pengajuan_completed' = 'pengajuan_approved'
-          if (payload.status === 'Ditolak') {
-            eventType = 'pengajuan_rejected'
-          } else if (payload.status === 'Selesai') {
-            eventType = 'pengajuan_completed'
-          }
+          if (payload.status === 'Selesai') {
+            // Jalur Pengajuan Selesai: Klaim atomik skm_reminder_sent_at untuk cegah pengiriman email ganda
+            const { data: claimed, error: claimErr } = await supabase
+              .from('pengajuans')
+              .update({ skm_reminder_sent_at: new Date().toISOString() })
+              .eq('id', payload.pengajuanId)
+              .is('skm_reminder_sent_at', null)
+              .select('id')
 
-          // Panggil email service secara aman tanpa mengganggu transaksi utama
-          await emailService.sendNotification({
-            event: eventType,
-            recipient: {
-              email: userProfile.email,
-              name: userProfile.name || 'Peserta Magang',
-            },
-            pengajuan: {
-              id: pData.id,
-              publicId: pData.public_id || String(pData.id),
-              bidangNama: bidangInfo?.nama,
-              asalInstansi: pData.asal_instansi,
-              tanggalMulai: pData.tanggal_mulai,
-              tanggalSelesai: pData.tanggal_selesai,
-            },
-            pembimbing: pembimbingInfo
-              ? {
-                  nama: pembimbingInfo.nama,
-                  nip: pembimbingInfo.nip,
-                  jabatan: pembimbingInfo.jabatan,
-                }
-              : null,
-            alasanPenolakan: payload.alasanPenolakan,
-            catatan: payload.catatan,
-          })
+            if (!claimErr && claimed && claimed.length > 0) {
+              const emailRes = await emailService.sendNotification({
+                event: 'pengajuan_completed',
+                recipient: {
+                  email: userProfile.email,
+                  name: userProfile.name || 'Peserta Magang',
+                },
+                pengajuan: {
+                  id: pData.id,
+                  publicId: pData.public_id || String(pData.id),
+                  bidangNama: bidangInfo?.nama,
+                  asalInstansi: pData.asal_instansi,
+                  tanggalMulai: pData.tanggal_mulai,
+                  tanggalSelesai: pData.tanggal_selesai,
+                },
+                pembimbing: pembimbingInfo
+                  ? {
+                      nama: pembimbingInfo.nama,
+                      nip: pembimbingInfo.nip,
+                      jabatan: pembimbingInfo.jabatan,
+                    }
+                  : null,
+                catatan: payload.catatan || 'Periode magang telah diselesaikan',
+              })
+
+              if (!emailRes.success) {
+                console.error('[AdminPengajuanService] Gagal kirim email pengajuan_completed, rollback skm_reminder_sent_at:', emailRes.error)
+                await supabase
+                  .from('pengajuans')
+                  .update({ skm_reminder_sent_at: null })
+                  .eq('id', payload.pengajuanId)
+              }
+            }
+          } else {
+            // Jalur Disetujui / Ditolak
+            const eventType: 'pengajuan_approved' | 'pengajuan_rejected' =
+              payload.status === 'Ditolak' ? 'pengajuan_rejected' : 'pengajuan_approved'
+
+            await emailService.sendNotification({
+              event: eventType,
+              recipient: {
+                email: userProfile.email,
+                name: userProfile.name || 'Peserta Magang',
+              },
+              pengajuan: {
+                id: pData.id,
+                publicId: pData.public_id || String(pData.id),
+                bidangNama: bidangInfo?.nama,
+                asalInstansi: pData.asal_instansi,
+                tanggalMulai: pData.tanggal_mulai,
+                tanggalSelesai: pData.tanggal_selesai,
+              },
+              pembimbing: pembimbingInfo
+                ? {
+                    nama: pembimbingInfo.nama,
+                    nip: pembimbingInfo.nip,
+                    jabatan: pembimbingInfo.jabatan,
+                  }
+                : null,
+              alasanPenolakan: payload.alasanPenolakan,
+              catatan: payload.catatan,
+            })
+          }
         }
       } catch (emailErr) {
         console.warn('[AdminPengajuanService] Gagal memicu notifikasi email:', emailErr)
@@ -574,6 +647,26 @@ export const adminPengajuanService = {
         success: false,
         error: msg,
       }
+    }
+  },
+
+  /**
+   * Mengambil daftar seluruh master pembimbing aktif untuk opsi dropdown filter
+   */
+  async getPembimbingList(): Promise<{ data: Array<{ id: number | string; nama: string }>; error: string | null }> {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pembimbings')
+        .select('id, nama')
+        .eq('is_active', true)
+        .order('nama', { ascending: true })
+
+      if (error) return { data: [], error: error.message }
+      return { data: data || [], error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memuat daftar pembimbing.'
+      return { data: [], error: msg }
     }
   },
 }

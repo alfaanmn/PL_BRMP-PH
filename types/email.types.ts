@@ -3,6 +3,7 @@ export type EmailNotificationEvent =
   | 'pengajuan_approved'
   | 'pengajuan_rejected'
   | 'pengajuan_completed'
+  | 'sertifikat_available'
 
 export interface EmailRecipient {
   email: string

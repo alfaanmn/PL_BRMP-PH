@@ -216,7 +216,7 @@ function VerifyOtpForm() {
           display: flex;
           flex: 1 1 500px;
           min-height: 100vh;
-          background-image: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(21, 128, 61, 0.55) 50%, rgba(6, 95, 70, 0.70) 100%), url('/BRMP_PH.png');
+          background-image: linear-gradient(135deg, rgba(6, 78, 59, 0.72) 0%, rgba(21, 128, 61, 0.60) 50%, rgba(6, 95, 70, 0.78) 100%), url('/auth_banner.jpg');
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
@@ -372,7 +372,7 @@ function VerifyOtpForm() {
             letterSpacing: '0.03em'
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#4ade80' }} />
-            <span>SIM-MAGANG &amp; PKL</span>
+            <span>SIMPUL MAGANG &amp; PKL</span>
           </div>
 
           <h1 style={{
@@ -384,7 +384,7 @@ function VerifyOtpForm() {
             color: '#ffffff',
             textShadow: '0 2px 8px rgba(0, 0, 0, 0.4)'
           }}>
-            Badan Perakitan dan Modernisasi Pertanian Pengelola Hasil
+            Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian
           </h1>
 
           <p style={{
@@ -412,7 +412,7 @@ function VerifyOtpForm() {
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
             <span>🏢</span>
-            <span>Jl. Salak 22 Bogor 16128</span>
+            <span>Jl. Salak Kel No.22, RT.03/RW.04, Bogor 16128</span>
           </div>
         </div>
 
@@ -445,10 +445,10 @@ function VerifyOtpForm() {
               </div>
               <div>
                 <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#15803d', display: 'block', lineHeight: 1.2 }}>
-                  SIM-Magang
+                  SIMPUL BRMP-PH
                 </span>
                 <span style={{ fontSize: '0.625rem', color: '#64748b', fontWeight: 600, display: 'block', lineHeight: 1.1 }}>
-                  BRMP Kementan RI
+                  Kementerian Pertanian RI
                 </span>
               </div>
             </Link>

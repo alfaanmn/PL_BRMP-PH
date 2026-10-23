@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { bidangService } from '@/lib/services/bidang.service'
 import { Navbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 import { AppLogo } from '@/components/shared/app-logo'
 import type { AppRole } from '@/types/auth.types'
 
@@ -1064,129 +1065,8 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
         </div>
       </main>
 
-      {/* Footer Resmi BRMP Kementan RI */}
-      <footer style={{
-        backgroundColor: '#064e3b',
-        color: '#d1fae5',
-        padding: '3rem 1.5rem 2rem 1.5rem',
-        marginTop: 'auto',
-        borderTop: '1px solid #047857'
-      }}>
-        <div style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '2.5rem',
-          marginBottom: '2rem'
-        }}>
-          {/* Kolom 1: Profil Lembaga */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.75rem' }}>
-              <AppLogo size={32} />
-              <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
-                SIM-Magang BRMP
-              </span>
-            </div>
-            <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#ffffff', margin: '0 0 0.5rem 0' }}>
-              Badan Riset dan Manajemen Pertanian
-            </h4>
-            <p style={{ fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.5, margin: '0 0 0.75rem 0' }}>
-              Badan kerja pemerintah yang bergerak di bidang riset dan standardisasi instrumen pertanian Republik Indonesia secara terpadu dan modern.
-            </p>
-            <p style={{ fontSize: '0.75rem', color: '#6ee7b7', lineHeight: 1.4, margin: 0 }}>
-              <a
-                href="https://www.google.com/maps/place/Balai+Pengelola+Hasil+Perakitan+dan+Modernisasi+Pertanian/@-6.5893588,106.7998551,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c5ccf0c9dc05:0xd84bcc2b4c0158c9!8m2!3d-6.5893641!4d106.80243!16s%2Fg%2F1tcwc2r_?entry=ttu"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#6ee7b7', textDecoration: 'none' }}
-              >
-                📍 Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian ↗
-              </a>
-            </p>
-          </div>
-
-          {/* Kolom 2: Navigasi Cepat */}
-          <div>
-            <h4 style={{
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              color: '#ffffff',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              margin: '0 0 1rem 0'
-            }}>
-              NAVIGASI CEPAT
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.8125rem' }}>
-              <Link href="/#bidang" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Katalog bidang & riset
-              </Link>
-              <Link href="/#alur" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Panduan & alur magang
-              </Link>
-              <Link href="/" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Beranda & persyaratan
-              </Link>
-              <Link href="/kontak" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                Kontak BRMP
-              </Link>
-            </div>
-          </div>
-
-          {/* Kolom 3: Layanan Informasi Publik */}
-          <div>
-            <h4 style={{
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              color: '#ffffff',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              margin: '0 0 1rem 0'
-            }}>
-              LAYANAN INFORMASI PUBLIK
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#a7f3d0' }}>
-              <div>
-                <strong style={{ color: '#ffffff', display: 'block', fontSize: '0.75rem' }}>Hubungi Layanan:</strong>
-                <span>(021) 7806205 / 7806544</span>
-              </div>
-              <div>
-                <strong style={{ color: '#ffffff', display: 'block', fontSize: '0.75rem' }}>Jam Operasional:</strong>
-                <span>Senin - Jumat, 08.00 - 16.00 WIB</span>
-              </div>
-              <div>
-                <strong style={{ color: '#ffffff', display: 'block', fontSize: '0.75rem' }}>Kementerian:</strong>
-                <span>Kementerian Pertanian Republik Indonesia</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Copyright */}
-        <div style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid #047857',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          color: '#6ee7b7'
-        }}>
-          <div>
-            © {new Date().getFullYear()} SIM-Magang BRMP. Hak cipta dilindungi undang-undang.
-          </div>
-          <div style={{ display: 'flex', gap: '1.25rem' }}>
-            <span style={{ color: '#a7f3d0' }}>Syarat & ketentuan</span>
-            <span style={{ color: '#a7f3d0' }}>Kebijakan privasi</span>
-            <span style={{ color: '#a7f3d0' }}>Standar pelayanan</span>
-          </div>
-        </div>
-      </footer>
+      {/* Footer Global SIMPUL BRMP-PH */}
+      <Footer />
     </div>
   )
 }

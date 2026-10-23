@@ -563,10 +563,10 @@ export const adminSKMService = {
   },
 
   /**
-   * Mengambil data respon masukan teks (Q14: Hal Memuaskan atau Q15: Saran/Masukan)
+   * Mengambil data respon masukan teks (Q17: Saran dan Masukan)
    */
   async getTextResponses(params: {
-    type: 'memuaskan' | 'saran'
+    type?: 'memuaskan' | 'saran' | string
     page: number
     limit: number
     periodFilter?: string
@@ -574,19 +574,13 @@ export const adminSKMService = {
     try {
       const supabase = createClient()
 
-      // Cari pertanyaan bertipe 'teks' sesuai kategori masukan
-      let qQuery = supabase
+      // Cari pertanyaan bertipe 'teks' (Q17: Saran dan masukan)
+      const { data: qList, error: qErr } = await supabase
         .from('skm_pertanyaan')
         .select('id, unsur, urutan, tipe')
         .eq('tipe', 'teks')
-
-      if (params.type === 'memuaskan') {
-        qQuery = qQuery.or('urutan.eq.14,unsur.ilike.%memuaskan%')
-      } else {
-        qQuery = qQuery.or('urutan.eq.15,unsur.ilike.%saran%')
-      }
-
-      const { data: qList, error: qErr } = await qQuery.order('urutan', { ascending: true }).limit(1)
+        .order('urutan', { ascending: true })
+        .limit(1)
 
       if (qErr) {
         console.error('Error finding text question:', qErr)
@@ -978,22 +972,24 @@ export const adminSKMService = {
         'NIM/NIS',
         'Asal Instansi',
         'Bidang Magang',
-        'Q1 (Persyaratan)',
-        'Q2 (Prosedur)',
-        'Q3 (Waktu Pelayanan)',
-        'Q4 (Biaya/Tarif)',
-        'Q5 (Produk Pelayanan)',
-        'Q6 (Kompetensi Petugas)',
-        'Q7 (Perilaku Petugas)',
-        'Q8 (Sarana Prasarana)',
-        'Q9 (Pengaduan)',
-        'Q10 (Kejelasan Info)',
-        'Q11 (Kemudahan Info)',
-        'Q12 (Keterbukaan Info)',
-        'Q13 (Kesesuaian Kebutuhan)',
-        'Rata-Rata Skor',
-        'Q14 (Hal Memuaskan)',
-        'Q15 (Saran & Masukan)',
+        'Q1 (Informasi Pelayanan)',
+        'Q2 (Persyaratan Pelayanan)',
+        'Q3 (Kejelasan Prosedur)',
+        'Q4 (Kemudahan Prosedur)',
+        'Q5 (Waktu Layanan)',
+        'Q6 (Biaya Layanan)',
+        'Q7 (Produk Layanan)',
+        'Q8 (Kecepatan Respon)',
+        'Q9 (Keramahan Petugas)',
+        'Q10 (Akses Pengaduan)',
+        'Q11 (Sarana Prasarana)',
+        'Q12 (Keadilan Pelayanan)',
+        'Q13 (Integritas Layanan)',
+        'Q14 (Anti Gratifikasi)',
+        'Q15 (Bebas Pungli)',
+        'Q16 (Bebas Percaloan)',
+        'Rata-Rata Skor (Skala 1-4)',
+        'Q17 (Saran dan Masukan)',
       ]
 
       const escapeCSV = (val: any) => {
@@ -1007,7 +1003,7 @@ export const adminSKMService = {
 
       submissions.forEach((item, idx) => {
         const qAnswers: string[] = []
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 1; i <= 17; i++) {
           const ans = answerLookup.get(`${item.pengajuanId}_${i}`) || ''
           qAnswers.push(escapeCSV(ans))
         }
@@ -1029,10 +1025,9 @@ export const adminSKMService = {
           escapeCSV(item.nimNis || '-'),
           escapeCSV(item.asalInstansi || '-'),
           escapeCSV(item.bidangNama),
-          ...qAnswers.slice(0, 13),
+          ...qAnswers.slice(0, 16),
           escapeCSV(item.rataRataSkor !== null ? item.rataRataSkor.toFixed(2) : '-'),
-          qAnswers[13] || '""',
-          qAnswers[14] || '""',
+          qAnswers[16] || '""',
         ]
 
         rows.push(row.join(','))

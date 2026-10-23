@@ -31,8 +31,7 @@ export default function AdminRekapSKMPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [periodFilter, setPeriodFilter] = useState<'all' | '30days' | 'this_month' | 'this_year'>('all')
 
-  // Text Responses (Q14 & Q15) state
-  const [textTab, setTextTab] = useState<'memuaskan' | 'saran'>('memuaskan')
+  // Text Responses (Q17: Saran & Masukan) state
   const [textList, setTextList] = useState<AdminSKMTextItem[]>([])
   const [textTotal, setTextTotal] = useState(0)
   const [textPage, setTextPage] = useState(1)
@@ -83,12 +82,12 @@ export default function AdminRekapSKMPage() {
     }
   }, [periodFilter])
 
-  // 2. Load Text Responses
+  // 2. Load Text Responses (Q17 Saran & Masukan)
   const loadTextResponses = useCallback(async () => {
     setTextLoading(true)
     try {
       const res = await adminSKMService.getTextResponses({
-        type: textTab,
+        type: 'saran',
         page: textPage,
         limit: textLimit,
         periodFilter,
@@ -102,7 +101,7 @@ export default function AdminRekapSKMPage() {
     } finally {
       setTextLoading(false)
     }
-  }, [textTab, textPage, periodFilter])
+  }, [textPage, periodFilter])
 
   // 3. Load Submissions List
   const loadSubmissions = useCallback(async () => {
@@ -503,7 +502,7 @@ export default function AdminRekapSKMPage() {
         )}
       </div>
 
-      {/* 3. Masukan & Umpan Balik Teks Bebas (Q14 & Q15 - Pill Tabs) */}
+      {/* 3. Masukan & Saran Terbuka Responden (Butir #17) */}
       <div style={{
         backgroundColor: '#ffffff',
         border: '1px solid #e2e8f0',
@@ -514,66 +513,34 @@ export default function AdminRekapSKMPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
           <div>
             <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
-              Umpan balik & masukan responden
+              Saran & Masukan Responden (Butir #17)
             </h2>
             <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
-              Jawaban esai kualitatif dari peserta magang untuk evaluasi pelayanan
+              Saran dan masukan terbuka untuk Layanan BRMP Pengelola Hasil
             </p>
           </div>
 
-          {/* Pill Tab Selector */}
-          <div style={{ display: 'flex', gap: '0.375rem' }}>
-            <button
-              type="button"
-              onClick={() => {
-                setTextTab('memuaskan')
-                setTextPage(1)
-              }}
-              style={{
-                padding: '0.35rem 0.875rem',
-                borderRadius: '9999px',
-                fontSize: '0.75rem',
-                fontWeight: textTab === 'memuaskan' ? 600 : 500,
-                backgroundColor: textTab === 'memuaskan' ? '#16a34a' : '#ffffff',
-                color: textTab === 'memuaskan' ? '#ffffff' : '#64748b',
-                border: textTab === 'memuaskan' ? '1px solid #16a34a' : '1px solid #e2e8f0',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              Hal yang memuaskan
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setTextTab('saran')
-                setTextPage(1)
-              }}
-              style={{
-                padding: '0.35rem 0.875rem',
-                borderRadius: '9999px',
-                fontSize: '0.75rem',
-                fontWeight: textTab === 'saran' ? 600 : 500,
-                backgroundColor: textTab === 'saran' ? '#16a34a' : '#ffffff',
-                color: textTab === 'saran' ? '#ffffff' : '#64748b',
-                border: textTab === 'saran' ? '1px solid #16a34a' : '1px solid #e2e8f0',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              Saran & masukan
-            </button>
+          <div style={{
+            padding: '0.35rem 0.875rem',
+            borderRadius: '9999px',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            backgroundColor: '#f0fdf4',
+            color: '#166534',
+            border: '1px solid #bbf7d0',
+          }}>
+            Total {textTotal} Masukan
           </div>
         </div>
 
         {textLoading ? (
           <div style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748b' }}>
             <LoaderIcon width={24} height={24} className="animate-spin text-emerald-600 mx-auto mb-2" />
-            <p style={{ fontSize: '0.875rem', margin: 0 }}>Memuat masukan teks responden...</p>
+            <p style={{ fontSize: '0.875rem', margin: 0 }}>Memuat saran dan masukan responden...</p>
           </div>
         ) : textList.length === 0 ? (
           <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center', color: '#64748b' }}>
-            <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>Belum ada masukan untuk kategori ini</p>
+            <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>Belum ada saran dan masukan pada periode ini</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
@@ -904,7 +871,7 @@ export default function AdminRekapSKMPage() {
                       <div style={{ fontWeight: 600, color: '#0f172a' }}>{detailData.pengajuan.bidangNama}</div>
                     </div>
                     <div>
-                      <div style={{ color: '#64748b' }}>Rata-Rata Skor Q1–Q13:</div>
+                      <div style={{ color: '#64748b' }}>Rata-Rata Skor (Q1–Q16):</div>
                       <div style={{ fontWeight: 700, color: '#16a34a' }}>
                         {detailData.rataRataSkor !== null ? `${detailData.rataRataSkor.toFixed(2)} / 4.00` : '-'}
                       </div>

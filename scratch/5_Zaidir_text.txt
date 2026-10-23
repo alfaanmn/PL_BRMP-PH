@@ -1,0 +1,730 @@
+=== FULL TEXT OF 5_Zaidir (File: jurnall/03_BAB_III_METODE_PENELITIAN/3_Metodologi_Pengembangan_Agile/Fahma+Vol+20+No+2+Mei+2022-1.pdf) ===
+Total Pages: 12
+
+==================== PAGE 1 ====================
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen 
+Vol 20, No 2, Mei 2022                                  ◼    1 
+  
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan) 
+Implementasi Extreme Programming untuk Rancang Bangun Aplikasi 
+Pengelolaan PKL-KTI  Berbasis Web 
+ 
+Zaidir1, Indra Listiawan2 
+ 
+1,2Prodi Teknologi Informasi Program Diploma, FST,  Universitas Respati Yogyakarta  
+*1zaidirtan@respati.ac.id, 2indra.unriyo@yahoo.com 
+ 
+ 
+Abstrak 
+Kegiatan Praktek Kerja Lapangan (PKL) dan Karya Tulis Ilmiah (KTI) pada program studi Teknologi 
+Informasi Program Diploma, Fakultas Sains dan Teknolog i (FST) Universitas Respati Yogyakarta 
+(UNRIYO) merupakan tahapan kegiatan untuk mendapatkan pengalaman nyata terkait keilmuan yang 
+ditekuni. Pengelolaan administrasi PKL dan KTI mahasiswa saat ini masih dilakukan secara manual. 
+Masalah yang ditemukan adalah proses administrasi PKL dan KTI tidak efisien, program studi kesulitan 
+untuk melacak judul PKL dan judul KTI yang diusulkan, dosen pembimbing kesulitan melakukan 
+monitoring kemajuan mahasiswa dalam melakukan PKL dan KTI, mahasiswa mengalami kendala untu k 
+proses pengajuan proposal dan mendapatkan informasi tentang jadwal seminar PKL maupun ujian 
+pendadaran serta dosen penguji tidak efektif dalam pemberian nilai. Penelitian ini bertujuan untuk  
+menghasilkan sistem informasi pengelolaan PKL -KTI  dengan fitu r yang sesuai kebutuhan program 
+studi. Sistem yang dihasilkan dapat digunakan untuk mempermudah layanan kepada mahasiswa terkait 
+PKL-KTI mulai dari  pegajuan proposal sampai penyerahan dokumen PKL -KTI. Sistem yang dihasilkan 
+dapat meningkat kan kinerja prog ram studi karena beberapa proses dilakukan secara otomatis dan 
+pengolahan data tidak hanya tersentral di prodi. Ketersediaan informasi sangat memadai baik dari segi 
+kuantitas maupun kualitas sehingga sangat membantu dalam pengambilan keputusan . 
+Kata Kunci: Extreme Programming, Praktek Kerja Lapangan, Karya Tulis Ilmiah 
+ 
+Abstrack 
+The Field Work Practice (PKL) and Scientific Writing (KTI) activities at the Information Technology 
+Diploma Program, Faculty of Science and Technology (FST) Universitas Respati Yogy akarta (UNRIYO) 
+are stages of activities to get real experience related to the science they are engaged in. The 
+administrative management of PKL and KTI students is currently still done manually. The problems 
+found were that the PKL and KTI administration processes were inefficient, the study program had 
+difficulty tracking the proposed PKL and KTI titles, the supervisors had difficulty monitoring student 
+progress in conducting PKL and KTI, students had problems with the proposal submission process and 
+getting information about the schedule. PKL seminars as well as self -assessment exams as well as 
+examining lecturers are not effective in giving grades. This study aims to produce a PKL -KTI 
+management information system with features that suit the needs of the  study program. The resulting 
+system can be used to facilitate services to students related to PKL -KTI starting from submitting 
+proposals to submitting PKL -KTI documents. The resulting system can improve the performance of the 
+study program because several  processes are carried out automatically and data processing is not only 
+centralized in the study program. The availability of information is very adequate both in terms of 
+quantity and quality so that it is very helpful in decision making. 
+Keywords: Extreme Programming, Field Work Practice, Scientific Writing 
+ 
+1. PENDAHULUAN  
+ 
+Praktek Kerja Lapangan (PKL) dan Karya Tulis Ilmiah (KTI) diselenggarakan hampir 
+di semua perguruan tinggi karena menjadi bagian muatan kurikulum. Setiap perguruan tinggi  
+memiliki aturan sendiri terkait prosedur dan persyaratan yang harus dipenuhi oleh mahasiswa 
+agar bisa mengikuti PKL maupun KTI. Kegiatan PKL dan KTI pada Program Studi (Prodi) 
+Teknologi Informasi Program Diploma Fakultas Sains dan Teknologi (FST) Universitas Respati 
+Yogyakarta (UNRIYO) merupakan rangkaian kegiatan sebagai jalan untuk mendapatkan 
+pengalaman nyata terkait keilmuan yang ditekuni. PKL adalah salah satu bentuk kegiatan yang 
+bertempat di lingkungan kerja langsung dan sesuai dengan kurikulum serta upaya untuk 
+
+==================== PAGE 2 ====================
+          ISSN: 2715-2944 (media online) 
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen:  1 – 12 
+2 
+menselaraskan materi pendidikan di kampus dengan kebutuhan pasar kerja. Kegiatan KTI 
+dilakukan setelah menyelesaikan PKL.   
+Pengelolaan administrasi PKL dan KTI mahasiswa di pro di  Teknologi Informasi 
+Program Diploma, FST UNRIYO masih dilakukan secara manu al. Tahapan untuk PKL adalah 
+mengajukan proposal ke Ketua Prodi apabila telah menempuh 80 SKS. Proposal diperiksa dan 
+disyahkan oleh Ketua Prodi. Proposal yang sudah disyahkan dikumpulkan ke Akademik 
+Fakultas dan Instansi tempat dilakukan PKL. Mahasiswa ya ng telah melaksanakan PKL akan 
+melalui tahapan ujian seminar PKL dihadapan 2 orang penguji. Hasil laporan PKL yang telah 
+dikoreksi penguji wajib dikumpulkan ke prodi. Tahapan untuk KTI adalah mengajukan proposal 
+ke Prodi setelah menempuh 100 SKS dan menyer ahkan laporan PKL. Mahasiswa yang telah 
+menyusun laporan KTI harus melalui tahapan ujian pendadaran dihadapan 3 orang penguji. 
+Hasil laporan KTI yang telah melalui sidang pendadaran wajib dikumpulkan ke prodi. Masalah 
+yang ada saat ini adalah proses admini strasi PKL dan KTI tidak efektif dan tidak efisien. Pro di  
+kesulitan untuk melacak judul -judul yang diusulkan. Dosen pembimbing juga kesulitan 
+melakukan monitoring kemajuan mahasiswa dalam melakukan PKL dan KTI. Mahasiswa  
+mengalami kendala terkait proses pengajuan proposal dan mendapatkan informasi jadwal 
+seminar PKL atau uj ian pendadaran. Dosen penguji juga tidak efektif dalam pemberian nilai 
+karena harus menghitung secara manual. 
+Berdasarkan masalah di atas, maka yang menjadi pertanyaan penelitian adalah dapatkah 
+dihasilkan rancang bangun aplikasi pengelolaan PKL-KTI berbasis web dan apakah sistem yang 
+dihasilkan dapat meningkat kinerja dan ketersediaan informasi bagi prodi Teknologi Informasi 
+Program Diploma FST UNRIYO. Tujuan penelitian ini adalah mengh asilkan sistem informasi 
+pengelolaan PKL -KTI  berbasis web dengan fitur yang sesuai dengan kebutuhan prodi dan 
+meningkatkan layanan kepada mahasiswa agar lebih baik dan cepat serta ketersediaan informasi 
+memenuhi kebutuhan pada pihak yang berkepentingan dengan prodi. 
+Penelitian ini terkait secara langsung maupun tidak langsung dengan penelitian 
+terdahulu yang dijadikan bahan rujukan terkait untuk membangun sistem pengelolaan 
+administrasi PKL -KTI/Skripsi diantaranya yaitu  Aditya Kurniawan [1] pada penelitian nya 
+mengatakan bahwa sistem administrasi yang dihasilkan dapat memudahkan mahasiswa 
+melakukan pengurusan administrasi tugas akhir, mempermudah dosen wali/pembimbing, 
+koordinator tugas akhir, dan pengurus jurusan dalam melakukan pemantauan dan pengendalian 
+pelaksanaan tugas akhir, sehingga pelaksanaan tugas akhir mahasiswa lebih baik dan cepat. 
+Dengan pengelolaan data tugas akhir yang lebih rapi, penyiapan data untuk keperluan akreditasi 
+dan pengambilan keputusan oleh pengurus jurusan akan lebih praktis.  Adiartika [2] pada 
+penelitiannya mengatakan sistem informasi manajemen dokumen tugas akhir dapat digunakan 
+untuk membantu mempermudah proses administrasi upload dokumen tugas akhir mahasiswa 
+sehingga menjadi lebih mudah dan efisien. Pada penelitian yang lain  Zanuar Alfiani  [3] 
+mengatakan perancangan sistem informasi merupakan hal yang sangat penting bagi organisasi, 
+dengan rancangan sistem yang sesuai dengan kebutuhan dapat berpengaruh positif kepada 
+kinerja organisasi, terlebih organisasi perusahaan dituntut  untuk dapat melayani dengan cepat 
+dan sigap. Hendra Kurniawan [4] mengatakan hadirnya sistem baru diharapkan dapat 
+memaksimalkan layanan mengenai tugas akhir yang dapat meningkatkan kualitas pelayanan. 
+Ahmad Homaidi  [5] mengatakan dengan adanya sistem e -thesis, proses pengajuan judul, 
+konfirmasi persetujuan dosen pembimbing, penjadwalan serta administrasi lainnya dari tugas 
+akhir dapat dilakukan secara sistematis. Sistem e -thesis dapat mempermudah panitia dalam 
+mengatasi permasalahan yang dikeluhkan. Muhammad Taher Jufri [6] mengatakan sistem yang 
+dihasilkan dapat mempermudah mahasiswa dan pihak Fakultas dalam melakukan pengelolaan 
+dan pengolahan dokumen Tugas Akhir. Sinta Maria [7] mengatakan sistem yang dihasilkan 
+memudahkan proses pengajuan judul tugas akhir bagi mahasiswa, setelah itu mahasiswa dengan 
+mudah mengetahui daftar judul yang disetujui, memudahkan ketua program studi dalam proses 
+penerimaan, maupun pengumuman terkait informasi jadwal seminar. Tommy Gumelar [8] 
+mengatakan  mengembangkan sistem e-commerce menggunakan metodologi Extreme 
+Programming, yang dianggap tepat saat ini karena semuanya membutuhkan waktu yang cepat. 
+
+==================== PAGE 3 ====================
+ISSN: 2715-2944 (media online)  
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan) 
+3 
+Fatoni [9] mengatakan d ari hasil penelitian menujukkan bahwa metode extreme programming 
+mampu menghasilkan sistem informasi yan g berfungsi secara baik. Samsuri Yahya [10] 
+mengatakan Metode Extreme Programming (XP) ini digunakan karena kesederhanaanya dan 
+hasil penelitian menunjukkan bahwa sistem yang dibuat dapat menampilkan aplikasi berbasis 
+Android dengan dilengkapi akun penggun a. Azdy [11] mengatakan penerapan Extreme 
+Programming pada pengembangan aplikasi mengakibatkan pengembangan dapat dilakukan 
+secara cepat dengan jumlah anggota tim yang minimal. Pengembangan dapat dilakukan dengan 
+cepat karena pengembangan aplikasi dimulai dengan membangun komponen yang paling 
+sederhana, yaitu komponen verifikasi akun, dilanjutkan dengan komponen lainnya.  Zaidir [12] 
+mengatakan bahwa rancangan sistem informasi pengelolaan layanan PKL -KTI yang dihasilkan 
+dapat mengakomodir pihak-pihak terkait dengan model yang praktis dan memenuhi kebutuhan 
+program studi dan para stakeholder lainnya. 
+Perbedaan penelitian ini dengan penelitian yang sudah ada yaitu pada penelitian ini 
+selain menyediakan fitur -fitur yang sesuai kebutuhan program studi Teknologi I nformasi 
+Program Diploma, FST UNRIYO, juga menyediakan kontrol bagi mahasiswa mengenai 
+kemajuan yang telah dilakukan mulai dari proposal PKL sampai ujian pendadaran.  Berdasarkan 
+permasalahan di atas, jika masalah ini tidak diselesaikan maka kinerja progra m studi kurang 
+maksimal karena administrasi/pelayanan PKL dan KTI masih dilakukan secara manual. 
+Selanjutnya dengan tidak adanya aplikasi khusus mengenai pengelolaan PKL dan KTI maka 
+dokumen tidak tersimpan dengan baik, serta penilaian saat akreditasi juga   berimbas karena 
+kurangnya sistem informasi pelayanan mahasiswa. 
+ 
+2. METODE PENELITIAN 
+ 
+Jenis penelitian yang digunakan adalah penelitian kualitatif yaitu menggunakan pendekatan 
+deskriptif dimana data yang dikumpulkan bukan berupa angka. Desain penelitian ya ng dipakai 
+adalah studi kasus dengan tujuan agar dapat menggali masalah secara spesifik.  Proses 
+pengumpulan data yang digunakan adalah observasi, wawancara dan analisis dokumen. 
+Observasi dilakukan di prodi Teknologi Informasi dan bagian akademik FST UNRIY O. 
+Wawancara dilakukan kepada ketua program studi, sekretaris program studi, staf akademik 
+fakultas. Analisis dokumen administrasi PKL -KTI yang terdiri atas: SOP PKL -KTI, form 
+pendaftaran seminar/pendadaran, penilaian ujian PKL-KTI, pengumpulan hasil PKL-KTI, dll. 
+Metode pengembangan sistem menggunakan metode Extreme Programming terdiri atas 6 
+tahap [11], seperti terlihat pada Gambar 1. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 1. Metode extreme programming  [10] 
+ 
+Exploration 
+Planning Death 
+Maintenance Iteration to 
+Release 
+Productionizing 
+
+==================== PAGE 4 ====================
+          ISSN: 2715-2944 (media online) 
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen:  1 – 12 
+4 
+1) Exploration: Tahapan ini klien mendefinisikan feature yang diharapkan pada sistem yang 
+akan dibuat dan saat bersamaan tim pengembang menyesuaikannya dengan tools, 
+teknologi, dan praktik-praktik yang akan digunakan pada proyek. 
+2) Planning: Pada tahapan ini requirement yang telah ditentukan pada tahap sebelumnya 
+dipecah menja di user stories  dan ditetapkan prioritas pengerjaannya untuk kemudian 
+disepakati konten yang akan dibuat pada release awal (small release). 
+3) Iteration to Release : Tahapan ini terdiri atas beberapa iterasi untuk dapat menghasilkan 
+sistem pada release awal. I terasi awal difokuskan pada pembangunan arsitektur sistem 
+sebagai pondasi sehingga akan dipilih requirement yang memberlakukan pembangunan 
+struktur seluruh sistem. Setiap akhir iterasi dilakukan tes fungsional dan diakhir iterasi, 
+sistem siap diproduksi. P embangunan sistem menerapkan pair programming, dimana dua 
+orang programmer melakukan pengkodean untuk task yang sama, menggunakan satu 
+komputer dan satu keyboard. Satu programmer bertugas sebagai “driver” yang melakukan 
+pengkodean, dan programmer lainnya b ertugas sebagai “ navigator” yang melakukan 
+observasi dan mengomentari kode program dan mencari alternatif kode yang lain. 
+4) Productionizing: Pada tahap ini dilakukan pengujian ekstra dan pemeriksaan kinerja 
+sistem. Kegiatan tersebut kemungkinan ditemukannya perubahan sistem, dan kesepakatan 
+harus dibuat mengenai perlu tidaknya perubahan diikutkan pada small release  atau 
+disesuaikan untuk release berikutnya. Lamanya iterasi dipersingkat menjadi satu minggu. 
+5) Maintenance: Tahap ini dilakukan setelah release sistem untuk digunakan oleh pengguna. 
+Sistem harus tetap berjalan dan pada saat yang bersamaan dihasilkan iterasi baru. Tahap ini 
+memerlukan support task  dari pihak klien sehingga dapat menghambat kecepatan 
+pengembangan atau diperlukan penambahan anggota baru ke tim. 
+6) Death: Tahapan ini tercapai ketika seluruh requirement pelanggan telah dipenuhi baik yang 
+berkaitan dengan kinerja maupun kehandalan sistem. Pada tahapan ini ditulis dokumentasi 
+sistem yang diperlukan karena tidak ada lagi perubahan, baik pada arsi tektur, desain, 
+maupun pengkodean. Tahapan death juga dapat tercapai ketika sistem tidak dapat 
+memberikan hasil sesuai requirement yang dibuat atau biaya yang dikeluarkan untuk 
+pengembangan lebih lanjut menjadi terlalu mahal. 
+ 
+3. HASIL DAN PEMBAHASAN 
+ 
+Berdasarkan pengumpulan data terkait dokumen PKL -KTI dan mengimplementasikan 
+tahapan exploration dan planning, dihasilkan rancangan fitur sistem yang disajikan dalam dua 
+bentuk use case diagram utama seperti terlihat pada Gambar 2.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 2. Use case utama 
+Sistem Informasi Layanan PKL-KTI
+Pendataan
+Layanan
+Laporan/Dashboard
+Admin
+Mahasiswa
+Dosen
+Ketua Prodi
+Login
+Verifikasi Login
+Error Login
+<<Include>>
+<<Include>>
+<<Include>>
+<<Include>>
+<<Extend>>
+
+==================== PAGE 5 ====================
+ISSN: 2715-2944 (media online)  
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan) 
+5 
+Ada 4 (empat) aktor  yaitu admin, mahasiswa, dosen dan ketua prodi. Ada 3 fungsi utama 
+yaitu fungsi untuk pendataan, layanan dan laporan secara detail seperti terlihat pada Gambar 3.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 3. Use case detail 
+ 
+Diagram class untuk s istem informasi layanan PKL -KTI disajikan  seperti terlihat pada 
+Gambar 4. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 4. Class diagram 
+Sistem Informasi Layanan PKL-KTI
+Pendataan
+Layanan
+Laporan/Dashboard
+Admin
+ Data Fakultas 
+Jadwal Seminar PKL/
+Ujian KTI
+ 
+Daftar Pembimbing 
+PKL/Pembimbing KTI
+ Daftar Mhs
+ Daftar Dosen
+Ketua Prodi
+ Data Prodi
+ Data Dosen
+Mahasiswa
+Dosen
+ Data Mhs 
+Penguji Seminar PKL/
+Penguji KTI
+ 
+Berita Acara PKL/Berita 
+Acara KTI
+ 
+Nilai Seminar PKL/Nilai 
+Ujian KTI
+ 
+Pengesahan Proposal 
+PKL/Proposal KTI
+ 
+Penentuan 
+Pembimbing PKL/
+Pembimbing KTI
+ 
+Proposal PKL/
+Proposal KTI
+ 
+Kumpul Dokumen 
+PKL/Dokumen KTI
+ 
+Daftar Seminar PKL/
+Daftar Ujian KTI
+ 
+Daftar Bimbingan PKL/
+Bimbingan KTI
+ 
+Daftar PKL/
+Daftar KTI
+ 
+Jadwal Seminar PKL/
+Jadwal Ujian KTI
+ 
+Rekapitulasi PKL/
+Rekapitulasi KTI
+ 
+Daftar Dokumen PKL/
+Dokumen KTI
+ 
+Daftar Penguji PKL/
+Penguji KTI
+ 
+Daftar Proposal PKL/
+Proposal KTI
+ 
+Daftar Nilai PKL/
+Nilai KTI
+
+
+==================== PAGE 6 ====================
+          ISSN: 2715-2944 (media online) 
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen:  1 – 12 
+6 
+Implementasi dari sistem, diwujudkan dalam bentuk antar muka yang dibangun 
+menggunakan PHP dan MYSQL serta dukungan framework Bootstrap.  Sistem yang dihasilkan 
+diberi nama SILACELUCE merupakan singkatan dari Sistem Informasi Layanan Cepat Lulus 
+Cepat. Tampilan awal dari system informasi layanan PKL -KTI dalam bentuk beranda seperti 
+terlihat pada Gambar 5. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 5. Tampilan beranda 
+ 
+Pada saat kondisi tampilan beranda, pengguna dapat melanjutkan dengan mengklik 
+tombol Mulai untuk melanjutkan ke halaman login. Ada beberapa hal yang bisa dilakukan pada 
+kondisi ini yaitu proses Login, lupa password dan membuat account seperti terlihat pada 
+Gambar 6. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 6. Tampilan halaman login 
+ 
+Proses pembuatan account diperlukan jika mahasiswa belum memiliki data atau hak 
+akses terhadap sistem. Proses login dapat dilakukan dengan terlebih dahulu mengisi nama user 
+dan password.  
+Proses login digunakan untuk membatasi penggunaan aplikasi dari pihak yang tidak 
+diberi hak. Proses login mengharuskan pengguna untuk memasukkan username dan password. 
+Aplikasi akan melakukan pencocokan apa yang dimasukkan oleh user dengan data yang ada 
+pada basis data ( database). Jika kombinasi username dan password tidak sesuai, maka sistem 
+akan menampilkan pesan, sehingga user diberi kesempatan untuk mengisikan lagi. Jika 
+kombinasi username dan password sesuai dengan data yang ada pada basis d ata, maka akan 
+dilanjutkan dengan tampilan dashboard. Tampilan dashboard berbeda untuk set iap pengguna 
+
+
+==================== PAGE 7 ====================
+ISSN: 2715-2944 (media online)  
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan) 
+7 
+(ada dashboard untuk admin, dashboard untuk ketua prodi, dashboard untuk mahasiswa dan 
+dashboard untuk dosen). Dashboard sebagai admin terlihat seperti Gambar 7. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 7. Tampilan dashboard admin 
+Jika nama user dan password sudah cocok, akan dilanjutkan ke halaman dashboard 
+sesuai dengan level pengguna . Pada masing -masing dashboard disediakan f itur-fitur untuk 
+pengolahan data master, pengolahan transaksi/layanan, dan laporan. 
+Pengolahan data master yang dicontoh kan adalah pengolahan data fakultas seperti terlihat 
+pada Gambar 8. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 8. Interface pengolahan data fakultas 
+Tombol perintah yang disediakan terdiri atas tombol Tambah D ata, Prodi, Edit, dan 
+Hapus. Jika tombol Tambah Data diklik , akan disajikan form pengisian data fakultas seperti 
+terlihat pada Gambar 9. Tombol Prodi untuk masuk ke pengisian data Prodi. Tombol Edit untuk 
+mengubah data, tombol hapus untuk menghapus record yang aktif. Ada tiga isian yang harus 
+dimasukkan pada form ini yaitu nama fakultas, nama dekan dan nama wakil dekan. Setelah 
+selesai mengisikannya, klik tombol Simpan agar data yang diisikan tersimpan ke database, dan 
+proses kembali ke tampilan semula 
+ 
+
+
+==================== PAGE 8 ====================
+          ISSN: 2715-2944 (media online) 
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen:  1 – 12 
+8 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 9. Interface input data fakultas 
+Pengolahan data layanan yang dicontohkan adalah  masalah terkait PKL, karena masalah 
+terkait KTI juga hampir sama. User interface pendataan PKL seperti terlihat pada Gambar 10. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 10. Interface pengolahan data PKL 
+Data mahasiswa langsung ditampilkan, selanjutnya tinggal mengklik tombol Input PKL 
+dan akan ditampilkan form pengisian data PKL seperti terlihat pada Gambar 11. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 11. Interface input data PKL 
+
+
+==================== PAGE 9 ====================
+ISSN: 2715-2944 (media online)  
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan) 
+9 
+Setelah proposal PKL dimasuk kan dilanjutkan dengan proses pengesahan PKL  seperti 
+terlihat pada Gambar 12. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 12. Interface input pengesahan PKL 
+Setelah pengesahan proposal akan ditentukan p embimbing PKL seperti terlihat pada 
+Gambar 13. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 13. Interface tampilan data pembimbing PKL 
+Proses selanjutnya adalah pengisian jadwal seminar ini dilakukan oleh admin . Tahap 
+berikutnya adalah penentuan penguji seminar PKL Ketua Program Studi, jumlah penguji adalah 
+dua orang yaitu penguji utama dan pembimbing merangkap pen guji. Tahap seminar sudah bisa 
+dilakukan dan pada tahap ini  disediakan fasilitas bagi penguji untuk memasukkan nilai seminat 
+PKL seperti terlihat pada Gambar 14. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 14. Interface layanan input nilai seminar PKL 
+
+
+==================== PAGE 10 ====================
+          ISSN: 2715-2944 (media online) 
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen:  1 – 12 
+10 
+Tahapan berikutnya adalah pembuatan Berita Acara (BA) dari kegiatan PKL. Proses berita 
+acara ini sekaligus melakukan perhitungan akumulasi nilai yang diberikan oleh masing -masing 
+penguji dan nilai angka akan dikonversi ke nilai huruf. Tahap akhir yang perlu dilakukan oleh 
+mahasiswa adalah penyerahan dokumen PKL yang telah direvisi. Dengan tahap ini maka selesai 
+sudah proses layanan PKL dan status mahasiswa untuk PKL akan diubah menjadi true (sudah 
+menjalani PKL). Tahap KTI juga mirip dengan tahap PKL ini sehingga tidak perlu disajikan 
+lagi. 
+Sistem informasi yang dihasilkan telah melalui beberapa tahap pengujian. Pengujian awal 
+dilakukan secara whitebo x test mulai dari awal implementasi sampai selesainya semua modul 
+system yang telah diintegrasikan. Pengujian berikutnya dilakukan dengan car a blackbox test 
+dengan melibatkan bagian administrasi fakultas dan mahasiswa yang dipilih secara acak. 
+Pengujian tahap akhir dilakukan dengan metode alpha test  dengan melibatkan semua 
+stakeholder.  
+Pengguna yang telah memakai aplikasi diberikan kuisioner u ntuk memberikan tanggapan 
+terkait aplikasi. Pengguna yang dilibatkan adalah sebanyak 35 orang yang terdiri atas 
+mahasiswa 27 orang, bagian administrasi 2 orang, pengelola prodi 2 orang dan dosen 4 orang. 
+Pernyataan dalam kuisioner ada 6 buah yaitu: 1) Apli kasi memberikan kemudahan bagi bagian 
+administrasi, mahasiswa, pengelola prodi dan dosen terkait layanan PKL -KTI, 2) Aplikasi 
+menjadikan layanan terkait PKL -KTI lebih sistematis, 3) Aplikasi mudah digunakan dan 
+menyajikan informasi yang sesuai kebutuhan pa ra stakeholder, 4) Aplikasi dapat meningkatkan 
+kualitas pengontrolan kegiatan PKL -KTI mahasiswa, 5) Aplikasi dapat meningkatkan kinerja 
+program studi dalam hal layanan administrasi dan pengelolaan dokumen PKL -KTI, 6) Aplikasi 
+dapat mengefisienkan prosedur pelaksanaan dan meningkat kualitas informasi terkait PKL-KTI. 
+Ada 4 pilihan jawaban untuk set iap pernyataan yaitu Sangat Setuju ( SS), Setuju (S), Kurang 
+Setuju (KS) dan Tidak Setuju (TS).  
+ 
+Tabel 1. Hasil kuisioner pengujian sistem 
+ 
+No Pernyataan SS S KS TS Total 
+1 
+Aplikasi memberikan kemudahan bagi 
+bagian administrasi, mahasiswa, pengelola 
+prodi dan dosen terkait layanan PKL-KTI 
+4 17 8 6 35 
+2 Aplikasi menjadikan layanan terkait PKL-
+KTI lebih sistematis 4 16 9 6 35 
+3 
+Aplikasi mudah digunakan dan menyajikan 
+informasi yang sesuai kebutuhan para 
+stakeholder 
+5 16 7 7 35 
+4 Aplikasi dapat meningkatkan kualitas 
+pengontrolan kegiatan PKL-KTI mahasiswa 2 17 10 6 35 
+5 
+Aplikasi dapat meningkatkan kinerja 
+program studi dalam hal layanan 
+administrasi dan pengelolaan dokumen 
+PKL-KTI 
+3 19 8 5 35 
+6 
+Aplikasi dapat mengefisienkan prosedur 
+pelaksanaan dan meningkat kualitas 
+informasi terkait PKL-KTI 
+4 16 10 5 35 
+Jumlah 22 101 52 35 210 
+ 
+ 
+ 
+ 
+
+==================== PAGE 11 ====================
+ISSN: 2715-2944 (media online)  
+Aplikasi Pengelolaan PKL-KTI  Berbasis Web (Zaidir, Indra Listiawan) 
+11 
+Jumlah dari keseluruhan pernyataan dengan empat jawaban dikelompokkan menjadi dua  
+kategori yaitu nilai positif/layak untuk kolom (SS + S) dan nilai negatif/tidak layak untuk kolom 
+(KS + TS). Besaran persentase untuk nilai positif/layak adalah sebesar 59% dan rata -rata nilai 
+negative/tidak layak adalah sebesar 41% seperti terliat pada Gambar 15. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 15. Persentase kelayakan sistem berdasarkan kuisioner pengguna 
+Berdasarkan hasil gambar yang disajikan di atas, maka system informasi layanan PKL-KTI 
+sangat direkomendasikan untuk diterapkan di prodi Teknologi Informasi maup un di prodi yang 
+lain dengan melakukan penyesuaian. 
+ 
+4. KESIMPULAN 
+ 
+Rancang bangun aplikasi pengelolaan PKL -KTI berbasis web dapat dihasilkan dengan 
+waktu yang cukup singkat karena penerapan metode extareme programming yang sangat tepat. 
+Sistem yang dihasilkan  dapat digunakan untuk mempermudah layanan kepada mahasiswa 
+terkait PKL-KTI mulai dari  pegajuan proposal sampai penyerahan dokumen PKL -KTI. Sistem 
+yang dihasilkan dapat meningkat kan kinerja program studi karena beberapa proses dilakukan 
+secara otomatis da n pengolahan data tidak hanya tersentral di prodi. Ketersediaan informasi 
+sangat memadai baik dari segi kuantitas maupun kualitas sehingga sangat membantu dalam 
+pengambilan keputusan.  
+ 
+5. SARAN 
+ 
+Sistem ini akan lebih berdaya guna lagi jika dimasa yang akan da tang ditambahkan 
+fitur-fitur pelengkap seperti proses bimbingan mahasiswa dengan dosen pembimbing dan 
+kemampuan system agar bisa diakses dengan perangkat mobile. 
+ 
+6. UCAPAN TERIMA KASIH 
+ 
+Terima kasih kami ucapkan kepada Universitas Respati Yogyakarta yang tel ah 
+memberikan dukungan dana penelitian melalui hibah internal tahun 2021. Terima kasih juga 
+kami ucapkan kepada Program Studi Teknologi Informasi Program Diploma yang telah 
+memberikan kesempatan dan menfasilitasi terlaksananya penelitian ini. 
+ 
+
+
+==================== PAGE 12 ====================
+          ISSN: 2715-2944 (media online) 
+FAHMA – Jurnal Informatika Komputer, Bisnis dan Manajemen:  1 – 12 
+12 
+DAFTAR PUSTAKA  
+ 
+ 
+[1]  A. Kurniawan, Y. Yusuf, Y. D. Hermawan and P. Subagyo, "Pembuatan Sistem 
+Administrasi Tugas Akhir Berbasis Teknologi Informasi Pada Program Studi S1 Teknik 
+Kimia UPN “Veteran” Yogyakarta," Telematika, pp. 38-48, 2020.  
+  
+[2]  M. H. D. Adiartika  and I. W. Supriana , "Pengembangan Sistem Informasi Manajemen 
+Tugas Akhir Program Studi  Teknik Informatika Universitas Udayana," Jurnal Elektronik 
+Ilmu Komputer Udayana, pp. 13-24, 2020.  
+  
+[3]  Z. Alfiani, "Perancangan Sistem Informasi Kerja Praktik dan Tugas Akhir pada Program 
+Studi Teknik Industri Universitas Islam Bandung," Prosiding Teknik Industri, pp. 275-283, 
+2017.  
+  
+[4]  H. Kurniawan and W. B. Bondowoso, "Sistem Informasi Terintegrasi Tugas Akhr/Skripsi 
+Berbasis Web (Studi Kasus: Jurusan Sistem Informasi Institut Informatika dan Bisnis 
+Darmajaya," Jurnal Sistem Informasi dan Manajemen Basis Data (SIMADA), pp. 124-134, 
+2019.  
+  
+[5]  A. Homaidi, "Perancangan dan Implementasi E -Thesis untuk Tugas Akhir Mahasiswa 
+Universitas Ibrahimy Situbondo," Nusantara Journal of Computers and Its Applications 
+(NJCA), pp. 15-26, 2019.  
+  
+[6]  M. T. Jufri, M. Tonggiroh and F. Razaq, "Sistem Informasi Manajemen Tugas Akhir pada 
+Fakultas Teknik dan Sistem Informasi Universitas Yapis Papua," Jurnal Ilmiah Teknik dan 
+Informatika, pp. 69-75, 2018. 
+   
+[7]  S. Maria and Listiana, "Sistem Informasi Pengajuan Judul Tugas Akhir di AMIK 
+Mahaputra Riau Berbasis Web," Jurnal Intra-Tech, pp. 60-69, 2019.  
+  
+[8]  T. Gumelar, R. Astuti and A. T. Sunarni, "Sistem Penjualan Online  dengan Metod e 
+Extreme Programming," Jurnal TELEMATIKA MKOM, pp. 87-90, 2017.  
+  
+[9]  Fatoni and D. Irawan, "Implementasi Metode Extreme Programming dalam 
+Pengembangan Sistem Informasi Izin Produk Makanan," Jurnal SISFOKOM, pp. 159-164, 
+2019.  
+  
+[10]  S. Yahya, F. Mahard ika, I. Saepudin and Suhenda, "Implementasi Metode Extreme 
+Programming pada Aplikasi Biro Jodoh Syari’ah Berbasis Mobile Android," JTERA 
+(Jurnal Teknologi Rekayasa), pp. 37-40, 2019.  
+  
+[11]  R. A. Azdy and A. Rini, "Penerapan Extreme Pro gramming dalam Memb angun Aplikasi 
+Pengaduan Layanan Pelanggan (PaLaPa) pada Perguruan Tinggi," Jurnal Teknologi 
+Informasi dan Ilmu Komputer (JTIIK), pp. 197-206, 2018.  
+  
+[12]  Zaidir and I. Listiawan, "Perancangan Sistem Informasi Berbasis Web untuk Peng elolaan 
+Layanan PKL -KTI (Studi Kasus : Prodi Teknologi Informasi)," in Seminar Nasional 
+UNRIYO, Yogyakarta, 2021.  
+ 
+

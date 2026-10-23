@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { bidangService } from '@/lib/services/bidang.service'
 import { createClient } from '@/lib/supabase/server'
 import { Navbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 import { AppLogo } from '@/components/shared/app-logo'
 import type { AppRole } from '@/types/auth.types'
 
@@ -307,7 +308,9 @@ export default async function HomePage() {
                 lineHeight: 1.15,
                 margin: 0
               }}>
-                Sistem Informasi Magang
+                Sistem Informasi Magang<br />
+                dan Pelatihan Unggulan<br />
+                Lanjutan
               </h1>
               <div style={{
                 fontSize: 'clamp(2rem, 4vw, 2.85rem)',
@@ -328,7 +331,7 @@ export default async function HomePage() {
               lineHeight: 1.6,
               margin: '0 0 2rem 0'
             }}>
-              SIM (Sistem Informasi Magang) merupakan platform resmi untuk memfasilitasi mahasiswa dan siswa dalam melaksanakan kegiatan magang akademik, riset vokasi, dan pengujian mutu instrumen di lingkungan Balai Penerapan Standar Instrumen Pertanian (BRMP) Pengelola Hasil Kementerian Pertanian.
+              Simpul (Sistem Informasi Magang dan Pelatihan Unggulan Lanjutan) merupakan platform resmi untuk memfasilitasi mahasiswa dan siswa dalam melaksanakan kegiatan magang akademik, riset vokasi, dan pengujian mutu instrumen di lingkungan Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian (BRMP-PH) Kementerian Pertanian.
             </p>
 
             {/* CTA Button Hijau Cerah */}
@@ -392,38 +395,31 @@ export default async function HomePage() {
             <div style={{
               position: 'absolute',
               width: '320px',
-              height: '430px',
+              height: '420px',
               backgroundColor: '#043c2b',
               borderRadius: '28px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)',
-              zIndex: 0
-            }} />
-
-            {/* Gambar Karakter Anti-Aliased Halus di Tengah */}
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '380px',
+              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.35)',
+              overflow: 'hidden',
               display: 'flex',
-              justifyContent: 'center',
               alignItems: 'flex-end',
-              zIndex: 1
+              justifyContent: 'center',
+              zIndex: 0
             }}>
+              {/* Gambar Karakter Transparan Menyatu Rapi di Dalam Card */}
               <Image
-                src="/g1_smooth.png"
+                src="/siswa.png"
                 alt="Peserta Magang BRMP Kementan"
-                width={684}
-                height={684}
+                width={461}
+                height={496}
                 priority
                 style={{
-                  width: '100%',
-                  maxWidth: '350px',
+                  width: '92%',
+                  maxWidth: '300px',
                   height: 'auto',
-                  maxHeight: '460px',
                   objectFit: 'contain',
                   display: 'block',
-                  filter: 'drop-shadow(0 15px 25px rgba(0, 0, 0, 0.35))'
+                  marginBottom: 0
                 }}
               />
             </div>
@@ -972,95 +968,8 @@ export default async function HomePage() {
 
       </main>
 
-          {/* Footer Resmi BRMP Kementan */}
-          <footer style={{
-            backgroundColor: '#064e3b',
-            color: '#ecfdf5',
-            borderTop: '1px solid #047857',
-            padding: '3rem 1.5rem 2rem 1.5rem',
-            marginTop: 'auto'
-          }}>
-            <div style={{
-              maxWidth: '1240px',
-              margin: '0 auto',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '2.5rem',
-              marginBottom: '2.5rem'
-            }}>
-              {/* Info Institusi */}
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <AppLogo size={36} />
-                  <span style={{ fontSize: '1.125rem', fontWeight: 800, color: '#ffffff' }}>
-                    SIM-Magang BRMP
-                  </span>
-                </div>
-              </div>
-
-              {/* Navigasi Cepat */}
-              <div>
-                <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
-                  NAVIGASI CEPAT
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.8125rem' }}>
-                  <Link href={dashboardUrl} style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                    Beranda Utama
-                  </Link>
-                  <a href="#bidang" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                    Katalog Bidang &amp; Riset
-                  </a>
-                  <a href="#alur" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                    Alur Magang
-                  </a>
-                  <Link href="/kontak" style={{ color: '#a7f3d0', textDecoration: 'none' }}>
-                    Bantuan &amp; Helpdesk
-                  </Link>
-                </div>
-              </div>
-
-              {/* Kontak & Lokasi */}
-              <div>
-                <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 1rem 0' }}>
-                  SEKRETARIAT BRMP
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#a7f3d0', lineHeight: 1.5 }}>
-                  <div>
-                    <a
-                      href="https://www.google.com/maps/place/Balai+Pengelola+Hasil+Perakitan+dan+Modernisasi+Pertanian/@-6.5893588,106.7998551,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c5ccf0c9dc05:0xd84bcc2b4c0158c9!8m2!3d-6.5893641!4d106.80243!16s%2Fg%2F1tcwc2r_?entry=ttu"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#a7f3d0', textDecoration: 'none' }}
-                    >
-                      Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian ↗
-                    </a>
-                  </div>
-                  <div>Email: magang.brmp@pertanian.go.id</div>
-                  <div>WhatsApp: +62 811-9284-550</div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{
-              maxWidth: '1240px',
-              margin: '0 auto',
-              paddingTop: '1.5rem',
-              borderTop: '1px solid #047857',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              fontSize: '0.75rem',
-              color: '#86efac'
-            }}>
-              <div>© {new Date().getFullYear()} Kementerian Pertanian Republik Indonesia (SIM-Magang BRMP). Hak Cipta Dilindungi.</div>
-              <div style={{ display: 'flex', gap: '1.5rem' }}>
-                <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Syarat &amp; Ketentuan</Link>
-                <Link href="/kontak" style={{ color: '#86efac', textDecoration: 'none' }}>Kebijakan Privasi</Link>
-              </div>
-            </div>
-          </footer>
+          {/* Footer Global SIMPUL BRMP-PH */}
+          <Footer dashboardUrl={dashboardUrl} />
         </div>
         )
 }

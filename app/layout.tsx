@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'SIM-Magang',
-  description: 'Sistem Informasi Manajemen Magang',
+  title: 'SIMPUL - Sistem Informasi Magang dan Pelatihan Unggulan Lanjutan',
+  description: 'Simpul BRMP-PH - Sistem Informasi Magang dan Pelatihan Unggulan Lanjutan Balai Pengelola Hasil Perakitan dan Modernisasi Pertanian',
   icons: {
     icon: '/favicon.ico',
   },

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sertifikatService } from '@/lib/services/sertifikat.service'
 import type { SKMSubmissionPayload, SKMResponse } from '@/types/skm.types'
 
 export async function POST(request: Request): Promise<NextResponse<SKMResponse>> {
@@ -190,19 +191,46 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
     }
 
     const questionMap = new Map(activeQuestions.map((q) => [q.id, q]))
+    const answerMap = new Map(answers.map((a) => [a.skmPertanyaanId, String(a.jawaban ?? '').trim()]))
 
-    // Validasi setiap butir jawaban
-    for (const ans of answers) {
-      const q = questionMap.get(ans.skmPertanyaanId)
-      if (q && q.tipe === 'pilihan') {
-        const scoreNum = Number(ans.jawaban)
+    // Validasi kelengkapan: seluruh butir aktif wajib dijawab
+    for (const q of activeQuestions) {
+      const ansVal = answerMap.get(q.id)
+      if (ansVal === undefined || ansVal === '') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'REQUIRED_FIELD_EMPTY',
+              message: `Pertanyaan nomor #${q.urutan} wajib diisi.`,
+            },
+          },
+          { status: 400 }
+        )
+      }
+
+      if (q.tipe === 'pilihan') {
+        const scoreNum = Number(ansVal)
         if (![1, 2, 3, 4].includes(scoreNum)) {
           return NextResponse.json(
             {
               success: false,
               error: {
                 code: 'INVALID_SCORE',
-                message: `Skor penilaian untuk butir nomor #${q.urutan} harus berada pada rentang 1 s/d 4.`,
+                message: `Pilihan jawaban untuk butir nomor #${q.urutan} harus bernilai antara 1 sampai 4.`,
+              },
+            },
+            { status: 400 }
+          )
+        }
+      } else if (q.tipe === 'teks') {
+        if (ansVal.length === 0) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: {
+                code: 'TEXT_REQUIRED',
+                message: `Kolom saran dan masukan (nomor #${q.urutan}) wajib diisi.`,
               },
             },
             { status: 400 }
@@ -211,14 +239,12 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
       }
     }
 
-    // 8. Format dan Susun Baris Data Jawaban (seluruh 17 butir disimpan dengan is_anonim yang seragam)
-    const isAnonimFinal = typeof payload.isAnonim === 'boolean' ? payload.isAnonim : true
-
-    const rowsToInsert = answers.map((ans) => ({
+    // 8. Format dan Susun Baris Data Jawaban (seluruh 17 butir disimpan dengan is_anonim = false)
+    const rowsToInsert = activeQuestions.map((q) => ({
       pengajuan_id: pengajuanId,
-      skm_pertanyaan_id: ans.skmPertanyaanId,
-      jawaban: String(ans.jawaban ?? '').trim(),
-      is_anonim: isAnonimFinal,
+      skm_pertanyaan_id: q.id,
+      jawaban: answerMap.get(q.id) || '',
+      is_anonim: false,
     }))
 
     // 9. Eksekusi Batch INSERT ke Database Supabase
@@ -248,7 +274,14 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
 
     console.log('[SKM API] Successfully inserted answers count:', insertedData?.length || rowsToInsert.length)
 
-    // 9. Berhasil Disimpan
+    // 10. Pemicu Pengecekan Notifikasi Sertifikat (Diisolasi dalam try/catch terpisah sesuai Koreksi 3)
+    try {
+      await sertifikatService.checkAndTriggerNotification(pengajuanId)
+    } catch (certNotifErr) {
+      console.warn('[SKM API] Pengecekan notifikasi sertifikat dilewati secara aman:', certNotifErr)
+    }
+
+    // 11. Berhasil Disimpan
     return NextResponse.json(
       {
         success: true,

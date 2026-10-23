@@ -1,0 +1,605 @@
+=== FULL TEXT OF 3_Zikri (File: jurnall/02_BAB_II_TINJAUAN_PUSTAKA/2.1_Sistem_Informasi_Manajemen_Magang/2.1.1_Sistem_Informasi/2089-File Naskah Utama-7372-1-10-20260804.pdf) ===
+Total Pages: 16
+
+==================== PAGE 1 ====================
+Jurnal Tekno Insentif   | Vol. 20 | No.  1 | Juli 2026   
+DOI : http://dx.doi.org/10.36787/jti.v20i1.2089 Halaman 18 - 33  
+ 
+Jurnal Tekno Insentif – 18 
+Sistem Informasi Magang Mahasiswa Berbasis 
+Web sebagai Pendukung Pengelolaan Kegiatan 
+Magang 
+Arifin Zikri1, Riki Afriansyah2, Eko Sulistyo3 
+Politenik Manufaktur Negeri Bangka Belitung, Indonesia 
+arifin.zikri182@gmail.com 
+ABSTRAK 
+Program magang di Politeknik Manufaktur Negeri Bangka Belitung sebelumnya masih dikelola 
+secara konvensional sehingga menimbulkan kendala dalam administrasi, pemantauan 
+mahasiswa, dan komunikasi antar pihak terkait. Penelitian ini bertujuan untuk 
+mengimplementasikan dan mengevaluasi sistem magang mahasiswa berbasis web guna 
+mendukung pengelolaan kegiatan magang. Sistem dikembangkan menggunakan metode 
+Extreme Programming (XP), yaitu metode pengembangan perangkat lunak berbasis agile yang 
+menekankan proses it eratif, umpan balik berkelanjutan, dan kemampuan beradaptasi 
+terhadap perubahan kebutuhan pengguna.  Sistem menyediakan fitur logbook digital, 
+penjadwalan sidang daring, serta fasilitas unggah dan unduh dokumen. Evaluasi dilakukan 
+melalui Blackbox Testing dan User Acceptance Testing (UAT). Hasil pengujian menunjukkan 
+seluruh fungsi sistem berjalan dengan baik dengan tingkat kepuasan pengguna sebesar 
+86,4%, sehingga sistem mampu meningkatkan efisiensi administrasi, transparansi, dan 
+kemudahan pemantauan kegiatan magang secara real -time di Politeknik Manufaktur Negeri 
+Bangka Belitung. 
+Kata kunci : Magang, Sistem Pengelolaan, Website, Extreme Programming , Monitoring, 
+Pembaruan. 
+ABSTRACT 
+The internship program at the Bangka Belitung State Manufacturing Polytechnic was previously 
+managed conventionally, which caused obstacles in administration, student monitoring, and 
+communication between related parties. This study aims to implement and e valuate a web-
+based student internship system to support the management of internship activities. The 
+system was developed using the Extreme Programming (XP) method, which is an agile 
+software development method that emphasizes iterative processes, continuous feedback, and 
+the ability to adapt to changing user needs. The system provides digital logbook features, 
+online meeting scheduling, and document upload and download facilities. The evaluation was 
+conducted through Blackbox Testing and User Acceptance T esting (UAT). The test results 
+showed that all system functions worked well with a user satisfaction rate of 86.4%, indicating 
+that the system was able to improve administrative efficiency, transparency, and ease of real-
+time monitoring of internship activities at the Bangka Belitung State Manufacturing Polytechnic. 
+Keywords: Internship, Management System, Website, Extreme Programming, Monitoring, 
+Updates.
+
+==================== PAGE 2 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 19 
+ 
+ PENDAHULUAN 
+Magang Magang merupakan proses pembelajaran di lingkungan kerja nyata yang 
+memungkinkan mahasiswa menerapkan ilmu dan keterampilan yang diperoleh selama studi, 
+sekaligus mempersiapkan diri menghadapi dunia kerja profesional (Fareza, 2024). Program 
+ini memiliki peran strategis dalam meningkatkan kompetensi mahasiswa, baik dari segi 
+kemampuan teknis maupun pengembangan soft skill, sehingga mampu beradaptasi dengan 
+kebutuhan industri yang terus berkembang. Di Politeknik Manufaktur Negeri Bangka Belitung, 
+kegiatan magang telah ditetapkan sebagai kewajiban akademik pada semester enam untuk 
+program Diploma III dan semester delapan untuk program Diploma IV, sehingga seluruh 
+mahasiswa diwajibkan melaksanakannya sebagai bagian dari kurikulum dan tanggung jawab 
+akademik. 
+Dalam pelaksanaannya, pengelolaan magang berada di bawah koordinasi Komisi Magang yang 
+bertugas memfasilitasi administrasi mulai dari pengajuan, verifikasi, hingga pelaksanaan 
+sidang magang. Namun, proses administrasi yang masih didominasi oleh mekanisme manual, 
+seperti pengumpulan berkas secara langsung, penyampaian informasi secara tatap muka, dan 
+pencatatan data secara konvensional yang berpotensi menimbulkan berbagai kendala. Proses 
+pengelolaan magang di beberapa institusi masih dilakukan secara manual, seperti mencatat 
+berkas di kertas serta komunikasi melalui pesan, yang menyebabkan data tidak lengkap dan 
+tidak sinkron sehingga pengel olaan magang kurang optimal  (Frasha et al., 2024) . 
+Permasalahan tersebut meliputi rendahnya efisiensi waktu, meningkatnya risiko kehilangan 
+dokumen, kesulitan akses informasi, serta terjadinya duplikasi data (Aura Wansa, 2023; 
+Trisno & Hari, 2021; Yusa, 2022) . Selain itu, keterbatasan pemanfaatan sistem berbasis 
+teknologi menyebabkan proses pemantauan dan validasi kegiatan magang belum berjalan 
+secara optimal. 
+Kondisi tersebut tidak hanya berdampak pada efektivitas administrasi, tetapi juga 
+memengaruhi kualitas koordinasi antara mahasiswa, dosen pembimbing, dan pihak industri. 
+Sejumlah penelitian menunjukkan bahwa pemanfaatan sistem informasi berbasis web mampu 
+meningkatkan efisiensi pengelolaan data, akurasi informasi, serta kemudahan akses bagi 
+seluruh pihak yang terlibat dalam kegiatan akademik. Hal ini sejalan dengan penelitian yang 
+menyatakan bahwa sistem informasi akademik berbasis web berperan penting dala m 
+meningkatkan efisiensi pengelolaan data akademik serta memberikan kemudahan akses 
+informasi kepada mahasiswa dan pengelola pendidikan (Pratama et al., 2025). Oleh karena 
+itu, diperlukan pemanfaatan sistem informasi magang yang mampu mendukung proses 
+pendaftaran, pemantauan kegiatan, penjadwalan sidang, serta validasi hasil magang secara 
+terintegrasi dan berkelanjutan. 
+Berdasarkan kondisi tersebut, penelitian ini difokuskan pada pemanfaatan dan evaluasi sistem 
+informasi magang berbasis website dalam mendukung pelaksanaan kegiatan magang di 
+Politeknik Manufaktur Negeri Bangka Belitung. Penelitian ini bertujuan untuk menel aah 
+bagaimana fitur-fitur yang tersedia, seperti jurnal harian mahasiswa dan penjadwalan sidang, 
+digunakan dalam menunjang proses pengajuan, pemantauan, serta validasi kegiatan magang. 
+Selain itu, penelitian ini meninjau kesesuaian sistem dengan kebutuhan pengguna melalui 
+pendekatan Extreme Programming (XP) sebagai kerangka konseptual untuk memahami proses 
+adaptasi dan perbaikan sistem berdasarkan umpan balik pengguna (Salim & Alijoyo, 2024). 
+
+==================== PAGE 3 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 20 
+Melalui pendekatan tersebut, penelitian ini diharapkan dapat memberikan gambaran mengenai 
+efektivitas pemanfaatan sistem informasi magang dalam mendukung koordinasi, transparansi, 
+dan akurasi pengelolaan kegiatan magang. Dengan demikian, sistem yang diguna kan 
+diharapkan mampu menunjang pelaksanaan magang secara lebih terstruktur, efisien, dan 
+sesuai dengan kebutuhan seluruh pihak yang terlibat di Politeknik Manufaktur Negeri Bangka 
+Belitung. 
+ 
+1. METODE 
+2.1 Diagram Alur 
+ 
+Gambar 1. Diagram Alur 
+Berdasarkan Gambar 1, alur flowchart menggambarkan proses penelitian diawali pada tahap 
+Mulai, yang menandai dimulainya rangkaian kegiatan penelitian. Tahap selanjutnya adalah 
+identifikasi kebutuhan pengguna, yaitu proses pengumpulan dan analisis kebutuhan pengguna 
+terhadap sistem magang mahasiswa berbasis web. Kebutuhan ini diperoleh dari pihak -pihak 
+yang terlibat langsung dalam pelaksanaan magang, seperti mahasiswa, dosen wali, mitra 
+industri, dan komisi magang, guna mengetahui permasalahan dan kebutuhan selama 
+penggunaan sistem. 
+Setelah kebutuhan pengguna teridentifikasi, proses dilanjutkan ke tahap penerapan sistem 
+magang berbasis web. Pada tahap ini, sistem yang telah tersedia diterapkan dan disiapkan 
+
+
+==================== PAGE 4 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 21 
+untuk digunakan dalam mendukung pengelolaan kegiatan magang, meliputi pencatatan 
+logbook dan absensi, pengelolaan dokumen magang, penjadwalan sidang, serta pemantauan 
+dan penilaian kegiatan magang. 
+Tahap berikutnya adalah penggunaan sistem oleh pengguna, di mana seluruh pengguna 
+memanfaatkan sistem sesuai dengan peran masing -masing dalam pelaksanaan kegiatan 
+magang. Penggunaan sistem ini menjadi dasar untuk menilai bagaimana sistem berfungsi 
+dalam kondisi nyata dan mendukung aktivitas magang secara langsung. 
+Selanjutnya, dilakukan evaluasi sistem untuk menilai kinerja dan fungsi sistem selama 
+digunakan. Evaluasi dilakukan melalui pengujian Blackbox untuk memastikan fungsi sistem 
+berjalan dengan baik, serta User Acceptance Testing (UAT) untuk mengukur tingkat 
+penerimaan dan kepuasan pengguna terhadap sistem. 
+Tahap terakhir adalah analisis hasil evaluasi, yaitu proses pengolahan dan pembahasan hasil 
+pengujian dan penilaian pengguna untuk mengetahui tingkat efektivitas sistem dalam 
+mendukung pengelolaan dan pemantauan kegiatan magang. Setelah seluruh hasil diana lisis, 
+proses penelitian diakhiri pada tahap Selesai, yang menandakan bahwa rangkaian penelitian 
+telah selesai dilaksanakan. 
+ 
+2.2 Metode Extreme Programming (XP) 
+ 
+  
+Gambar 2. Metode Extreme Programming 
+Metode yang digunakan dalam penelitian sistem Pengelolaan Kegiatan Magang di Polman 
+Negeri Bangka Belitung adalah Extreme Programming (XP), yang diposisikan sebagai kerangka 
+kerja Agile untuk mendukung proses evaluasi, penyempurnaan, dan adaptasi sistem 
+berdasarkan umpan balik pengguna (Zaidir & Listiawan, 2022). XP berlandaskan lima nilai 
+utama, yaitu Communication, Simplicity, Feedback, Courage, dan Respect, serta menerapkan 
+prinsip seperti siklus kerja iteratif, pengujian berkelanjutan, dan perbaikan sistem secara 
+bertahap (Dewi et al., 2022) . Dengan karakter iteratif, kolaboratif, dan berfokus pada 
+umpan balik, pendekatan XP memungkinkan sistem disesuaikan secara berkelanjutan agar 
+tetap relevan dan efektif dalam mendukung pelaksanaan kegiatan magang sesuai kebutuhan 
+pengguna. Penelitian oleh (Yusa, 2022)  serta (Salim & Alijoyo, 2024)  menunjukkan 
+bahwa penerapan XP efektif dalam mendukung sistem yang adaptif, khususnya pada 
+pengelolaan dokumen, pemantauan peserta, dan penjadwalan kegiatan magang.  Sementara 
+itu, pendekatan lain seperti SDLC dan Research and Development (R&D) yang digunakan oleh 
+(Rusli Baharuddin, 2021)  lebih menitikberatkan pada tahapan pengembangan sistem 
+
+
+==================== PAGE 5 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 22 
+akademik dan perancangan komunikasi antara mahasiswa, dosen pembimbing, dan pengelola 
+magang. Studi lain oleh Ordiyasa et al. (2021)  menghadirkan pemanfaatan teknologi 
+Location-Based Service (LBS) untuk monitoring lokasi peserta magang secara real -time, 
+meskipun aspek keamanan data masih menjadi keterbatasan. Beberapa penelitian lain, seperti 
+(Trisno & Hari, 2021) , lebih berfokus pada penyajian desain sistem menggunakan UML 
+tanpa disertai evaluasi penggunaan sistem secara langsung.  
+ 
+2. HASIL DAN PEMBAHASAN 
+ 
+2.1. Identifikasi Kebutuhan Pengguna dalam Implementasi Sistem 
+Pengumpulan data pada tahap ini dilakukan untuk mengidentifikasi kebutuhan pengguna 
+dalam implementasi dan pemanfaatan sistem pengelolaan magang berbasis web di Politeknik 
+Manufaktur Negeri Bangka Belitung. Data diperoleh melalui wawancara dan observasi 
+langsung terhadap pihak-pihak yang terlibat dalam pelaksanaan magang, khususnya Komisi 
+Magang. Hasil wawancara menunjukkan bahwa sebelum sistem diterapkan, proses 
+pemantauan kegiatan mahasiswa selama magang masih dilakukan secara manual dan tidak 
+terpusat, sehingga menyulitkan pemantauan perkembangan mahasiswa secara real -time. 
+Selain itu, pengarsip an dokumen magang seperti logbook, surat rekomendasi, dan laporan 
+kegiatan masih dikelola secara fisik, yang berpotensi menimbulkan risiko kehilangan atau 
+kerusakan data. Observasi terhadap alur pelaksanaan magang, mulai dari pengajuan lokasi, 
+pengumpulan berkas, pengisian logbook, hingga pelaksanaan sidang, menunjukkan bahwa 
+sebagian besar proses administrasi masih berjalan secara konvensional dan rawan 
+keterlambatan. Temuan ini menjadi dasar dalam penerapan sistem informasi magang berbasis 
+web untuk mengintegrasikan proses administrasi, mempermudah pemantauan kegiatan 
+magang, serta mendukung pelaksanaan magang secara lebih terstruktur dan efisien.  
+2.1.1. Use case Diagram 
+Use case diagram ini menggambarkan interaksi antara mahasiswa, dosen/penguji, mitra 
+industri, dan admin/komisi magang dalam pemanfaatan sistem magang berbasis web. 
+Mahasiswa menggunakan sistem untuk mengajukan dan memantau kegiatan magang, mengisi 
+logbook, serta melihat hasil evaluasi selama proses magang berlangsung.  Dosen berperan 
+dalam memantau perkembangan mahasiswa serta memberikan umpan balik dan penilaian 
+berdasarkan aktivitas yang tercatat dalam sistem, sedangkan mitra industri melakukan 
+verifikasi aktivitas dan penilaian kinerja mahasiswa selama pelaksanaan mag ang. 
+Admin/komisi magang bertugas mengelola data pengguna, memantau keseluruhan proses 
+magang, serta menyajikan laporan sebagai bahan evaluasi pelaksanaan magang.  Use case 
+diagram pada penelitian ini disajikan untuk menggambarkan fungsi utama sistem dalam 
+mendukung pengelolaan dan evaluasi kegiatan magang mahasiswa secara terintegrasi, bukan 
+sebagai representasi detail proses perancangan sistem. Relasi interaksi ant ar aktor 
+menunjukkan bagaimana sistem digunakan sebagai sarana pendukung alur magang yang 
+terstruktur dan efisien (Maulida Sari et al., 2024). 
+
+==================== PAGE 6 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 23 
+ 
+Gambar 3. Use Case Diagram 
+2.1.2. Activity Diagram 
+Alur proses ini menggambarkan tahapan aktivitas harian hingga sidang  magang oleh 
+mahasiswa yang melibatkan empat pihak utama: Mahasiswa, Admin / Komisi Magang, Mitra, 
+dan Dosen Wali/Penguji. 
+1. Activity Diagram Harian Mahasiswa 
+Alur proses ini menggambarkan aktivitas harian mahasiswa selama pelaksanaan magang yang 
+meliputi pengisian logbook dan pencatatan absensi melalui sistem magang berbasis web. 
+Proses ini melibatkan mahasiswa sebagai pengguna utama, serta admin/komisi magang, mitra 
+industri, dan dosen wali dalam melakukan pemantauan, verifikasi, dan evaluasi aktivitas 
+magang. 
+
+
+==================== PAGE 7 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 24 
+ 
+Gambar 4. Activity Diagram Harian Mahasiswa 
+ 
+2. Activity Diagram Penjadwalan Sidang Magang 
+Alur proses sidang magang menggambarkan tahapan pelaksanaan sidang magang mahasiswa 
+yang dilakukan melalui sistem magang berbasis web. Proses ini dimulai dari pembuatan dan 
+pengumpulan laporan akhir magang oleh mahasiswa, penilaian yang dilakukan oleh mitra, 
+penjadwalan sidang oleh admin/komisi magang, dilanjutkan dengan pelaksanaan sidang oleh 
+mahasiswa, serta proses penilaian oleh dosen/penguji. Sistem berperan dalam mendukung 
+pengelolaan jadwal, dokumentasi, dan hasil penilaian sidang magang. 
+ 
+
+
+==================== PAGE 8 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 25 
+ 
+Gambar 5. Activity Diagram Penjadwalan Sidang Magang 
+ 
+ 
+ 
+ 
+
+
+==================== PAGE 9 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 26 
+2.2. Implementasi Sistem 
+Implementasi Implementasi sistem dilakukan melalui penerapan sistem magang mahasiswa 
+berbasis web yang telah tersedia dengan menggunakan PHP Laravel pada sisi backend serta 
+HTML, CSS, dan JavaScript pada sisi frontend. Metode Extreme Programming dipilih karena 
+telah te rbukti mampu meningkatkan integrasi dan efisiensi dalam pengembangan sistem 
+berbasis web, memungkinkan pengguna mendaftar, mengunggah dokumen, serta memantau 
+status secara online sesuai kebutuhan sistem magang modern  (Nabila Putri & Hardiani, 
+2024). Metode Extreme Programming (XP) dimanfaatkan sebagai kerangka kerja iteratif 
+untuk mendukung proses evaluasi, penyesuaian, dan penyempurnaan sistem berdasarkan 
+umpan balik pengguna selama sistem digunakan. Pengembangan sistem informasi magang 
+berbasis web juga dirancang untuk memantau perkembangan mahasiswa secara real -time 
+secara efisien, meningkatkan efektivitas proses pembelajaran dan administrasi magang  
+(Hanifa & Syahputra, 2025). Sistem ini menyediakan fitur utama meliputi login multi-peran, 
+pengelolaan logbook dan absensi harian, unggah dokumen magang, akses nilai, serta 
+penjadwalan sidang secara daring. Setiap modul sistem diterapkan dan digunakan secara 
+terpisah untuk memudahkan proses evaluasi fungsi, pemeliharaan sistem, serta penyesuaian 
+fitur berdasarkan kebutuhan pengguna, dengan melibatkan pengguna melalui pengujian rutin 
+selama penggunaan sistem. 
+1. Tampilan Halaman Home 
+ 
+Gambar 6. Tampilan Halaman Home 
+2. Tampilan Halaman Login 
+ 
+
+
+==================== PAGE 10 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 27 
+Gambar 7. Tampilan Halaman Login 
+3. Tampilan Halaman Dashboard 
+ 
+Gambar 8. Tampilan Halaman Dashboard 
+ 
+4. Tampilan Halaman Absensi 
+ 
+ 
+Gambar 9. Tampilan Halaman Absensi 
+ 
+5. Tampilan Halaman Logbook 
+
+
+==================== PAGE 11 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 28 
+ 
+Gambar 10. Tampilan Halaman Logbook 
+6. Tampilan Halaman Penilaian 
+ 
+Gambar 11. Tampilan Halaman Penilaian 
+ 
+7. Tampilan Halaman Upload Laporan Akhir 
+ 
+Gambar 12. Tampilan Halaman Upload Laporan Akhir 
+ 
+8. Tampilan Halaman Jadwal Sidang Magang 
+
+
+==================== PAGE 12 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 29 
+ 
+Gambar 13. Tampilan Halaman Jadwal Sidang Magang 
+2.3. Evaluasi Sistem 
+Evaluasi sistem dilakukan melalui Blackbox Testing pada fitur login, logbook, unggah dokumen, 
+dan verifikasi mitra untuk memastikan fungsi berjalan sesuai kebutuhan. Selain itu, User 
+Acceptance Testing (UAT) dilakukan melalui kuesioner kepada mahasiswa, do sen wali, mitra 
+industri, dan komisi magang. Hasil pengujian menunjukkan tingkat penerimaan pengguna 
+yang sangat baik, sehingga sistem dinilai layak dan efektif digunakan dalam mendukung 
+pengelolaan kegiatan magang. 
+1. Blackbox Testing 
+Hasil Black Box Testing menunjukkan semua fitur sistem berfungsi sesuai peran pengguna. 
+Mahasiswa dapat login, mengisi logbook, mengunggah dokumen, melamar lowongan, melihat 
+jadwal, dan mengikuti sidang. Mitra memvalidasi logbook serta memberi nilai, pengu ji 
+menginput hasil sidang, sedangkan admin mengelola akun, dokumen, jadwal, dan lowongan. 
+Seluruh fitur dinyatakan valid dan mendukung kebutuhan pengelolaan magang. Jika data yang 
+dimasukkan tidak sesuai, sistem otomatis menolaknya dan tidak menyimpannya, sedangkan 
+data valid akan diproses serta disimpan dengan benar (Apriansah et al., 2023). 
+Tabel 1. Blackbox Testing 
+No Pengguna Fitur Sistem Tujuan Evaluasi 
+Hasil 
+Penggunaan 
+Keterangan 
+1 Mahasiswa Akses sistem dan 
+dashboard 
+Menilai kemudahan 
+pengguna dalam 
+mengakses sistem 
+Berjalan 
+sesuai 
+Valid 
+2 Mahasiswa Pengisian 
+logbook harian 
+Menilai dukungan sistem 
+dalam pencatatan 
+aktivitas magang 
+Berjalan 
+Sesuai 
+Valid 
+3 Mahasiswa Unggah 
+dokumen 
+magang 
+Menilai dukungan sistem 
+dalam pengelolaan 
+dokumen magang 
+Berjalan 
+Sesuai 
+Valid 
+
+
+==================== PAGE 13 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 30 
+4 Mitra Validasi logbook 
+mahasiswa 
+Menilai dukungan sistem 
+dalam proses verifikasi 
+aktivitas mahasiswa 
+Berjalan 
+Sesuai 
+Valid 
+5 Mitra Akses data 
+mahasiswa 
+magang 
+Menilai penyajian data 
+mahasiswa oleh sistem 
+Berjalan 
+Sesuai 
+Valid 
+6 Admin Pengelolaan 
+akun pengguna 
+Menilai fungsi sistem 
+dalam pengelolaan data 
+pengguna 
+Berjalan 
+Sesuai 
+Valid 
+7 Admin Pengelolaan 
+informasi 
+magang 
+Menilai fungsi sistem 
+dalam pengelolaan 
+informasi magang 
+Berjalan 
+Sesuai 
+Valid 
+8 Dosen Pemantauan 
+absensi dan 
+logbook 
+Menilai dukungan sistem 
+dalam monitoring 
+aktivitas mahasiswa 
+Berjalan 
+Sesuai 
+Valid 
+9 Mahasiswa Unggah laporan 
+akhir magang 
+Menilai dukungan sistem 
+dalam pengumpulan 
+laporan akhir magang 
+Berjalan 
+Sesuai 
+Valid 
+10 Admin Verifikasi 
+laporan akhir 
+Menilai dukungan sistem 
+dalam proses verifikasi 
+laporan akhir 
+Berjalan 
+Sesuai 
+Valid 
+11 Admin Penjadwalan 
+sidang magang 
+Menilai fungsi sistem 
+dalam pengelolaan 
+jadwal sidang magang 
+Berjalan 
+Sesuai 
+Valid 
+12 Mahasiswa Akses jadwal 
+sidang 
+Menilai penyajian 
+informasi jadwal sidang 
+oleh sistem 
+Berjalan 
+Sesuai 
+Valid 
+13 Mitra Penilaian 
+pelaksanaan 
+magang 
+Menilai dukungan sistem 
+dalam penginputan nilai 
+magang 
+Berjalan 
+Sesuai 
+Valid 
+14 Penguji Penilaian hasil 
+sidang 
+Menilai dukungan sistem 
+dalam proses penilaian 
+sidang 
+Berjalan 
+Sesuai 
+Valid 
+15 Mahasiswa Partisipasi 
+sidang magang 
+Menilai dukungan sistem 
+dalam pelaksanaan 
+sidang magang admin 
+Berjalan 
+Sesuai 
+Valid 
+ 
+
+==================== PAGE 14 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 31 
+2. User Acceptance Testing (UAT) 
+User Acceptance Testing (UAT) dilakukan dengan melibatkan pengguna akhir untuk menilai 
+pemanfaatan sistem magang mahasiswa berbasis web dalam mendukung pelaksanaan 
+kegiatan magang. Responden diminta memberikan penilaian terhadap kemudahan 
+penggunaan, tampi lan antarmuka, fungsi sistem, serta tingkat kepuasan selama sistem 
+digunakan. Penilaian dilakukan menggunakan skala empat kategori jawaban, yaitu  Sangat 
+Setuju (4), Setuju (3), Tidak Setuju (2), dan Sangat Tidak Setuju (1).  Pengujian ini berfokus 
+pada persepsi pengguna akhir terhadap kinerja sistem dalam penggunaan nyata, guna 
+memastikan bahwa sistem dapat digunakan secara efektif dan sesuai dengan kebutuhan 
+operasional pengguna. 
+ 
+ 
+ 
+ 
+Tabel 2. User Acceptance Testing 
+No Aspek Penilaian Deskripsi Evaluasi 
+ 
+Persentase 
+ 
+1 Fungsional 
+Pemanfaatan fitur logbook, absensi, 
+dan penjadwalan sidang selama 
+kegiatan magang 
+87% 
+2 Desain 
+Kemudahan pemahaman tampilan 
+dan navigasi sistem selama 
+penggunaan 
+88% 
+3 Teknis Stabilitas sistem dan kecepatan 
+akses selama penggunaan 85% 
+4 Kegunaan 
+Kemudahan penggunaan sistem 
+dalam mendukung pelaporan dan 
+pemantauan magang 
+83% 
+5 Kepuasan Pengguna 
+Kemudahan penggunaan sistem 
+dalam mendukung pelaporan dan 
+pemantauan magang 
+89% 
+ 
+2.4. Analisis Hasil 
+Berdasarkan hasil User Acceptance Testing (UAT) yang melibatkan pengguna akhir, diperoleh 
+nilai rata -rata keseluruhan sebesar 86,4%, yang menunjukkan bahwa sistem magang 
+mahasiswa berbasis web berada pada kategori sangat baik dan dapat diterima oleh pengguna 
+dalam mendukung pelaksanaan kegiatan magang. Pada aspek fungsional, sistem memperoleh 
+nilai yang tinggi, yang menunjukkan bahwa fitur-fitur utama seperti pengisian logbook, absensi 
+magang, serta penjadwalan sidang dapat dimanfaatkan dengan baik sesuai kebutuhan 
+pengguna selama proses magang berlangsu ng. Aspek desain juga memperoleh nilai tinggi, 
+yang menggambarkan bahwa tampilan antarmuka sistem dinilai menarik, konsisten, dan 
+mudah dipahami oleh pengguna.  Selanjutnya, aspek teknis menunjukkan bahwa sistem 
+berjalan secara stabil dan responsif selama digunakan, serta tidak menimbulkan kendala yang 
+signifikan. Aspek kegunaan (usability) juga menunjukkan hasil positif, yang menandakan 
+bahwa pengguna tidak mengalami kesulitan berarti dalam memahami alur penggunaan sistem 
+
+==================== PAGE 15 ====================
+Sistem Informasi Magang Mahasiswa Berbasis Web sebagai Pendukung Pengelolaan Kegiatan Magang  
+Jurnal Tekno Insentif – 32 
+dan menjalankan fitur yang tersedia. Selain itu, aspek kepuasan pengguna memperoleh nilai 
+yang baik, yang menunjukkan bahwa secara umum pengguna merasa puas terhadap kinerja 
+dan manfaat sistem dalam mendukung kegiatan magang. Secara keseluruhan, hasil ini 
+menunjukkan bahwa sistem dapat diguna kan secara efektif dalam konteks operasional dan 
+memenuhi kriteria uji penerimaan pengguna berdasarkan pengalaman penggunaan langsung. 
+ 
+3. KESIMPULAN 
+Sistem informasi magang berbasis website yang diterapkan di Politeknik Manufaktur Negeri 
+Bangka Belitung telah dimanfaatkan sebagai sarana pendukung pelaksanaan kegiatan 
+magang, mulai dari pengajuan, pencatatan logbook, absensi, hingga pendaftaran sidang yang 
+melibatkan mahasiswa, dosen wali, mitra industri, dan admin. Pemanfaatan sistem ini 
+mempermudah proses administrasi dan pelaporan kegiatan magang, serta membantu dosen 
+dan komisi magang dalam melakukan pemantauan dan penilaian secara lebih terstruktur. 
+Pendekatan Extreme Programming (XP) digunakan sebagai kerangka evaluatif untuk meninjau 
+kesesuaian sistem terhadap kebutuhan pengguna melalui umpan balik selama penggunaan, 
+sehingga sistem dapat beroperasi secara efektif dan responsif. Hasil pengujian Black Box dan 
+User Acceptance Testing (UAT) menunjukkan bahwa seluruh fungsi utama sistem berjalan 
+dengan baik, dengan tingkat kepuasan pengguna mencapai 86,4%. Secara keseluruhan, 
+sistem informasi magang ini berkontribusi dalam meningkatkan efektivitas pengelolaan 
+magang dan dapat menjadi acuan penerapan sistem serupa pada institusi pendidikan lainnya, 
+meskipun masih terdapat peluang penguatan pada aspek integrasi dan keamanan data. 
+ 
+4. DAFTAR RUJUKAN 
+Apriansah, B. B., Saputra, E. A., & Permatasari, H. (2023). Pengujian Aplikasi Absensi dan 
+Kegiatan Magang Mahasiswa Menggunakan Metode BlackBox Testing. 
+Aura Wansa, N. (2023). Sistem Pengelolaan Kerja Praktik Mahasiswa Berbasis Website di 
+Universitas Bina Insani. 
+Dewi, I. P., Marta, R., Rinaldi, D., Riyanda, A. R., & Indarta, Y. (2022). Penerapan Extreme 
+Programming Dalam Perancangan Sistem Informasi Praktik Industri Berbasis Website. 
+Journal of Information System Research (JOSH), 4(1), 277–284. 
+https://doi.org/10.47065/josh.v4i1.2328 
+Fareza, M. (2024). Perancangan Sistem Informasi Penerimaan Peserta Magang Berbasis 
+Web. Jurnal Mahasiswa Aplikasi Teknologi Komputer Dan Informasi, 6(1), 61–69. 
+Frasha, M., Perdana, C., Atina, V., Nastiti, F. E., Studi, P., Informasi, S., Rekayasa, T., & 
+Lunak, P. (2024). INFORMASI (Jurnal Informatika dan Sistem Informasi) Sistem 
+Informasi Pengelolaan Magang Berbasis Web. 
+Hanifa, A., & Syahputra, M. (2025). Perancangan Sistem Informasi Magang Mahasiswa 
+Berbasis Web sebagai Alat Pemantauan Progres di Politeknik LP3I Kampus Padang. 
+RIGGS: Journal of Artificial Intelligence and Digital Business, 4(2), 2096–2103. 
+https://doi.org/10.31004/riggs.v4i2.801 
+
+==================== PAGE 16 ====================
+Arifin Zikri, Riki Afriansyah, Eko Sulistyo 
+Jurnal Tekno Insentif – 33 
+Maulida Sari, I., Ardian, Z., Sahputra, I., & Ilhadi, V. (2024). SISTEM INFORMASI MAGANG 
+BERBASIS WEBSITE PADA KANTOR CABANG BPJS KETENAGAKERJAAN 
+LHOKSEUMAWE. SISFO : Jurnal Ilmiah Sistem Informasi, 8(1). 
+Nabila Putri, S., & Hardiani, T. (2024). Sistem informasi internship program pada SEAMEO 
+RECFON berbasis website menggunakan framework laravel (Vol. 2). Safira Nabila Putri. 
+Ordiyasa, W., Rosmawati, D., Diqi, M., & Saputra Nur, A. (2021). RANCANG BANGUN 
+SISTEM INFORMASI MONITORING KEMAJUAN NASKAH DAN LOKASI MAGANG 
+MAHASISWA PROGRAM STUDI SASTRA INGGRIS UNRIYO MENGGUNAKAN TEKNOLOGI 
+LOCATION BASED SERVICE DESIGN AND DEVELOPMENT OF MONITORING 
+INFORMATION SYSTEM PROGRESS OF MANUAL AND LOCATION OF INTERNSHIP 
+STUDENTS OF UNRIYO ENGLISH LITERATURE STUDY PROGRAM USING LOCATION 
+BASED SERVICE TECHNOLOGY. 
+Pratama, F. A., Zahir Ulayya, R., Pratama, P. A., & Khair, F. M. (2025). PERANCANGAN 
+SISTEM INFORMASI AKADEMIK BERBASIS WEB UNTUK MENINGKATKAN LAYANAN 
+MAHASISWA. Kohesi: Jurnal Multidisiplin Saintek. 
+https://doi.org/10.8734/Musytari.v1i2.365 
+Rusli Baharuddin, M. (2021). Pengembangan Sistem Informasi Manajemen Pelaksanaan 
+Magang FKIP UNCP. https://doi.org/10.30605/jld.1.1.2021.6 
+Salim, A. Y., & Alijoyo, F. A. (2024). RANCANG BANGUN SISTEM INFORMASI MANAJEMEN 
+LAYANAN MAGANG DI DISKOMINFO KABUPATEN PURWAKARTA BERBASIS WEB 
+DENGAN MENGGUNAKAN METODE EXTREME PROGRAMMING. JIPI (Jurnal Ilmiah 
+Penelitian Dan Pembelajaran Informatika), 9(1), 284–294. 
+https://doi.org/10.29100/jipi.v9i1.4434 
+Trisno, I. B., & Hari, Y. (2021). Desain dan Analisa Sistem Magang di Prodi Teknik Informasi 
+Universitas Widya Kartika Menggunakan UML. Jurnal Nasional Komputasi Dan Teknologi 
+Informasi (JNKTI), 4(6), 490–500. https://doi.org/10.32672/jnkti.v4i6.3682 
+Yusa, U. A. (2022). SISTEM PENGELOLAAN KEGIATAN MAGANG MAHASISWA POLMAN 
+NEGERI BABEL PROYEK AKHIR Laporan akhir ini dibuat dan diajukan untuk memenuhi 
+salah satu syarat kelulusan Sarjana Terapan/Diploma IV Politeknik Manufaktur Negeri 
+Bangka Belitung Disusun oleh. 
+Zaidir, & Listiawan, I. (2022). Implementasi Extreme Programming untuk Rancang Bangun 
+Aplikasi Pengelolaan PKL-KTI Berbasis Web. In Bisnis dan Manajemen (Vol. 20, Issue 
+2). 
+  
+

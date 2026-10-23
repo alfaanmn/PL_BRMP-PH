@@ -19,6 +19,20 @@ export function PengajuanDetailModal({
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
   const [openingDocKey, setOpeningDocKey] = useState<string | null>(null)
 
+  const handlePreviewSertifikat = async (pengajuanId: number, title: string) => {
+    try {
+      const res = await fetch(`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuanId}`)
+      const json = await res.json()
+      if (json.success && json.data?.signedUrl) {
+        setPreviewDoc({ url: json.data.signedUrl, title })
+      } else {
+        alert(json.error || 'Gagal memuat pratinjau sertifikat.')
+      }
+    } catch {
+      alert('Terjadi kesalahan saat memuat berkas sertifikat.')
+    }
+  }
+
   const handleOpenDoc = async (
     rawPath: string | null | undefined,
     title: string,
@@ -779,10 +793,10 @@ export function PengajuanDetailModal({
                         <button
                           type="button"
                           onClick={() =>
-                            setPreviewDoc({
-                              url: pengajuan.sertifikat_url,
-                              title: `Sertifikat Magang - ${pengajuan.bidangs?.nama || 'BRMP PH'}`,
-                            })
+                            handlePreviewSertifikat(
+                              pengajuan.id,
+                              `Sertifikat Magang - ${pengajuan.bidangs?.nama || 'BRMP PH'}`
+                            )
                           }
                           style={{
                             display: 'inline-flex',
@@ -803,7 +817,7 @@ export function PengajuanDetailModal({
                           <span>Lihat</span>
                         </button>
                         <a
-                          href={pengajuan.sertifikat_url}
+                          href={`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuan.id}&redirect=1`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
@@ -826,8 +840,7 @@ export function PengajuanDetailModal({
                           <span>Tab Baru</span>
                         </a>
                         <a
-                          href={pengajuan.sertifikat_url}
-                          download
+                          href={`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuan.id}&download=true&redirect=1`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{

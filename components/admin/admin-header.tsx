@@ -1,6 +1,7 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Profile } from '@/types/auth.types'
 
 interface AdminHeaderProps {
@@ -12,6 +13,9 @@ export function AdminHeader({
   profile,
   onOpenMobileSidebar,
 }: AdminHeaderProps) {
+  const router = useRouter()
+  const [navSearchKeyword, setNavSearchKeyword] = useState('')
+
   const adminName = profile?.name || 'Administrator'
 
   const todayDate = new Date().toLocaleDateString('id-ID', {
@@ -20,6 +24,16 @@ export function AdminHeader({
     month: 'long',
     year: 'numeric',
   })
+
+  const handleNavSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = navSearchKeyword.trim()
+    if (trimmed) {
+      router.push(`/admin/riwayat-pengajuan?search=${encodeURIComponent(trimmed)}`)
+    } else {
+      router.push('/admin/riwayat-pengajuan')
+    }
+  }
 
   return (
     <header
@@ -35,10 +49,11 @@ export function AdminHeader({
         top: 0,
         zIndex: 30,
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+        gap: '1rem',
       }}
     >
       {/* Left: Mobile Toggle Button & Greeting */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', flexShrink: 0 }}>
         {/* Mobile Toggle Button (< 1024px) */}
         <button
           onClick={onOpenMobileSidebar}
@@ -99,8 +114,63 @@ export function AdminHeader({
         </div>
       </div>
 
+      {/* Center: Global Search Bar */}
+      <form
+        onSubmit={handleNavSearch}
+        style={{
+          flex: '1 1 200px',
+          maxWidth: '380px',
+          position: 'relative',
+        }}
+        className="admin-header-search"
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: '10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: '#34d399',
+            display: 'flex',
+            alignItems: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          value={navSearchKeyword}
+          onChange={(e) => setNavSearchKeyword(e.target.value)}
+          placeholder="Cari pengajuan, nama, instansi..."
+          style={{
+            width: '100%',
+            padding: '6px 12px 6px 30px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#013723',
+            color: '#ffffff',
+            fontSize: '12px',
+            outline: 'none',
+            boxSizing: 'border-box',
+            transition: 'border-color 0.15s ease, background-color 0.15s ease',
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = '#34d399'
+            e.currentTarget.style.backgroundColor = '#012e1d'
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
+            e.currentTarget.style.backgroundColor = '#013723'
+          }}
+        />
+      </form>
+
       {/* Right: Notification & Compact Account Widget */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
         {/* Notification Bell Icon */}
         <div
           style={{
@@ -173,6 +243,11 @@ export function AdminHeader({
         @media (max-width: 1023px) {
           .admin-mobile-menu-btn {
             display: flex !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .admin-header-search {
+            display: none !important;
           }
         }
       `}</style>
