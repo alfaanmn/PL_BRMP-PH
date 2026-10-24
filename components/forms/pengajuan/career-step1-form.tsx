@@ -146,7 +146,7 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
     const { isValid, errors: validationErrors } = validatePengajuanStep1(formData)
     if (!isValid) {
       setErrors(validationErrors)
-      window.scrollTo({ top: 150, behavior: 'smooth' })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
 
@@ -202,6 +202,35 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
           }
         }
       `}</style>
+
+      {/* BANNER NOTIFIKASI ERROR JIKA VALIDASI GAGAL */}
+      {Object.keys(errors).length > 0 && (
+        <div
+          role="alert"
+          style={{
+            backgroundColor: '#fef2f2',
+            border: '1.5px solid #f87171',
+            borderRadius: '12px',
+            padding: '1rem 1.25rem',
+            boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.08)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '20px' }}>⚠️</span>
+            <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 700, color: '#991b1b' }}>
+              Mohon Lengkapi Kolom Wajib Berikut Sebelum Melanjutkan:
+            </h4>
+          </div>
+          <ul style={{ margin: '0.25rem 0 0', paddingLeft: '1.75rem', fontSize: '0.8125rem', color: '#b91c1c', lineHeight: 1.6 }}>
+            {Object.values(errors).slice(0, 6).map((errMsg, idx) => (
+              <li key={idx}>{errMsg}</li>
+            ))}
+            {Object.keys(errors).length > 6 && (
+              <li>...dan {Object.keys(errors).length - 6} kolom lainnya di bawah.</li>
+            )}
+          </ul>
+        </div>
+      )}
 
       {/* 1. UNIT KERJA TERPILIH */}
       <div style={{
@@ -895,28 +924,37 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
           Kembali
         </button>
 
-        <button
-          type="submit"
-          style={{
-            padding: '0.625rem 1.5rem',
-            fontSize: '0.875rem',
-            fontWeight: 600,
-            color: '#ffffff',
-            backgroundColor: '#16a34a',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            boxShadow: '0 2px 4px rgba(22, 163, 74, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.375rem'
-          }}
-        >
-          <span>Lanjut ke dokumen</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {Object.keys(errors).length > 0 && (
+            <div style={{ fontSize: '0.8125rem', color: '#dc2626', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+              <span>⚠️</span>
+              <span>Terdapat {Object.keys(errors).length} kolom yang belum lengkap di atas.</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            style={{
+              padding: '0.625rem 1.5rem',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#ffffff',
+              backgroundColor: '#16a34a',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.375rem'
+            }}
+          >
+            <span>Lanjut ke dokumen</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </form>
   )
