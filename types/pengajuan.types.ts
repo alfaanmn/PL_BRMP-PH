@@ -68,4 +68,23 @@ export interface PengajuanInsertPayload {
   proposal_url?: string | null
   dokumen_tambahan_url?: string | null
   status?: string
+  konfirmasi_kuota_sebagian?: boolean
+  idempotency_key?: string
+}
+
+export interface PengajuanAnggotaRow {
+  id: number
+  pengajuan_id: number
+  nama: string
+  nim_nis: string
+  no_hp?: string | null
+  jurusan?: string | null
+  is_ketua: boolean
+  status: 'menunggu' | 'diterima' | 'ditolak' | 'dibatalkan'
+  alasan_penolakan?: string | null
+  diputuskan_oleh?: string | null
+  diputuskan_pada?: string | null
+  urutan_prioritas?: number
+  created_at?: string
+  updated_at?: string
 }

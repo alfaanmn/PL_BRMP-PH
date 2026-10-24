@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/client'
 import { emailService } from '@/lib/services/email.service'
 import { PengajuanInsertPayload } from '@/types/pengajuan.types'
+import { parseRpcError } from '@/lib/helpers/rpc-error-parser'
+import { normalizeWhatsApp } from '@/lib/constants/pengajuan.constants'
 
 export interface PengajuanResponse {
   success: boolean
@@ -8,6 +10,7 @@ export interface PengajuanResponse {
   error?: {
     code: string
     message: string
+    details?: Record<string, any>
   }
 }
 
@@ -255,60 +258,94 @@ export const pengajuanService = {
         }
       }
 
-      const insertData: any = {
-        user_id: user.id,
-        bidang_id: Number(payload.bidang_id),
-        nomor_surat: payload.nomor_surat,
-        tanggal_surat: payload.tanggal_surat,
-        jenjang: payload.jenjang === 'Siswa' ? 'Siswa' : 'Mahasiswa',
-        asal_instansi: payload.asal_instansi,
-        jurusan: payload.jurusan,
-        tanggal_mulai: payload.tanggal_mulai,
-        tanggal_selesai: payload.tanggal_selesai,
-        durasi_bulan: payload.durasi_bulan,
-        jumlah_anggota: payload.jumlah_anggota || 1,
-        anggota: payload.jumlah_anggota > 1 ? payload.anggota : [],
-        nama_lengkap: payload.nama_lengkap,
-        nim_nis: payload.nim_nis,
-        jenis_kelamin: payload.jenis_kelamin || null,
-        no_hp: payload.no_hp || null,
-        alamat: payload.alamat || null,
-        foto_url: payload.foto_url || null,
-        topik_magang: payload.topik_magang,
-        surat_pengantar_url: payload.surat_pengantar_url,
-        proposal_url: payload.proposal_url || null,
-        dokumen_tambahan_url: payload.dokumen_tambahan_url || null,
-        status: payload.status || 'Menunggu Verifikasi',
-      }
-
-      const { data, error: insertError } = await supabase
-        .from('pengajuans')
-        .insert([insertData])
-        .select()
-        .single()
-
-      if (insertError) {
-        // Tangani pesan jika ditolak oleh constraint database
-        if (insertError.code === '23505' || insertError.message?.includes('duplicate key') || insertError.message?.includes('single_active')) {
-          return {
-            success: false,
-            error: {
-              code: 'ACTIVE_APPLICATION_EXISTS',
-              message: 'Anda sudah memiliki pengajuan magang yang sedang aktif. Tidak dapat membuat pengajuan baru.',
-            },
-          }
-        }
-
+      // Validasi jenjang pendidikan
+      if (payload.jenjang !== 'Mahasiswa' && payload.jenjang !== 'Siswa') {
         return {
           success: false,
           error: {
-            code: 'DATABASE_ERROR',
-            message: insertError.message || 'Gagal menyimpan data pengajuan magang.',
+            code: 'VALIDATION_ERROR',
+            message: 'Jenjang pendidikan harus berupa Mahasiswa atau Siswa.',
           },
         }
       }
 
-      // Kirim email konfirmasi pengajuan magang berhasil terkirim (Asynchronous & Graceful)
+      // Buang baris anggota yang kosong sebelum dikirim dan pastikan kunci JSON: nama, nim_nis, no_hp, jurusan
+      const anggotaJson = (payload.anggota || [])
+        .filter((a) => a && (a.nama || '').trim() && (a.nim_nis || '').trim())
+        .map((a) => ({
+          nama: (a.nama || '').trim(),
+          nim_nis: (a.nim_nis || '').trim(),
+          no_hp: normalizeWhatsApp(a.no_hp) || null,
+          jurusan: (a.jurusan || '').trim() || null,
+        }))
+
+      // Hitung dari data aktual: 1 (pemohon) + anggota tambahan
+      const jumlahAnggotaDipilih = 1 + anggotaJson.length
+
+      // 22 Parameter PERSIS sesuai fungsi LIVE di DB
+      const { data: rpcRes, error: rpcError } = await supabase.rpc(
+        'submit_pengajuan_atomic',
+        {
+          p_bidang_id: Number(payload.bidang_id),
+          p_nomor_surat: payload.nomor_surat,
+          p_tanggal_surat: payload.tanggal_surat,
+          p_jenjang: payload.jenjang,
+          p_asal_instansi: payload.asal_instansi,
+          p_jurusan: payload.jurusan,
+          p_tanggal_mulai: payload.tanggal_mulai,
+          p_tanggal_selesai: payload.tanggal_selesai,
+          p_durasi_bulan: Number(payload.durasi_bulan),
+          p_topik_magang: payload.topik_magang,
+          p_surat_pengantar_url: payload.surat_pengantar_url,
+          p_proposal_url: payload.proposal_url || null,
+          p_dokumen_tambahan_url: payload.dokumen_tambahan_url || null,
+          p_nama_pemohon: payload.nama_lengkap,
+          p_nim_pemohon: payload.nim_nis,
+          p_no_hp_pemohon: normalizeWhatsApp(payload.no_hp) || null,
+          p_jenis_kelamin_pemohon: payload.jenis_kelamin || null,
+          p_alamat_pemohon: payload.alamat || null,
+          p_anggota_tambahan: anggotaJson,
+          p_jumlah_anggota_dipilih: jumlahAnggotaDipilih,
+          p_konfirmasi_kuota_sebagian: Boolean(payload.konfirmasi_kuota_sebagian),
+          p_idempotency_key: payload.idempotency_key || null,
+        }
+      )
+
+      if (rpcError) {
+        const parsed = parseRpcError(rpcError, 'user')
+        return {
+          success: false,
+          error: {
+            code: parsed.code,
+            message: parsed.message,
+            details: parsed.details,
+          },
+        }
+      }
+
+      // Return JSONB: { success, id, public_id, is_idempotent_replay }
+      const newPengajuanId = rpcRes?.id
+      const publicId = rpcRes?.public_id
+      const isReplay = Boolean(rpcRes?.is_idempotent_replay)
+
+      // Ambil data pengajuan untuk response
+      const { data: dataBaru } = await supabase
+        .from('pengajuans')
+        .select('*')
+        .eq('id', newPengajuanId)
+        .single()
+
+      const data = dataBaru || { id: newPengajuanId, public_id: publicId }
+
+      // Jika merupakan idempotent replay, JANGAN kirim email atau efek samping lagi
+      if (isReplay) {
+        return {
+          success: true,
+          data,
+        }
+      }
+
+      // Kirim email konfirmasi pengajuan magang berhasil terkirim (Hanya untuk pengajuan baru)
       try {
         const { data: bData } = await supabase
           .from('bidangs')

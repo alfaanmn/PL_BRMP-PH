@@ -92,6 +92,9 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
 
     case 'pengajuan_approved':
       body += `Selamat! Permohonan magang Anda dengan ID #${pengajuan.publicId} telah DISETUJUI oleh tim BRMP PH.\n\n`
+      if (payload.catatan) {
+        body += `Catatan Status:\n${payload.catatan}\n\n`
+      }
       body += `Informasi Penugasan:\n`
       body += `- Bidang: ${pengajuan.bidangNama || '-'}\n`
       body += `- Pembimbing Lapangan: ${pembimbing?.nama || 'Akan dikonfirmasi'}${pembimbing?.nip ? ` (NIP: ${pembimbing.nip})` : ''}\n`
@@ -205,6 +208,11 @@ export function renderEmailHtml(payload: EmailNotificationPayload): string {
             <td style="padding:5px 0;color:#64748b;">Periode Magang</td>
             <td style="padding:5px 0;font-weight:600;color:#15803d;">${formatDateId(pengajuan.tanggalMulai)} – ${formatDateId(pengajuan.tanggalSelesai)}</td>
           </tr>
+          ${payload.catatan ? `
+          <tr>
+            <td style="padding:5px 0;color:#64748b;">Catatan Status</td>
+            <td style="padding:5px 0;font-weight:600;color:#15803d;">${escapeHtml(payload.catatan)}</td>
+          </tr>` : ''}
         </table>
       </div>
     `

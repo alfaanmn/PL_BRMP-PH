@@ -1,10 +1,12 @@
 import { PengajuanStep1State, PengajuanStep2State } from '@/types/pengajuan.types'
+import { isValidNim, normalizeWhatsApp } from '@/lib/constants/pengajuan.constants'
 
 export function validatePengajuanStep1(data: Partial<PengajuanStep1State>): {
   isValid: boolean
   errors: Record<string, string>
 } {
   const errors: Record<string, string> = {}
+  const seenNims = new Set<string>()
 
   if (!data.bidang_id) {
     errors.bidang_id = 'Pilih salah satu bidang magang'
@@ -22,8 +24,20 @@ export function validatePengajuanStep1(data: Partial<PengajuanStep1State>): {
     errors.jurusan = 'Program studi / jurusan wajib diisi'
   }
 
-  if (!data.nim_nis || !data.nim_nis.trim()) {
+  const pemohonNim = (data.nim_nis || '').trim()
+  if (!pemohonNim) {
     errors.nim_nis = 'NIM / NIS / NISN wajib diisi'
+  } else if (!isValidNim(pemohonNim)) {
+    errors.nim_nis = 'NIM / NIS harus berupa angka 5–20 digit'
+  } else {
+    seenNims.add(pemohonNim)
+  }
+
+  if (data.no_hp && data.no_hp.trim()) {
+    const normWa = normalizeWhatsApp(data.no_hp)
+    if (!/^62[0-9]{8,13}$/.test(normWa)) {
+      errors.no_hp = 'Format nomor WhatsApp tidak valid (contoh: 08123456789 atau 628123456789)'
+    }
   }
 
   if (!data.topik_magang || !data.topik_magang.trim()) {
@@ -59,11 +73,29 @@ export function validatePengajuanStep1(data: Partial<PengajuanStep1State>): {
   // Validasi anggota jika jumlah_anggota > 1
   if (data.jumlah_anggota && data.jumlah_anggota > 1 && Array.isArray(data.anggota)) {
     data.anggota.forEach((member, idx) => {
-      if (!member.nama || !member.nama.trim()) {
+      const nama = (member.nama || '').trim()
+      const nim = (member.nim_nis || '').trim()
+      const hp = (member.no_hp || '').trim()
+
+      if (!nama) {
         errors[`anggota_${idx}_nama`] = `Nama anggota ke-${idx + 2} wajib diisi`
       }
-      if (!member.nim_nis || !member.nim_nis.trim()) {
+
+      if (!nim) {
         errors[`anggota_${idx}_nim_nis`] = `NIM/NIS anggota ke-${idx + 2} wajib diisi`
+      } else if (!isValidNim(nim)) {
+        errors[`anggota_${idx}_nim_nis`] = `NIM/NIS anggota ke-${idx + 2} harus berupa angka 5–20 digit`
+      } else if (seenNims.has(nim)) {
+        errors[`anggota_${idx}_nim_nis`] = `NIM/NIS "${nim}" terduplikasi dengan pemohon atau anggota lain`
+      } else {
+        seenNims.add(nim)
+      }
+
+      if (hp) {
+        const norm = normalizeWhatsApp(hp)
+        if (!/^62[0-9]{8,13}$/.test(norm)) {
+          errors[`anggota_${idx}_no_hp`] = `Nomor HP anggota ke-${idx + 2} tidak valid`
+        }
       }
     })
   }

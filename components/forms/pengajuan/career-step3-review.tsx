@@ -7,6 +7,7 @@ import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { BidangItem } from '@/lib/services/bidang.service'
 import { AnggotaMagang, PengajuanInsertPayload } from '@/types/pengajuan.types'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
+import { QuotaConfirmationModal } from '@/components/forms/pengajuan/quota-confirmation-modal'
 import { EyeIcon } from '@/components/ui/admin-icons'
 
 interface CareerStep3ReviewProps {
@@ -23,13 +24,20 @@ interface CareerStep3ReviewProps {
 
 export function CareerStep3Review({ bidangList, userProfile }: CareerStep3ReviewProps) {
   const router = useRouter()
-  const { state, setPernyataanBenar, resetWizard } = usePengajuanWizard()
+  const { state, setPernyataanBenar, resetWizard, idempotencyKey } = usePengajuanWizard()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
+
+  // State untuk modal konfirmasi kuota sebagian
+  const [showQuotaModal, setShowQuotaModal] = useState(false)
+  const [quotaDetails, setQuotaDetails] = useState<{ sisa: number; diajukan: number }>({
+    sisa: 0,
+    diajukan: 0,
+  })
 
   const selectedBidang = bidangList.find(
     (b) => String(b.id) === String(state.step1.bidang_id)
@@ -47,7 +55,7 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
     return () => clearTimeout(timer)
   }, [submitSuccess, countdown, router])
 
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (isPartialConfirmed: boolean = false) => {
     if (!state.pernyataan_benar) return
     if (isSubmitting) return
 
@@ -80,17 +88,44 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
         proposal_url: state.step2.proposal_url || null,
         dokumen_tambahan_url: state.step2.dokumen_tambahan_url || null,
         status: 'Menunggu Verifikasi',
+        konfirmasi_kuota_sebagian: isPartialConfirmed,
+        idempotency_key: idempotencyKey,
       }
 
       const res = await pengajuanService.submitPengajuan(payload)
 
       if (!res.success) {
+        if (res.error?.code === 'MEMERLUKAN_KONFIRMASI_KUOTA') {
+          const formDiajukan = 1 + (state.step1.anggota?.length || 0)
+          let sisa = res.error.details?.sisa
+          let diajukan = res.error.details?.diajukan || formDiajukan
+
+          if (sisa === undefined || sisa === null) {
+            const numMatches = (res.error.message || '').match(/\d+/g)
+            if (numMatches && numMatches.length >= 2) {
+              sisa = parseInt(numMatches[0], 10)
+              diajukan = parseInt(numMatches[1], 10)
+            } else {
+              sisa = 0
+            }
+          }
+
+          setQuotaDetails({
+            sisa,
+            diajukan,
+          })
+          setShowQuotaModal(true)
+          setIsSubmitting(false)
+          return
+        }
+
         setSubmitError(res.error?.message || 'Gagal mengirim pengajuan magang. Silakan coba kembali.')
         setIsSubmitting(false)
         return
       }
 
       // Berhasil
+      setShowQuotaModal(false)
       setSubmitSuccess(true)
       resetWizard()
     } catch (err: unknown) {
@@ -98,6 +133,11 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
       setSubmitError(msg)
       setIsSubmitting(false)
     }
+  }
+
+  const handleConfirmPartial = () => {
+    setShowQuotaModal(false)
+    handleFinalSubmit(true)
   }
 
   if (submitSuccess) {
@@ -539,6 +579,41 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {/* Anggota 1: Ketua Tim / Pemohon */}
+            <div
+              style={{
+                padding: '0.625rem 0.75rem',
+                backgroundColor: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '0.8125rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontWeight: 700, color: '#166534' }}>
+                  1. {state.step1.nama_lengkap || userProfile?.name || '-'}
+                </span>
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    backgroundColor: '#dcfce7',
+                    color: '#15803d',
+                  }}
+                >
+                  Ketua Kelompok
+                </span>
+                <span style={{ color: '#64748b' }}>NIM: {state.step1.nim_nis || '-'}</span>
+              </div>
+              <span style={{ color: '#64748b' }}>{state.step1.no_hp || userProfile?.no_hp || '-'}</span>
+            </div>
+
+            {/* Anggota 2..N */}
             {state.step1.anggota?.map((item: AnggotaMagang, idx: number) => (
               <div
                 key={idx}
@@ -550,11 +625,11 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  fontSize: '0.8125rem'
+                  fontSize: '0.8125rem',
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 600, color: '#0f172a' }}>{item.nama || '-'}</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a' }}>{idx + 2}. {item.nama || '-'}</span>
                   <span style={{ color: '#64748b', marginLeft: '0.5rem' }}>NIM: {item.nim_nis || '-'}</span>
                 </div>
                 <span style={{ color: '#64748b' }}>{item.no_hp || '-'}</span>
@@ -819,7 +894,7 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
 
         <button
           type="button"
-          onClick={handleFinalSubmit}
+          onClick={() => handleFinalSubmit(false)}
           disabled={!state.pernyataan_benar || isSubmitting}
           style={{
             padding: '0.625rem 1.5rem',
@@ -856,6 +931,24 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
         title={previewDoc?.title || 'Pratinjau Dokumen'}
         subtitle="Verifikasi Berkas Sebelum Dikirim"
         onClose={() => setPreviewDoc(null)}
+      />
+
+      {/* Modal Konfirmasi Keterbatasan Kuota Bidang */}
+      <QuotaConfirmationModal
+        isOpen={showQuotaModal}
+        sisaKuota={quotaDetails.sisa}
+        jumlahDiajukan={quotaDetails.diajukan}
+        loading={isSubmitting}
+        onConfirmPartial={handleConfirmPartial}
+        onReduceMembers={() => {
+          setShowQuotaModal(false)
+          router.push('/pengguna/career/step1')
+        }}
+        onChangeField={() => {
+          setShowQuotaModal(false)
+          router.push('/pengguna/career/step1')
+        }}
+        onClose={() => setShowQuotaModal(false)}
       />
     </div>
   )

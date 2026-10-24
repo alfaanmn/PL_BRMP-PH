@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 import { emailService } from '@/lib/services/email.service'
+import { parseRpcError } from '@/lib/helpers/rpc-error-parser'
 
 export interface AdminPengajuanFilterParams {
   status?: string
@@ -98,6 +99,21 @@ export interface VerifikasiPayload {
   status: 'Sedang Magang' | 'Ditolak' | 'Selesai'
   pembimbingId?: number | string | null
   alasanPenolakan?: string | null
+  catatan?: string | null
+  adminId?: string | null
+}
+
+export interface VerifikasiKelompokPayload {
+  pengajuanId: number | string
+  statusTarget: 'Sedang Magang' | 'Disetujui'
+  pembimbingId?: number | string | null
+  keputusanAnggota: Array<{
+    id: number
+    status: 'diterima' | 'ditolak'
+    alasan?: string | null
+  }>
+  alasanPenolakanGlobal?: string | null
+  suratBalasanUrl?: string | null
   catatan?: string | null
   adminId?: string | null
 }
@@ -714,6 +730,212 @@ export const adminPengajuanService = {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal memuat daftar pembimbing.'
       return { data: [], error: msg }
+    }
+  },
+
+  /**
+   * Mengambil status kuota aktual pada tabel bidangs
+   */
+  async getBidangQuota(bidangId: number | string): Promise<{
+    kuota: number
+    terisi: number
+    sisa: number
+    error: string | null
+  }> {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('bidangs')
+        .select('kuota, terisi')
+        .eq('id', Number(bidangId))
+        .single()
+
+      if (error || !data) {
+        return { kuota: 0, terisi: 0, sisa: 0, error: error?.message || 'Bidang tidak ditemukan' }
+      }
+
+      const kuota = Number(data.kuota) || 0
+      const terisi = Number(data.terisi) || 0
+      const sisa = Math.max(0, kuota - terisi)
+      return { kuota, terisi, sisa, error: null }
+    } catch (err: unknown) {
+      return { kuota: 0, terisi: 0, sisa: 0, error: err instanceof Error ? err.message : 'Gagal' }
+    }
+  },
+
+  /**
+   * Mengambil daftar anggota pengajuan dari tabel pengajuan_anggotas
+   */
+  async getPengajuanAnggotas(pengajuanId: number | string): Promise<{
+    data: any[]
+    error: string | null
+  }> {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pengajuan_anggotas')
+        .select('*')
+        .eq('pengajuan_id', Number(pengajuanId))
+        .order('is_ketua', { ascending: false })
+        .order('id', { ascending: true })
+
+      if (error) {
+        return { data: [], error: error.message }
+      }
+
+      return { data: data || [], error: null }
+    } catch (err: unknown) {
+      return { data: [], error: err instanceof Error ? err.message : 'Gagal memuat anggota' }
+    }
+  },
+
+  /**
+   * Verifikasi pengajuan awal (Menunggu Verifikasi -> Sedang Magang / Ditolak) secara atomik
+   * Memanggil RPC admin_verifikasi_anggota_atomic dan mengirim notifikasi email
+   */
+  async verifikasiAnggotaKelompok(payload: VerifikasiKelompokPayload): Promise<{
+    success: boolean
+    error: string | null
+    data?: any
+  }> {
+    try {
+      const supabase = createClient()
+
+      // 1. Eksekusi RPC admin_verifikasi_anggota_atomic (6 parameter persis)
+      const { data: rpcRes, error: rpcError } = await supabase.rpc('admin_verifikasi_anggota_atomic', {
+        p_pengajuan_id: Number(payload.pengajuanId),
+        p_pembimbing_id: payload.pembimbingId ? Number(payload.pembimbingId) : null,
+        p_status_target: payload.statusTarget || 'Sedang Magang',
+        p_keputusan_anggota: payload.keputusanAnggota,
+        p_alasan_penolakan_global: payload.alasanPenolakanGlobal || null,
+        p_surat_balasan_url: payload.suratBalasanUrl || null,
+      })
+
+      if (rpcError) {
+        const parsed = parseRpcError(rpcError, 'admin')
+        return {
+          success: false,
+          error: parsed.message,
+        }
+      }
+
+      // 2. Ambil data baris pengajuans teraktual dari DB untuk keperluan email & audit
+      const { data: pData } = await supabase
+        .from('pengajuans')
+        .select(`
+          id,
+          public_id,
+          status,
+          jumlah_anggota,
+          jumlah_diajukan,
+          alasan_penolakan,
+          user_id,
+          tanggal_mulai,
+          tanggal_selesai,
+          asal_instansi,
+          profiles:user_id (
+            id,
+            name,
+            email
+          ),
+          bidangs (
+            id,
+            nama
+          ),
+          pembimbings (
+            id,
+            nama,
+            nip,
+            jabatan
+          )
+        `)
+        .eq('id', Number(payload.pengajuanId))
+        .single()
+
+      if (pData && (pData as any).profiles?.email) {
+        const userProfile = (pData as any).profiles
+        const bidangInfo = (pData as any).bidangs
+        const pembimbingInfo = (pData as any).pembimbings
+
+        const totalDiajukan = Number(pData.jumlah_diajukan) || Number(pData.jumlah_anggota) || 1
+        const totalDiterima = Number(pData.jumlah_anggota) || 0
+        const totalDitolak = Math.max(0, totalDiajukan - totalDiterima)
+
+        if (pData.status === 'Sedang Magang') {
+          // Kasus Disetujui (baik penuh maupun sebagian)
+          let catatanText: string | null = null
+          if (totalDitolak > 0) {
+            catatanText = `Pengajuan disetujui sebagian: ${totalDiterima} anggota diterima dan ${totalDitolak} anggota tidak lolos.`
+          } else if (payload.catatan) {
+            catatanText = payload.catatan
+          }
+
+          try {
+            await emailService.sendNotification({
+              event: 'pengajuan_approved',
+              recipient: {
+                email: userProfile.email,
+                name: userProfile.name || 'Peserta Magang',
+              },
+              pengajuan: {
+                id: pData.id,
+                publicId: pData.public_id || String(pData.id),
+                bidangNama: bidangInfo?.nama,
+                asalInstansi: pData.asal_instansi,
+                tanggalMulai: pData.tanggal_mulai,
+                tanggalSelesai: pData.tanggal_selesai,
+              },
+              pembimbing: pembimbingInfo
+                ? {
+                    nama: pembimbingInfo.nama,
+                    nip: pembimbingInfo.nip,
+                    jabatan: pembimbingInfo.jabatan,
+                  }
+                : null,
+              catatan: catatanText,
+            })
+          } catch (emailErr) {
+            console.warn('[AdminPengajuanService] Gagal kirim email pengajuan_approved:', emailErr)
+          }
+        } else if (pData.status === 'Ditolak') {
+          // Kasus Ditolak (ambil alasan dari pData.alasan_penolakan dari DB)
+          const alasanDB = pData.alasan_penolakan || 'Seluruh anggota kelompok belum memenuhi kriteria penerimaan.'
+
+          try {
+            await emailService.sendNotification({
+              event: 'pengajuan_rejected',
+              recipient: {
+                email: userProfile.email,
+                name: userProfile.name || 'Peserta Magang',
+              },
+              pengajuan: {
+                id: pData.id,
+                publicId: pData.public_id || String(pData.id),
+                bidangNama: bidangInfo?.nama,
+                asalInstansi: pData.asal_instansi,
+                tanggalMulai: pData.tanggal_mulai,
+                tanggalSelesai: pData.tanggal_selesai,
+              },
+              alasanPenolakan: alasanDB,
+              catatan: payload.catatan || 'Pengajuan ditolak oleh administrator',
+            })
+          } catch (emailErr) {
+            console.warn('[AdminPengajuanService] Gagal kirim email pengajuan_rejected:', emailErr)
+          }
+        }
+      }
+
+      return {
+        success: true,
+        error: null,
+        data: rpcRes,
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan sistem saat memverifikasi pengajuan.'
+      return {
+        success: false,
+        error: msg,
+      }
     }
   },
 }

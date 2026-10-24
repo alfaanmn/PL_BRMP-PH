@@ -12,6 +12,7 @@ import { authService } from '@/lib/services/auth.service'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { PengajuanTimelineLog } from '@/components/admin/pengajuan-timeline-log'
 import { PengajuanVerifikasiModal } from '@/components/admin/pengajuan-verifikasi-modal'
+import { ModalReviewAnggota, type ModalReviewAnggotaItem } from '@/components/admin/modal-review-anggota'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
 import { EyeIcon, ExternalLinkIcon, DownloadIcon, FileTextIcon, LoaderIcon } from '@/components/ui/admin-icons'
 
@@ -28,13 +29,22 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
   const [detail, setDetail] = useState<AdminPengajuanDetailItem | null>(null)
   const [logs, setLogs] = useState<StatusLogItem[]>([])
   const [pembimbings, setPembimbings] = useState<PembimbingOption[]>([])
+  const [anggotas, setAnggotas] = useState<ModalReviewAnggotaItem[]>([])
+  const [isFallbackAnggota, setIsFallbackAnggota] = useState(false)
+  const [bidangQuota, setBidangQuota] = useState<{ kuota: number; terisi: number; sisa: number }>({
+    kuota: 0,
+    terisi: 0,
+    sisa: 0,
+  })
   const [currentAdminId, setCurrentAdminId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
-  // Modal State Verifikasi
+  // Modal State Verifikasi Lama (untuk alur selesai)
   const [modalAction, setModalAction] = useState<'terima' | 'tolak' | 'selesai' | null>(null)
+  // Modal State Verifikasi Anggota Baru (untuk alur awal Menunggu Verifikasi)
+  const [modalReviewOpen, setModalReviewOpen] = useState(false)
   const [loadingSubmit, setLoadingSubmit] = useState(false)
 
   // Modal State Preview Dokumen
@@ -113,14 +123,48 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
       const item = res.data
       setDetail(item)
 
-      // Ambil logs & pembimbing terkait
-      const [logsRes, pembimbingRes] = await Promise.all([
+      // Ambil logs, pembimbing, anggota kelompok, & kuota bidang terkait
+      const [logsRes, pembimbingRes, anggotasRes, quotaRes] = await Promise.all([
         adminPengajuanService.getPengajuanStatusLogs(item.id),
         adminPengajuanService.getBidangPembimbings(item.bidang_id),
+        adminPengajuanService.getPengajuanAnggotas(item.id),
+        adminPengajuanService.getBidangQuota(item.bidang_id),
       ])
 
       setLogs(logsRes.data)
       setPembimbings(pembimbingRes.data)
+      setBidangQuota({ kuota: quotaRes.kuota, terisi: quotaRes.terisi, sisa: quotaRes.sisa })
+
+      if (anggotasRes.data && anggotasRes.data.length > 0) {
+        setAnggotas(anggotasRes.data)
+        setIsFallbackAnggota(false)
+      } else {
+        setIsFallbackAnggota(true)
+        // Fallback jika pengajuan_anggotas belum terisi
+        const fallbackList: ModalReviewAnggotaItem[] = [
+          {
+            id: 0,
+            nama: item.nama_lengkap,
+            nim_nis: item.nim_nis,
+            no_hp: item.no_hp,
+            jurusan: item.jurusan,
+            is_ketua: true,
+          },
+        ]
+        if (item.anggota && Array.isArray(item.anggota)) {
+          item.anggota.forEach((a: any, idx: number) => {
+            fallbackList.push({
+              id: idx + 1,
+              nama: a.nama,
+              nim_nis: a.nim_nis,
+              no_hp: a.no_hp,
+              jurusan: a.jurusan,
+              is_ketua: false,
+            })
+          })
+        }
+        setAnggotas(fallbackList)
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat memuat data.'
       setErrorMsg(msg)
@@ -133,7 +177,7 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
     loadDetail()
   }, [loadDetail])
 
-  // Handle Verifikasi Submit
+  // Handle Verifikasi Submit Lama (KHUSUS status Sedang Magang -> Selesai)
   const handleVerifikasiSubmit = async (payload: {
     status: 'Sedang Magang' | 'Ditolak' | 'Selesai'
     pembimbingId?: string | number | null
@@ -161,6 +205,50 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
         setSuccessMsg(`Status pengajuan berhasil diperbarui menjadi "${payload.status}".`)
         setModalAction(null)
         // Refresh data
+        await loadDetail()
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.'
+      setErrorMsg(msg)
+    } finally {
+      setLoadingSubmit(false)
+    }
+  }
+
+  // Handle Verifikasi Anggota Kelompok Baru (Menunggu Verifikasi -> Sedang Magang / Ditolak)
+  const handleReviewAnggotaSubmit = async (data: {
+    statusTarget: 'Sedang Magang' | 'Disetujui'
+    pembimbingId?: number | null
+    keputusanAnggota: Array<{
+      id: number
+      status: 'diterima' | 'ditolak'
+      alasan?: string | null
+    }>
+    alasanPenolakanGlobal?: string | null
+    suratBalasanUrl?: string | null
+    catatan?: string
+  }) => {
+    if (!detail) return
+    try {
+      setLoadingSubmit(true)
+      setErrorMsg(null)
+
+      const res = await adminPengajuanService.verifikasiAnggotaKelompok({
+        pengajuanId: detail.id,
+        statusTarget: data.statusTarget,
+        pembimbingId: data.pembimbingId,
+        keputusanAnggota: data.keputusanAnggota,
+        alasanPenolakanGlobal: data.alasanPenolakanGlobal,
+        suratBalasanUrl: data.suratBalasanUrl,
+        catatan: data.catatan,
+        adminId: currentAdminId,
+      })
+
+      if (!res.success) {
+        setErrorMsg(res.error || 'Gagal memproses verifikasi.')
+      } else {
+        setSuccessMsg(`Status pengajuan berhasil diperbarui.`)
+        setModalReviewOpen(false)
         await loadDetail()
       }
     } catch (err: unknown) {
@@ -295,41 +383,23 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
             </span>
 
             {detail.status === 'Menunggu Verifikasi' && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setModalAction('terima')}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#15803d',
-                    color: '#ffffff',
-                    border: 'none',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Terima Pengajuan
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setModalAction('tolak')}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#fee2e2',
-                    color: '#b91c1c',
-                    border: '1px solid #fecaca',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Tolak
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => setModalReviewOpen(true)}
+                style={{
+                  padding: '6px 16px',
+                  borderRadius: '8px',
+                  backgroundColor: '#15803d',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
+                }}
+              >
+                Verifikasi Anggota & Kuota
+              </button>
             )}
 
             {detail.status === 'Sedang Magang' && (
@@ -880,7 +950,7 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* 3. Modal Form Verifikasi */}
+      {/* 3. Modal Form Verifikasi Lama (Selesai Magang) */}
       <PengajuanVerifikasiModal
         isOpen={modalAction !== null}
         actionType={modalAction}
@@ -890,6 +960,30 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
         onClose={() => setModalAction(null)}
         onSubmit={handleVerifikasiSubmit}
       />
+
+      {/* 3b. Modal Form Verifikasi Anggota Kelompok & Kuota Baru */}
+      {detail && (
+        <ModalReviewAnggota
+          isOpen={modalReviewOpen}
+          isFallbackData={isFallbackAnggota}
+          pengajuan={{
+            id: Number(detail.id),
+            public_id: detail.public_id,
+            nama_lengkap: detail.nama_lengkap,
+            asal_instansi: detail.asal_instansi,
+            bidang_nama: detail.bidangs?.nama,
+            bidang_id: Number(detail.bidang_id),
+          }}
+          anggotas={anggotas}
+          pembimbingOptions={pembimbings}
+          sisaKuotaBidang={bidangQuota.sisa}
+          kuotaTotalBidang={bidangQuota.kuota}
+          terisiBidang={bidangQuota.terisi}
+          loadingSubmit={loadingSubmit}
+          onClose={() => setModalReviewOpen(false)}
+          onSubmit={handleReviewAnggotaSubmit}
+        />
+      )}
 
       {/* 4. Modal Pratinjau Dokumen */}
       <DocumentPreviewModal
