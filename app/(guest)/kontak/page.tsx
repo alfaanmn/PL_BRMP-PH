@@ -249,7 +249,6 @@ export default async function KontakPage() {
                   marginBottom: '0.75rem',
                 }}
               >
-                <span>💬</span>
                 <span>KONTAK LANGSUNG</span>
               </div>
 
@@ -419,7 +418,6 @@ export default async function KontakPage() {
                   marginBottom: '0.75rem',
                 }}
               >
-                <span>🌐</span>
                 <span>MEDIA SOSIAL</span>
               </div>
 

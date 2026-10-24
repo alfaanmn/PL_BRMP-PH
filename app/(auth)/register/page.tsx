@@ -210,7 +210,7 @@ export default function RegisterPage() {
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
               overflow: 'hidden'
             }}>
-              <AppLogo size={40} alt="Logo BRMP" priority />
+              <AppLogo size={40} alt="Logo SIMPUL BRMP-PH" priority />
             </div>
             <div>
               <span style={{
@@ -295,7 +295,6 @@ export default function RegisterPage() {
             borderRadius: '6px',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
-            <span>🏢</span>
             <span>Jl. Salak Kel No.22, RT.03/RW.04, Bogor 16128</span>
           </div>
         </div>

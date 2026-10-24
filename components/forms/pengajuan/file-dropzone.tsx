@@ -21,9 +21,9 @@ export interface FileDropzoneProps {
 export function FileDropzone({
   id,
   label,
-  sublabel = 'Format yang didukung: Dokumen PDF (Maks. 5 MB).',
+  sublabel = 'Format yang didukung: Dokumen PDF (Maks. 20 MB).',
   required = false,
-  maxSizeMB = 5,
+  maxSizeMB = 20,
   valueUrl,
   valueFileName,
   userId = 'guest',
@@ -237,13 +237,13 @@ export function FileDropzone({
             border: isDragOver
               ? '2px dashed #15803d'
               : displayError
-              ? '2px dashed #f87171'
-              : '2px dashed #cbd5e1',
+                ? '2px dashed #f87171'
+                : '2px dashed #cbd5e1',
             backgroundColor: isDragOver
               ? '#ecfdf5'
               : displayError
-              ? '#fef2f2'
-              : '#f8fafc',
+                ? '#fef2f2'
+                : '#f8fafc',
             borderRadius: '12px',
             padding: '1.75rem 1rem',
             textAlign: 'center',

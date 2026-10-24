@@ -31,7 +31,9 @@ export default function AdminRekapSKMPage() {
   })
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [periodFilter, setPeriodFilter] = useState<'all' | '30days' | 'this_month' | 'this_year'>('all')
+  const [periodFilter, setPeriodFilter] = useState<'all' | '30days' | 'this_month' | 'this_year' | 'custom'>('all')
+  const [startDate, setStartDate] = useState<string>('')
+  const [endDate, setEndDate] = useState<string>('')
 
   // Text Responses (Q17: Saran & Masukan) state
   const [textList, setTextList] = useState<AdminSKMTextItem[]>([])
@@ -70,7 +72,8 @@ export default function AdminRekapSKMPage() {
     setLoading(true)
     setErrorMsg(null)
     try {
-      const res = await adminSKMService.getRekapStats(periodFilter)
+      const customRange = periodFilter === 'custom' ? { startDate, endDate } : undefined
+      const res = await adminSKMService.getRekapStats(periodFilter, customRange)
       if (res.error) {
         setErrorMsg(res.error)
       } else {
@@ -82,17 +85,19 @@ export default function AdminRekapSKMPage() {
     } finally {
       setLoading(false)
     }
-  }, [periodFilter])
+  }, [periodFilter, startDate, endDate])
 
   // 2. Load Text Responses (Q17 Saran & Masukan)
   const loadTextResponses = useCallback(async () => {
     setTextLoading(true)
     try {
+      const customRange = periodFilter === 'custom' ? { startDate, endDate } : undefined
       const res = await adminSKMService.getTextResponses({
         type: 'saran',
         page: textPage,
         limit: textLimit,
         periodFilter,
+        customRange,
       })
       if (res.data) {
         setTextList(res.data)
@@ -103,17 +108,19 @@ export default function AdminRekapSKMPage() {
     } finally {
       setTextLoading(false)
     }
-  }, [textPage, periodFilter])
+  }, [textPage, periodFilter, startDate, endDate])
 
   // 3. Load Submissions List
   const loadSubmissions = useCallback(async () => {
     setSubmissionLoading(true)
     try {
+      const customRange = periodFilter === 'custom' ? { startDate, endDate } : undefined
       const res = await adminSKMService.getSubmissionsList({
         page: submissionPage,
         limit: submissionLimit,
         search: submissionSearch,
         periodFilter,
+        customRange,
       })
       if (res.data) {
         setSubmissions(res.data)
@@ -124,7 +131,7 @@ export default function AdminRekapSKMPage() {
     } finally {
       setSubmissionLoading(false)
     }
-  }, [submissionPage, submissionSearch, periodFilter])
+  }, [submissionPage, submissionSearch, periodFilter, startDate, endDate])
 
   useEffect(() => {
     loadStats()
@@ -181,7 +188,8 @@ export default function AdminRekapSKMPage() {
   const handleExportExcel = async () => {
     setExporting(true)
     try {
-      const res = await adminSKMService.generateXLSXBuffer(periodFilter)
+      const customRange = periodFilter === 'custom' ? { startDate, endDate } : undefined
+      const res = await adminSKMService.generateXLSXBuffer(periodFilter, customRange)
       if (res.buffer) {
         const blob = new Blob([res.buffer as any], {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -210,10 +218,12 @@ export default function AdminRekapSKMPage() {
   const handleExportPDF = async () => {
     setExporting(true)
     try {
+      const customRange = periodFilter === 'custom' ? { startDate, endDate } : undefined
       const { data: list, error: err } = await adminSKMService.getSubmissionsList({
         page: 1,
         limit: 10000,
         periodFilter,
+        customRange,
       })
 
       if (err || !list) {
@@ -227,10 +237,12 @@ export default function AdminRekapSKMPage() {
         publicId: item.publicId || '-',
         tanggalPengisian: item.tanggalPengisian
           ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            })
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
           : '-',
         namaPemohon: item.namaPemohon,
         jenisKelamin: item.jenisKelamin || '-',
@@ -245,6 +257,7 @@ export default function AdminRekapSKMPage() {
         '30days': '30 Hari Terakhir',
         this_month: 'Bulan Ini',
         this_year: 'Tahun Ini',
+        custom: `Rentang: ${startDate || 'Awal'} s/d ${endDate || 'Sekarang'}`,
       }
 
       await exportTableToPDF({
@@ -269,10 +282,12 @@ export default function AdminRekapSKMPage() {
   const handleExportWord = async () => {
     setExporting(true)
     try {
+      const customRange = periodFilter === 'custom' ? { startDate, endDate } : undefined
       const { data: list, error: err } = await adminSKMService.getSubmissionsList({
         page: 1,
         limit: 10000,
         periodFilter,
+        customRange,
       })
 
       if (err || !list) {
@@ -286,10 +301,10 @@ export default function AdminRekapSKMPage() {
         publicId: item.publicId || '-',
         tanggalPengisian: item.tanggalPengisian
           ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            })
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })
           : '-',
         namaPemohon: item.namaPemohon,
         jenisKelamin: item.jenisKelamin || '-',
@@ -304,6 +319,7 @@ export default function AdminRekapSKMPage() {
         '30days': '30 Hari Terakhir',
         this_month: 'Bulan Ini',
         this_year: 'Tahun Ini',
+        custom: `Rentang: ${startDate || 'Awal'} s/d ${endDate || 'Sekarang'}`,
       }
 
       await exportTableToWord({
@@ -425,7 +441,75 @@ export default function AdminRekapSKMPage() {
             <option value="30days">30 hari terakhir</option>
             <option value="this_month">Bulan ini</option>
             <option value="this_year">Tahun ini</option>
+            <option value="custom">Rentang waktu tertentu</option>
           </select>
+
+          {periodFilter === 'custom' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>Dari:</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value)
+                    setTextPage(1)
+                    setSubmissionPage(1)
+                  }}
+                  style={{
+                    padding: '0.4rem 0.5rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.8125rem',
+                    color: '#0f172a',
+                    backgroundColor: '#ffffff',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>Sampai:</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value)
+                    setTextPage(1)
+                    setSubmissionPage(1)
+                  }}
+                  style={{
+                    padding: '0.4rem 0.5rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.8125rem',
+                    color: '#0f172a',
+                    backgroundColor: '#ffffff',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+              {(startDate || endDate) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStartDate('')
+                    setEndDate('')
+                  }}
+                  style={{
+                    padding: '0.4rem 0.6rem',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    backgroundColor: '#f8fafc',
+                    color: '#64748b',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          )}
 
           <ExportMenu
             buttonText="Export"
@@ -637,7 +721,7 @@ export default function AdminRekapSKMPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
           <div>
             <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
-              Saran & Masukan Responden (Butir #17)
+              Saran & Masukan Responden
             </h2>
             <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
               Saran dan masukan terbuka untuk Layanan BRMP Pengelola Hasil
@@ -1002,6 +1086,19 @@ export default function AdminRekapSKMPage() {
                       <div style={{ color: '#64748b' }}>Rata-Rata Skor (Q1–Q16):</div>
                       <div style={{ fontWeight: 700, color: '#16a34a' }}>
                         {detailData.rataRataSkor !== null ? `${detailData.rataRataSkor.toFixed(2)} / 4.00` : '-'}
+                      </div>
+                    </div>
+                    {/* New field: Tanggal Pengisian */}
+                    <div>
+                      <div style={{ color: '#64748b' }}>Tanggal Pengisian:</div>
+                      <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                        {detailData.submittedAt ? new Date(detailData.submittedAt).toLocaleDateString('id-ID', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }) : '-'}
                       </div>
                     </div>
                   </div>

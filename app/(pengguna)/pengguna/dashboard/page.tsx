@@ -406,7 +406,7 @@ export default async function PenggunaDashboardPage() {
 
               {(profile?.asal_instansi || profile?.jurusan) && (
                 <div style={{ fontSize: '0.8125rem', color: '#ecfdf5', marginBottom: '0.625rem', fontWeight: 600 }}>
-                  🏛️ {profile?.asal_instansi || '-'} {profile?.jurusan ? `• ${profile.jurusan}` : ''}
+                  {profile?.asal_instansi || '-'} {profile?.jurusan ? `• ${profile.jurusan}` : ''}
                 </div>
               )}
 
@@ -416,7 +416,7 @@ export default async function PenggunaDashboardPage() {
                     <div>
                       <div style={{ fontSize: '0.6875rem', color: '#a7f3d0' }}>Pengajuan Terakhir:</div>
                       <strong style={{ fontSize: '0.9375rem', color: '#ffffff' }}>
-                        {latestPengajuan.status} ({latestPengajuan.public_id})
+                        {latestPengajuan.status}
                       </strong>
                     </div>
                     <Link
@@ -487,7 +487,7 @@ export default async function PenggunaDashboardPage() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  <span>✨ Ajukan Magang</span>
+                  <span>Ajukan Magang</span>
                 </Link>
               )}
 
@@ -509,7 +509,7 @@ export default async function PenggunaDashboardPage() {
                   transition: 'all 0.2s'
                 }}
               >
-                <span>📄 Riwayat Pengajuan</span>
+                <span>Riwayat Pengajuan</span>
               </Link>
             </div>
           </div>

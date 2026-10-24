@@ -214,7 +214,7 @@ export const adminPengajuanService = {
         query = query.or(`nama_lengkap.ilike.%${term}%,nim_nis.ilike.%${term}%,asal_instansi.ilike.%${term}%,jurusan.ilike.%${term}%,nomor_surat.ilike.%${term}%,public_id.ilike.%${term}%`)
       }
 
-      query = query.order('created_at', { ascending: false }).range(from, to)
+      query = query.order('created_at', { ascending: true }).range(from, to)
 
       const { data, count, error } = await query
 
@@ -319,7 +319,8 @@ export const adminPengajuanService = {
         .from('pengajuan_status_logs')
         .select('*')
         .eq('pengajuan_id', pengajuanId)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true })
 
       if (error) {
         return { data: [], error: error.message }
@@ -649,10 +650,10 @@ export const adminPengajuanService = {
                 },
                 pembimbing: pembimbingInfo
                   ? {
-                      nama: pembimbingInfo.nama,
-                      nip: pembimbingInfo.nip,
-                      jabatan: pembimbingInfo.jabatan,
-                    }
+                    nama: pembimbingInfo.nama,
+                    nip: pembimbingInfo.nip,
+                    jabatan: pembimbingInfo.jabatan,
+                  }
                   : null,
                 catatan: payload.catatan || 'Periode magang telah diselesaikan',
               })
@@ -686,10 +687,10 @@ export const adminPengajuanService = {
               },
               pembimbing: pembimbingInfo
                 ? {
-                    nama: pembimbingInfo.nama,
-                    nip: pembimbingInfo.nip,
-                    jabatan: pembimbingInfo.jabatan,
-                  }
+                  nama: pembimbingInfo.nama,
+                  nip: pembimbingInfo.nip,
+                  jabatan: pembimbingInfo.jabatan,
+                }
                 : null,
               alasanPenolakan: payload.alasanPenolakan,
               catatan: payload.catatan,
@@ -887,10 +888,10 @@ export const adminPengajuanService = {
               },
               pembimbing: pembimbingInfo
                 ? {
-                    nama: pembimbingInfo.nama,
-                    nip: pembimbingInfo.nip,
-                    jabatan: pembimbingInfo.jabatan,
-                  }
+                  nama: pembimbingInfo.nama,
+                  nip: pembimbingInfo.nip,
+                  jabatan: pembimbingInfo.jabatan,
+                }
                 : null,
               catatan: catatanText,
             })
