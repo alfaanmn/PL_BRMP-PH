@@ -1,6 +1,6 @@
-import nodemailer from 'nodemailer'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendServerMail } from '@/lib/services/server-mailer'
 import { getPesertaList, evaluateSKMCompletion } from '@/lib/helpers/peserta.helper'
 import {
   getEmailSubject,
@@ -525,26 +525,7 @@ export const sertifikatService = {
         console.warn('[SertifikatService] Admin client tidak tersedia, email dikirim tanpa lampiran.')
       }
 
-      // 8. Kirim Email Internal Langsung Menggunakan Nodemailer (Menghindari fetch HTTP luar)
-      const gmailUser = process.env.GMAIL_USER?.trim()
-      const gmailAppPassword = process.env.GMAIL_APP_PASSWORD?.trim()
-      const fromAddress =
-        process.env.EMAIL_FROM?.trim() ||
-        (gmailUser ? `"SIMPUL BRMP-PH" <${gmailUser}>` : '"SIMPUL BRMP-PH" <no-reply@brmp.go.id>')
-
-      if (
-        !gmailUser ||
-        !gmailAppPassword ||
-        gmailAppPassword.includes('placeholder') ||
-        gmailUser.includes('placeholder') ||
-        gmailAppPassword.includes('your-google-app-password')
-      ) {
-        console.warn(
-          '[SertifikatService] Kredensial Gmail SMTP belum disetel. Notifikasi email sertifikat dilewati.'
-        )
-        return { triggered: true, error: null }
-      }
-
+      // 8. Kirim Email Notifikasi Sertifikat Menggunakan Helper Bersama
       const emailPayload: EmailNotificationPayload = {
         event: 'sertifikat_available',
         recipient: {
@@ -565,32 +546,17 @@ export const sertifikatService = {
       const htmlContent = renderEmailHtml(emailPayload)
       const textContent = renderEmailPlainText(emailPayload)
 
-      const cleanPassword = gmailAppPassword.replace(/\s+/g, '')
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: gmailUser,
-          pass: cleanPassword,
-        },
-        connectionTimeout: 8000,
-        greetingTimeout: 5000,
-        socketTimeout: 10000,
+      const sendResult = await sendServerMail({
+        to: profile.email,
+        subject,
+        html: htmlContent,
+        text: textContent,
+        attachments: attachments.length > 0 ? attachments : undefined,
+        event: 'sertifikat_available',
       })
 
-      try {
-        await transporter.sendMail({
-          from: fromAddress,
-          to: profile.email,
-          subject,
-          html: htmlContent,
-          text: textContent,
-          attachments: attachments.length > 0 ? attachments : undefined,
-        })
-      } catch (sendErr: unknown) {
-        const errorMsg = sendErr instanceof Error ? sendErr.message : 'Gagal mengirim email.'
-        console.error('[SertifikatService] Pengiriman email gagal, rollback notified_at:', errorMsg)
+      if (!sendResult.success) {
+        console.error('[SertifikatService] Pengiriman email gagal, rollback notified_at:', sendResult.error)
 
         // Rollback notified_at ke NULL jika email gagal terkirim
         await supabase
@@ -598,7 +564,7 @@ export const sertifikatService = {
           .update({ notified_at: null })
           .eq('pengajuan_id', pengajuanId)
 
-        return { triggered: false, error: errorMsg }
+        return { triggered: false, error: sendResult.error || 'Gagal mengirim email.' }
       }
 
       return { triggered: true, error: null }

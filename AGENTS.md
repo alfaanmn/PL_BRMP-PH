@@ -1093,6 +1093,29 @@ business action mungkin berhasil
 
 Notifikasi tidak boleh menggantikan audit trail.
 
+ATURAN IMPLEMENTASI NOTIFIKASI:
+1. Sisi Server Wajib Direct:
+   DILARANG memanggil endpoint API route milik sendiri via HTTP fetch
+   (loopback fetch) di dalam serverless function. Gunakan fungsi
+   server-side langsung (server-mailer & server-notifikasi).
+2. RLS & Admin Client:
+   Karena policy INSERT tabel notifikasi hanya untuk administrator,
+   seluruh insert notifikasi dari sistem server WAJIB menggunakan
+   admin client (service role).
+3. Filter Eksplisit:
+   Seluruh query SELECT dan PATCH notifikasi untuk lonceng (baik admin
+   maupun pengguna) WAJIB menggunakan filter eksplisit
+   user_id = auth.uid() dari sesi yang sedang login.
+4. Ketahanan Serverless & Error Handling:
+   Pengiriman email wajib di-await (atau menggunakan Promise.allSettled)
+   agar tidak terputus sebelum serverless function selesai.
+   Kegagalan pengiriman email TIDAK boleh menggagalkan proses bisnis
+   utama (submit, verifikasi, atau pembatalan), namun wajib dicatat
+   dalam structured log tanpa mengekspos secret.
+5. Sanitasi & Template:
+   Seluruh input pengguna pada template email WAJIB di-escape untuk
+   mencegah HTML/script injection (XSS).
+
 =================================================================
 BAGIAN 39 — SKM
 ===============

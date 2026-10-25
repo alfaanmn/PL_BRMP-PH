@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { authService } from '@/lib/services/auth.service'
 import { AppLogo } from '@/components/shared/app-logo'
+import { UserNotificationBell } from '@/components/pengguna/user-notification-bell'
 import type { AppRole } from '@/types/auth.types'
 
 export interface NavbarProps {
@@ -354,6 +355,11 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     >
                       <span>Sertifikat</span>
                     </Link>
+
+                    {/* Lonceng Notifikasi Pengguna */}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <UserNotificationBell />
+                    </div>
                   </>
                 )}
 
@@ -453,8 +459,14 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
           {/* Mobile Right Section (Visible on Mobile <1024px: Auth buttons + Hamburger) */}
           <div className="mobile-header-right">
             {isLoggedIn ? (
-              <Link
-                href={isPengguna ? '/pengguna/profil' : '/admin/dashboard'}
+              <>
+                {isPengguna && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <UserNotificationBell />
+                  </div>
+                )}
+                <Link
+                  href={isPengguna ? '/pengguna/profil' : '/admin/dashboard'}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -487,6 +499,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                   {userName || 'User'}
                 </span>
               </Link>
+              </>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <Link

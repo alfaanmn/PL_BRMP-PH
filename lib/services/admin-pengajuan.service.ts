@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 import { emailService } from '@/lib/services/email.service'
+import { notifikasiService } from '@/lib/services/notifikasi.service'
 import { parseRpcError } from '@/lib/helpers/rpc-error-parser'
 
 export interface AdminPengajuanFilterParams {
@@ -563,30 +564,54 @@ export const adminPengajuanService = {
       let notifJudul = 'Update Status Pengajuan Magang'
       let notifPesan = `Status pengajuan magang Anda telah diperbarui menjadi "${payload.status}".`
 
+      let notifLink: string | null = '/pengguna/riwayat'
+
       if (payload.status === 'Sedang Magang') {
         notifJudul = 'Pengajuan Magang Diterima'
         notifPesan = 'Selamat, permohonan magang Anda telah disetujui oleh BRMP PH. Anda kini berstatus Sedang Magang.'
+        notifLink = '/pengguna/riwayat'
       } else if (payload.status === 'Ditolak') {
         notifJudul = 'Pengajuan Magang Ditolak'
         notifPesan = `Mohon maaf, permohonan magang Anda belum dapat disetujui. Alasan: ${payload.alasanPenolakan || 'Persyaratan belum terpenuhi'}.`
+        notifLink = '/pengguna/riwayat'
       } else if (payload.status === 'Selesai') {
         notifJudul = 'Magang Telah Selesai'
-        notifPesan = 'Selamat! Anda telah menyelesaikan seluruh rangkaian kegiatan magang di BRMP PH.'
+        notifPesan = 'Selamat! Anda telah menyelesaikan seluruh rangkaian kegiatan magang di BRMP PH. Silakan isi SKM untuk penerbitan sertifikat.'
+        notifLink = `/pengguna/skm?pengajuan_id=${payload.pengajuanId}`
       }
 
+      // Simpan web notifikasi pemohon dengan deduplikasi link untuk status 'Selesai'
       try {
-        await supabase
-          .from('notifikasi')
-          .insert([
-            {
-              user_id: payload.userId,
+        if (typeof window === 'undefined') {
+          const { createNotificationServer } = await import('@/lib/services/server-notifikasi')
+          const { createAdminClient } = await import('@/lib/supabase/admin')
+          const adminClient = createAdminClient()
+
+          let isDuplicate = false
+          if (payload.status === 'Selesai' && adminClient) {
+            const { data: existingNotif } = await adminClient
+              .from('notifikasi')
+              .select('id')
+              .eq('user_id', payload.userId)
+              .eq('link', notifLink)
+              .limit(1)
+
+            if (existingNotif && existingNotif.length > 0) {
+              isDuplicate = true
+            }
+          }
+
+          if (!isDuplicate) {
+            await createNotificationServer({
+              userId: payload.userId,
               judul: notifJudul,
               pesan: notifPesan,
-              is_read: false,
-            },
-          ])
+              link: notifLink,
+            })
+          }
+        }
       } catch (notifErr) {
-        console.warn('Gagal membuat entri notifikasi:', notifErr)
+        console.warn('Gagal membuat entri notifikasi user:', notifErr)
       }
 
       // 4. Kirim Notifikasi Email Otomatis (Asynchronous & Graceful)
@@ -624,6 +649,24 @@ export const adminPengajuanService = {
           const bidangInfo = (pData as any).bidangs
           const pembimbingInfo = (pData as any).pembimbings
 
+          let emailContext: any = null
+          try {
+            const { getPengajuanEmailContext } = await import('@/lib/services/email-context.service')
+            emailContext = await getPengajuanEmailContext(pData.id)
+          } catch (ctxErr) {
+            console.warn('[AdminPengajuanService] Gagal load email context:', ctxErr)
+          }
+
+          const basePengajuanData = {
+            id: pData.id,
+            publicId: pData.public_id || String(pData.id),
+            bidangNama: bidangInfo?.nama,
+            asalInstansi: pData.asal_instansi,
+            tanggalMulai: pData.tanggal_mulai,
+            tanggalSelesai: pData.tanggal_selesai,
+            ...(emailContext?.pengajuan || {}),
+          }
+
           if (payload.status === 'Selesai') {
             // Jalur Pengajuan Selesai: Klaim atomik skm_reminder_sent_at untuk cegah pengiriman email ganda
             const { data: claimed, error: claimErr } = await supabase
@@ -634,29 +677,62 @@ export const adminPengajuanService = {
               .select('id')
 
             if (!claimErr && claimed && claimed.length > 0) {
-              const emailRes = await emailService.sendNotification({
-                event: 'pengajuan_completed',
-                recipient: {
-                  email: userProfile.email,
-                  name: userProfile.name || 'Peserta Magang',
-                },
-                pengajuan: {
-                  id: pData.id,
-                  publicId: pData.public_id || String(pData.id),
-                  bidangNama: bidangInfo?.nama,
-                  asalInstansi: pData.asal_instansi,
-                  tanggalMulai: pData.tanggal_mulai,
-                  tanggalSelesai: pData.tanggal_selesai,
-                },
-                pembimbing: pembimbingInfo
-                  ? {
-                    nama: pembimbingInfo.nama,
-                    nip: pembimbingInfo.nip,
-                    jabatan: pembimbingInfo.jabatan,
-                  }
-                  : null,
-                catatan: payload.catatan || 'Periode magang telah diselesaikan',
-              })
+              const emailTasks: Promise<any>[] = []
+
+              // Email ke Peserta Pemohon
+              emailTasks.push(
+                emailService.sendNotification({
+                  event: 'pengajuan_completed',
+                  recipientRole: 'user',
+                  recipient: {
+                    email: userProfile.email,
+                    name: userProfile.name || 'Peserta Magang',
+                  },
+                  pengajuan: basePengajuanData,
+                  pembimbing: pembimbingInfo
+                    ? {
+                      nama: pembimbingInfo.nama,
+                      nip: pembimbingInfo.nip,
+                      jabatan: pembimbingInfo.jabatan,
+                    }
+                    : null,
+                  catatan: payload.catatan || 'Periode magang telah diselesaikan',
+                })
+              )
+
+              // Email ke Admin Pengelola
+              const getAdminEmail = async () => {
+                if (typeof window === 'undefined') {
+                  const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
+                  return getAdminEmailAddress()
+                }
+                return 'simpulbrmpph@gmail.com'
+              }
+
+              emailTasks.push(
+                getAdminEmail().then((admEmail) =>
+                  emailService.sendNotification({
+                    event: 'pengajuan_completed',
+                    recipientRole: 'admin',
+                    recipient: {
+                      email: admEmail,
+                      name: 'Admin SIMPUL',
+                    },
+                    pengajuan: basePengajuanData,
+                    catatan: `Status pengajuan atas nama ${userProfile.name || 'Peserta'} telah diubah ke 'Selesai'.`,
+                  })
+                )
+              )
+
+              // Web notifikasi admin
+              notifikasiService.notifyAdmins({
+                judul: 'Kegiatan Magang Selesai',
+                pesan: `Kegiatan magang #${pData.public_id || pData.id} (${bidangInfo?.nama || '-'}) atas nama ${userProfile.name || 'Peserta'} telah selesai.`,
+                link: `/admin/riwayat-pengajuan/${pData.public_id || pData.id}`,
+              }).catch((e: unknown) => console.warn('Gagal notif admin magang selesai:', e))
+
+              const results = await Promise.allSettled(emailTasks)
+              const emailRes = results[0]?.status === 'fulfilled' ? (results[0].value as any) : { success: false }
 
               if (!emailRes.success) {
                 console.error('[AdminPengajuanService] Gagal kirim email pengajuan_completed, rollback skm_reminder_sent_at:', emailRes.error)
@@ -673,18 +749,12 @@ export const adminPengajuanService = {
 
             await emailService.sendNotification({
               event: eventType,
+              recipientRole: 'user',
               recipient: {
                 email: userProfile.email,
                 name: userProfile.name || 'Peserta Magang',
               },
-              pengajuan: {
-                id: pData.id,
-                publicId: pData.public_id || String(pData.id),
-                bidangNama: bidangInfo?.nama,
-                asalInstansi: pData.asal_instansi,
-                tanggalMulai: pData.tanggal_mulai,
-                tanggalSelesai: pData.tanggal_selesai,
-              },
+              pengajuan: basePengajuanData,
               pembimbing: pembimbingInfo
                 ? {
                   nama: pembimbingInfo.nama,
@@ -871,6 +941,22 @@ export const adminPengajuanService = {
             catatanText = payload.catatan
           }
 
+          // 1. Web Notifikasi untuk User Pemohon
+          try {
+            if (typeof window === 'undefined') {
+              const { createNotificationServer } = await import('@/lib/services/server-notifikasi')
+              await createNotificationServer({
+                userId: pData.user_id,
+                judul: 'Pengajuan Magang Disetujui',
+                pesan: `Selamat! Permohonan magang Anda (#${pData.public_id || pData.id}) untuk bidang ${bidangInfo?.nama || '-'} telah disetujui.`,
+                link: '/pengguna/riwayat',
+              })
+            }
+          } catch (notifErr) {
+            console.warn('[AdminPengajuanService] Gagal buat web notifikasi disetujui:', notifErr)
+          }
+
+          // 2. Email Notifikasi
           try {
             await emailService.sendNotification({
               event: 'pengajuan_approved',
@@ -902,6 +988,22 @@ export const adminPengajuanService = {
           // Kasus Ditolak (ambil alasan dari pData.alasan_penolakan dari DB)
           const alasanDB = pData.alasan_penolakan || 'Seluruh anggota kelompok belum memenuhi kriteria penerimaan.'
 
+          // 1. Web Notifikasi untuk User Pemohon
+          try {
+            if (typeof window === 'undefined') {
+              const { createNotificationServer } = await import('@/lib/services/server-notifikasi')
+              await createNotificationServer({
+                userId: pData.user_id,
+                judul: 'Pengajuan Magang Belum Disetujui',
+                pesan: `Mohon maaf, permohonan magang Anda (#${pData.public_id || pData.id}) belum dapat disetujui. Alasan: ${alasanDB}.`,
+                link: '/pengguna/riwayat',
+              })
+            }
+          } catch (notifErr) {
+            console.warn('[AdminPengajuanService] Gagal buat web notifikasi ditolak:', notifErr)
+          }
+
+          // 2. Email Notifikasi
           try {
             await emailService.sendNotification({
               event: 'pengajuan_rejected',

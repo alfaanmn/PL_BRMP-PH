@@ -347,6 +347,9 @@ export const pengajuanService = {
       }
 
       // Kirim email konfirmasi pengajuan magang berhasil terkirim (Hanya untuk pengajuan baru)
+      // =========================================================================
+      // Pemicu Notifikasi (Web & Email) setelah RPC Berhasil
+      // =========================================================================
       try {
         const { data: bData } = await supabase
           .from('bidangs')
@@ -354,47 +357,107 @@ export const pengajuanService = {
           .eq('id', Number(payload.bidang_id))
           .single()
 
-        await emailService.sendNotification({
-          event: 'pengajuan_submitted',
-          recipient: {
-            email: user.email || '',
-            name: payload.nama_lengkap || user.user_metadata?.name || 'Peserta Magang',
-          },
-          pengajuan: {
+        const namaBidang = bData?.nama || `Bidang #${payload.bidang_id}`
+        const namaPemohon = payload.nama_lengkap || user.user_metadata?.name || 'Peserta'
+        const instansi = payload.asal_instansi || 'Instansi'
+        const publicId = data.public_id || String(data.id)
+
+        // 1. Web Notifikasi untuk User Pemohon (via Admin Client agar lolos RLS)
+        try {
+          if (typeof window === 'undefined') {
+            const { createNotificationServer } = await import('@/lib/services/server-notifikasi')
+            await createNotificationServer({
+              userId: user.id,
+              judul: 'Pengajuan Magang Berhasil Terkirim',
+              pesan: `Permohonan magang Anda (#${publicId}) untuk ${namaBidang} telah berhasil diterima dan menunggu verifikasi admin.`,
+              link: '/pengguna/riwayat',
+            })
+          }
+        } catch (notifUserErr) {
+          console.warn('[PengajuanService] Gagal membuat web notifikasi user:', notifUserErr)
+        }
+
+        // 2. Web Notifikasi untuk Seluruh Administrator
+        try {
+          await notifikasiService.notifyAdmins({
+            judul: 'Pengajuan Magang Baru',
+            pesan: `${namaPemohon} dari ${instansi} telah mengajukan permohonan magang untuk ${namaBidang}. Silakan verifikasi berkas permohonan.`,
+            link: data.public_id ? `/admin/riwayat-pengajuan/${data.public_id}` : '/admin/riwayat-pengajuan',
+          })
+        } catch (notifAdminErr) {
+          console.warn('[PengajuanService] Gagal membuat web notifikasi admin:', notifAdminErr)
+        }
+
+        // 3. Email Notifikasi (Konfirmasi User + Pemberitahuan Admin) via Promise.allSettled
+        try {
+          let emailContext: any = null
+          try {
+            const { getPengajuanEmailContext } = await import('@/lib/services/email-context.service')
+            emailContext = await getPengajuanEmailContext(data.id || publicId)
+          } catch (ctxErr) {
+            console.warn('[PengajuanService] Gagal load email context submit:', ctxErr)
+          }
+
+          const basePengajuanData = {
             id: data.id,
-            publicId: data.public_id || String(data.id),
-            bidangNama: bData?.nama || `Bidang #${payload.bidang_id}`,
+            publicId,
+            namaPemohon,
+            bidangNama: namaBidang,
             asalInstansi: payload.asal_instansi,
             jurusan: payload.jurusan,
+            jenjang: payload.jenjang,
             nomorSurat: payload.nomor_surat,
             tanggalMulai: payload.tanggal_mulai,
             tanggalSelesai: payload.tanggal_selesai,
             durasiBulan: payload.durasi_bulan,
-          },
-        })
-      } catch (emailErr) {
-        console.warn('[PengajuanService] Gagal memicu email konfirmasi pendaftaran:', emailErr)
-      }
+            ...(emailContext?.pengajuan || {}),
+          }
 
-      // Notifikasi in-app untuk seluruh administrator
-      try {
-        const { data: bDataInfo } = await supabase
-          .from('bidangs')
-          .select('nama')
-          .eq('id', Number(payload.bidang_id))
-          .single()
+          const emailTasks: Promise<unknown>[] = []
 
-        const namaBidang = bDataInfo?.nama || `Bidang #${payload.bidang_id}`
-        const namaPemohon = payload.nama_lengkap || user.user_metadata?.name || 'Peserta'
-        const instansi = payload.asal_instansi || 'Instansi'
+          // Email ke User Pemohon (Konfirmasi)
+          if (user.email) {
+            emailTasks.push(
+              emailService.sendNotification({
+                event: 'pengajuan_submitted',
+                recipientRole: 'user',
+                recipient: {
+                  email: user.email,
+                  name: namaPemohon,
+                },
+                pengajuan: basePengajuanData,
+              })
+            )
+          }
 
-        await notifikasiService.notifyAdmins({
-          judul: 'Pengajuan Magang Baru',
-          pesan: `${namaPemohon} dari ${instansi} telah mengajukan permohonan magang untuk ${namaBidang}. Silakan verifikasi berkas permohonan.`,
-          link: data.public_id ? `/admin/riwayat-pengajuan/${data.public_id}` : '/admin/riwayat-pengajuan',
-        })
-      } catch (notifErr) {
-        console.warn('[PengajuanService] Gagal membuat notifikasi admin:', notifErr)
+          // Email ke Admin Pengelola (Pemberitahuan Berkas Baru)
+          const getAdminEmail = async () => {
+            if (typeof window === 'undefined') {
+              const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
+              return getAdminEmailAddress()
+            }
+            return 'simpulbrmpph@gmail.com'
+          }
+
+          const adminEmailTarget = await getAdminEmail()
+          emailTasks.push(
+            emailService.sendNotification({
+              event: 'admin_pengajuan_new',
+              recipientRole: 'admin',
+              recipient: {
+                email: adminEmailTarget,
+                name: 'Admin SIMPUL',
+              },
+              pengajuan: basePengajuanData,
+            })
+          )
+
+          await Promise.allSettled(emailTasks)
+        } catch (emailErr) {
+          console.warn('[PengajuanService] Gagal memicu email pengajuan baru:', emailErr)
+        }
+      } catch (flowErr) {
+        console.warn('[PengajuanService] Exception di alur notifikasi submit:', flowErr)
       }
 
       return {
@@ -573,6 +636,98 @@ export const pengajuanService = {
           success: false,
           error: data.error?.message || 'Gagal membatalkan pengajuan magang.',
         }
+      }
+
+      // =========================================================================
+      // Pemicu Notifikasi (Web Admin & Email User/Admin) setelah Pembatalan Sukses
+      // =========================================================================
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+
+        // Ambil detail pengajuan untuk data email
+        let emailContext: any = null
+        try {
+          const { getPengajuanEmailContext } = await import('@/lib/services/email-context.service')
+          emailContext = await getPengajuanEmailContext(publicId)
+        } catch (ctxErr) {
+          console.warn('[PengajuanService batalkanPengajuan] Gagal load email context:', ctxErr)
+        }
+
+        const namaBidang = emailContext?.pengajuan?.bidangNama || 'Bidang Magang'
+        const pemohonName = emailContext?.pemohonNama || user?.user_metadata?.name || 'Peserta'
+        const pemohonEmail = emailContext?.pemohonEmail || user?.email || ''
+        const instansi = emailContext?.pengajuan?.asalInstansi || '-'
+
+        // 1. Web Notifikasi untuk Admin (FYI, kanal WEB SAJA, tanpa klausa kuota dipulihkan)
+        try {
+          await notifikasiService.notifyAdmins({
+            judul: 'Pengajuan Magang Dibatalkan Pemohon',
+            pesan: `Permohonan magang #${publicId} (${namaBidang}) atas nama ${pemohonName} (${instansi}) telah dibatalkan oleh pemohon.`,
+            link: `/admin/riwayat-pengajuan/${publicId}`,
+          })
+        } catch (notifErr) {
+          console.warn('[PengajuanService batalkanPengajuan] Gagal notifikasi web admin:', notifErr)
+        }
+
+        // 2. Email Notifikasi (Konfirmasi ke User & Pemberitahuan ke Admin)
+        try {
+          const emailTasks: Promise<unknown>[] = []
+
+          const pengajuanPayloadData = {
+            ...(emailContext?.pengajuan || {}),
+            publicId,
+            namaPemohon: pemohonName,
+            bidangNama: namaBidang,
+            asalInstansi: instansi,
+          }
+
+          // Email Konfirmasi ke User Pemohon
+          if (pemohonEmail) {
+            emailTasks.push(
+              emailService.sendNotification({
+                event: 'pengajuan_cancelled',
+                recipientRole: 'user',
+                recipient: {
+                  email: pemohonEmail,
+                  name: pemohonName,
+                },
+                pengajuan: pengajuanPayloadData,
+                catatan: alasan ? `Alasan pembatalan: ${alasan}` : undefined,
+              })
+            )
+          }
+
+          // Email Pemberitahuan ke Admin Pengelola
+          const getAdminEmail = async () => {
+            if (typeof window === 'undefined') {
+              const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
+              return getAdminEmailAddress()
+            }
+            return 'simpulbrmpph@gmail.com'
+          }
+
+          const adminEmailTarget = await getAdminEmail()
+          emailTasks.push(
+            emailService.sendNotification({
+              event: 'pengajuan_cancelled',
+              recipientRole: 'admin',
+              recipient: {
+                email: adminEmailTarget,
+                name: 'Admin SIMPUL',
+              },
+              pengajuan: pengajuanPayloadData,
+              catatan: alasan ? `Alasan pembatalan: ${alasan}` : undefined,
+            })
+          )
+
+          await Promise.allSettled(emailTasks)
+        } catch (emailErr) {
+          console.warn('[PengajuanService batalkanPengajuan] Gagal kirim email batal:', emailErr)
+        }
+      } catch (flowErr) {
+        console.warn('[PengajuanService batalkanPengajuan] Exception saat alur notifikasi:', flowErr)
       }
 
       return {

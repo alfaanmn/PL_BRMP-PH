@@ -1008,7 +1008,7 @@ export function UserPengajuanDetailView({
       </div>
 
       {/* Card 5: Riwayat Perjalanan Status (Audit Trail Timeline) */}
-      {logs && logs.length > 0 && (
+      {currentLogs && currentLogs.length > 0 && (
         <div style={{
           backgroundColor: '#ffffff',
           borderRadius: '12px',

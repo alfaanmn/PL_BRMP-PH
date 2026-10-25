@@ -176,6 +176,35 @@ export type Database = {
           updated_at?: string
         }
       }
+      notifikasi: {
+        Row: {
+          id: number
+          user_id: string
+          judul: string
+          pesan: string
+          link: string | null
+          is_read: boolean
+          created_at: string | null
+        }
+        Insert: {
+          id?: number
+          user_id: string
+          judul: string
+          pesan: string
+          link?: string | null
+          is_read?: boolean
+          created_at?: string | null
+        }
+        Update: {
+          id?: number
+          user_id?: string
+          judul?: string
+          pesan?: string
+          link?: string | null
+          is_read?: boolean
+          created_at?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never

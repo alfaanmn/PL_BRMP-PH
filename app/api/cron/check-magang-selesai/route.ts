@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { emailService } from '@/lib/services/email.service'
+import { notifikasiService } from '@/lib/services/notifikasi.service'
 
 export const dynamic = 'force-dynamic'
 
@@ -126,18 +127,40 @@ export async function GET(request: NextRequest) {
             console.warn(`[Cron] Gagal mencatat status log untuk pengajuan #${item.id}:`, logErr)
           }
 
-          // (a.3) Masukkan entri ke tabel notifikasi pemohon
+          // (a.3) Masukkan entri ke tabel notifikasi pemohon dengan deduplikasi link
+          const completionLink = `/pengguna/skm?pengajuan_id=${item.public_id || item.id}`
           try {
-            await adminClient.from('notifikasi').insert([
-              {
-                user_id: item.user_id,
-                judul: 'Periode Magang Selesai',
-                pesan: 'Selamat! Periode magang Anda telah selesai. Silakan isi Survei Kepuasan Masyarakat (SKM) untuk membantu kami meningkatkan kualitas layanan & penerbitan sertifikat.',
-                is_read: false,
-              },
-            ])
+            const { data: existingNotif } = await adminClient
+              .from('notifikasi')
+              .select('id')
+              .eq('user_id', item.user_id)
+              .eq('link', completionLink)
+              .limit(1)
+
+            if (!existingNotif || existingNotif.length === 0) {
+              await adminClient.from('notifikasi').insert([
+                {
+                  user_id: item.user_id,
+                  judul: 'Periode Magang Selesai',
+                  pesan: 'Selamat! Periode magang Anda telah selesai. Silakan isi Survei Kepuasan Masyarakat (SKM) untuk membantu kami meningkatkan kualitas layanan & penerbitan sertifikat.',
+                  link: completionLink,
+                  is_read: false,
+                },
+              ])
+            }
           } catch (notifErr) {
             console.warn(`[Cron] Gagal membuat notifikasi untuk pengajuan #${item.id}:`, notifErr)
+          }
+
+          // Notifikasi Web ke Administrator
+          try {
+            await notifikasiService.notifyAdmins({
+              judul: 'Kegiatan Magang Selesai (Otomatis)',
+              pesan: `Periode magang #${item.public_id || item.id} (${(item.bidangs as any)?.nama || '-'}) atas nama ${(item.profiles as any)?.name || 'Peserta'} telah berakhir otomatis hari ini.`,
+              link: `/admin/riwayat-pengajuan/${item.public_id || item.id}`,
+            })
+          } catch (admNotifErr) {
+            console.warn(`[Cron] Gagal notifikasi admin untuk #${item.id}:`, admNotifErr)
           }
 
           // (a.4) Klaim atomik skm_reminder_sent_at untuk pengiriman email
@@ -151,29 +174,69 @@ export async function GET(request: NextRequest) {
           if (!claimErr && claimed && claimed.length > 0) {
             const profile = item.profiles as any
             if (profile?.email) {
-              const emailRes = await emailService.sendNotification({
-                event: 'pengajuan_completed',
-                recipient: {
-                  email: profile.email,
-                  name: profile.name || 'Peserta Magang',
-                },
-                pengajuan: {
-                  id: item.id,
-                  publicId: item.public_id || String(item.id),
-                  bidangNama: (item.bidangs as any)?.nama,
-                  asalInstansi: item.asal_instansi,
-                  tanggalMulai: item.tanggal_mulai,
-                  tanggalSelesai: item.tanggal_selesai,
-                },
-                pembimbing: item.pembimbings
-                  ? {
-                      nama: (item.pembimbings as any).nama,
-                      nip: (item.pembimbings as any).nip,
-                      jabatan: (item.pembimbings as any).jabatan,
-                    }
-                  : null,
-                catatan: 'Periode magang telah berakhir (otomatis diselesaikan oleh sistem)',
-              })
+              const emailTasks: Promise<any>[] = []
+
+              let emailContext: any = null
+              try {
+                const { getPengajuanEmailContext } = await import('@/lib/services/email-context.service')
+                emailContext = await getPengajuanEmailContext(item.id)
+              } catch (ctxErr) {
+                console.warn('[Cron] Gagal load email context:', ctxErr)
+              }
+
+              const basePengajuanData = {
+                id: item.id,
+                publicId: item.public_id || String(item.id),
+                bidangNama: (item.bidangs as any)?.nama,
+                asalInstansi: item.asal_instansi,
+                tanggalMulai: item.tanggal_mulai,
+                tanggalSelesai: item.tanggal_selesai,
+                ...(emailContext?.pengajuan || {}),
+              }
+
+              // Email ke Peserta
+              emailTasks.push(
+                emailService.sendNotification({
+                  event: 'pengajuan_completed',
+                  recipientRole: 'user',
+                  recipient: {
+                    email: profile.email,
+                    name: profile.name || 'Peserta Magang',
+                  },
+                  pengajuan: basePengajuanData,
+                  pembimbing: item.pembimbings
+                    ? {
+                        nama: (item.pembimbings as any).nama,
+                        nip: (item.pembimbings as any).nip,
+                        jabatan: (item.pembimbings as any).jabatan,
+                      }
+                    : null,
+                  catatan: 'Periode magang telah berakhir (otomatis diselesaikan oleh sistem)',
+                })
+              )
+
+              // Email ke Admin Pengelola
+              try {
+                const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
+                const admEmailTarget = getAdminEmailAddress()
+                emailTasks.push(
+                  emailService.sendNotification({
+                    event: 'pengajuan_completed',
+                    recipientRole: 'admin',
+                    recipient: {
+                      email: admEmailTarget,
+                      name: 'Admin SIMPUL',
+                    },
+                    pengajuan: basePengajuanData,
+                    catatan: `Periode magang atas nama ${profile.name || 'Peserta'} telah berakhir otomatis via cron sistem.`,
+                  })
+                )
+              } catch (admEmailErr) {
+                console.warn('[Cron] Gagal setup email admin:', admEmailErr)
+              }
+
+              const results = await Promise.allSettled(emailTasks)
+              const emailRes = results[0]?.status === 'fulfilled' ? (results[0].value as any) : { success: false }
 
               if (!emailRes.success) {
                 console.error(`[Cron] Email pengajuan_completed gagal untuk #${item.id}, rollback skm_reminder_sent_at:`, emailRes.error)

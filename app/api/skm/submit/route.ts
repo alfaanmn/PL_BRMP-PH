@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sertifikatService } from '@/lib/services/sertifikat.service'
-import { getPesertaList, type PesertaIdentitas } from '@/lib/helpers/peserta.helper'
+import { getPesertaList, evaluateSKMCompletion, type PesertaIdentitas } from '@/lib/helpers/peserta.helper'
 import { notifikasiService } from '@/lib/services/notifikasi.service'
+import { emailService } from '@/lib/services/email.service'
 import type { SKMSubmissionPayload, SKMResponse } from '@/types/skm.types'
 
 export async function POST(request: Request): Promise<NextResponse<SKMResponse>> {
@@ -345,19 +346,66 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
       console.warn('[SKM API] Pengecekan notifikasi sertifikat dilewati secara aman:', certNotifErr)
     }
 
-    // 11. Pemicu Notifikasi Admin (Pengisian SKM Selesai & Siap Terbitkan Sertifikat)
+    // 11. Pemicu Notifikasi Admin (HANYA TERKIRIM SEKALI SAAT SKM MENJADI LENGKAP 100%)
     try {
-      const namaPeserta = pengajuan.nama_lengkap || user.user_metadata?.name || 'Peserta'
-      const instansi = pengajuan.asal_instansi ? ` (${pengajuan.asal_instansi})` : ''
-      const identifier = pengajuan.public_id || `#${pengajuan.id}`
+      // Ambil seluruh jawaban SKM untuk pengajuan ini guna mengevaluasi kelengkapan seluruh responden
+      const { data: allSkmRows } = await supabase
+        .from('skm_jawaban')
+        .select('id, anggota_id, peserta_nama, peserta_nim, is_legacy')
+        .eq('pengajuan_id', pengajuanId)
 
-      await notifikasiService.notifyAdmins({
-        judul: 'Survei SKM Diselesaikan',
-        pesan: `${namaPeserta}${instansi} telah mengisi Survei Kepuasan Masyarakat (SKM) untuk pengajuan ${identifier}. Siap untuk penerbitan sertifikat.`,
-        link: '/admin/sertifikat',
-      })
+      const skmEval = evaluateSKMCompletion(pengajuan, dbAnggotas || [], allSkmRows || [])
+
+      if (skmEval.isComplete) {
+        const namaPeserta = pengajuan.nama_lengkap || user.user_metadata?.name || 'Peserta'
+        const instansi = pengajuan.asal_instansi ? ` (${pengajuan.asal_instansi})` : ''
+        const identifier = pengajuan.public_id || `#${pengajuan.id}`
+
+        // 1. Web Notifikasi untuk Admin
+        await notifikasiService.notifyAdmins({
+          judul: 'Survei SKM Telah Lengkap',
+          pesan: `Survei Kepuasan Masyarakat (SKM) untuk pengajuan ${identifier} (${namaPeserta}${instansi}) telah lengkap diisi oleh seluruh peserta (${skmEval.submittedCount}/${skmEval.totalPeserta}). Siap untuk penerbitan sertifikat.`,
+          link: '/admin/sertifikat',
+        })
+
+        // 2. Email Notifikasi ke Admin Pengelola
+        try {
+          const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
+          const adminEmailTarget = getAdminEmailAddress()
+
+          let emailContext: any = null
+          try {
+            const { getPengajuanEmailContext } = await import('@/lib/services/email-context.service')
+            emailContext = await getPengajuanEmailContext(pengajuan.id)
+          } catch (ctxErr) {
+            console.warn('[SKM API] Gagal load email context:', ctxErr)
+          }
+
+          await emailService.sendNotification({
+            event: 'admin_skm_completed',
+            recipientRole: 'admin',
+            recipient: {
+              email: adminEmailTarget,
+              name: 'Admin SIMPUL',
+            },
+            pengajuan: {
+              id: pengajuan.id,
+              publicId: pengajuan.public_id || identifier,
+              namaPemohon: namaPeserta,
+              asalInstansi: pengajuan.asal_instansi || '-',
+              ...(emailContext?.pengajuan || {}),
+            },
+          })
+        } catch (emailErr) {
+          console.warn('[SKM API] Gagal kirim email admin_skm_completed:', emailErr)
+        }
+      } else {
+        console.log(
+          `[SKM API] SKM peserta tersimpan. Progres: ${skmEval.submittedCount}/${skmEval.totalPeserta} responden. Notifikasi admin menunggu kelengkapan seluruh peserta.`
+        )
+      }
     } catch (notifErr) {
-      console.warn('[SKM API] Gagal memicu notifikasi admin:', notifErr)
+      console.warn('[SKM API] Gagal memicu evaluasi notifikasi admin:', notifErr)
     }
 
     // 11. Berhasil Disimpan

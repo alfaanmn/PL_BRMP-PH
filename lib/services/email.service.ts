@@ -2,33 +2,54 @@ import {
   EmailNotificationPayload,
   EmailSendResult,
 } from '@/types/email.types'
+import {
+  getEmailSubject,
+  renderEmailHtml,
+  renderEmailPlainText,
+} from '@/lib/templates/email-templates'
 
 export const emailService = {
   /**
-   * Mengirim notifikasi email transaksional melalui Server Route Handler (/api/notifications/email).
-   * Bersih dari import Nodemailer/Node.js internals sehingga aman di-import oleh Client Component.
+   * Mengirim notifikasi email transaksional.
+   * Di sisi server: langsung memproses via server-mailer (tanpa HTTP loopback fetch ke diri sendiri).
+   * Di sisi browser (jika ada): memanggil route handler /api/notifications/email.
    */
   async sendNotification(payload: EmailNotificationPayload): Promise<EmailSendResult> {
     try {
-      // Tentukan base URL sesuai context (Browser vs Server-Side execution)
-      let baseUrl = ''
+      // 1. Jika dieksekusi di Server-side (Node.js runtime / Server Action / Route Handler)
       if (typeof window === 'undefined') {
-        const rawUrl =
-          process.env.NEXT_PUBLIC_APP_URL ||
-          (process.env.VERCEL_PROJECT_PRODUCTION_URL
-            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-            : process.env.VERCEL_URL
-              ? `https://${process.env.VERCEL_URL}`
-              : process.env.NODE_ENV === 'production'
-                ? 'https://simpul-brmpph.id'
-                : 'http://localhost:3000')
+        const { sendServerMail } = await import('@/lib/services/server-mailer')
 
-        baseUrl = rawUrl.replace(/\/+$/, '')
+        const toEmail = payload.recipient?.email?.trim()
+        if (!toEmail || !toEmail.includes('@')) {
+          console.warn(`[EmailService] Email penerima tidak valid: "${toEmail}". Pengiriman dibatalkan.`)
+          return {
+            success: false,
+            error: 'Alamat email penerima tidak valid.',
+          }
+        }
+
+        const subject = getEmailSubject(payload)
+        const html = renderEmailHtml(payload)
+        const text = renderEmailPlainText(payload)
+
+        const result = await sendServerMail({
+          to: toEmail,
+          subject,
+          html,
+          text,
+          event: payload.event,
+        })
+
+        return {
+          success: result.success,
+          messageId: result.messageId,
+          error: result.error || null,
+        }
       }
 
-      const endpoint = `${baseUrl}/api/notifications/email`
-
-      const response = await fetch(endpoint, {
+      // 2. Jika dipanggil dari Client-side Browser
+      const response = await fetch('/api/notifications/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +65,7 @@ export const emailService = {
       }
     } catch (err: unknown) {
       const msg =
-        err instanceof Error ? err.message : 'Terjadi kegagalan saat menghubungi endpoint notifikasi email'
+        err instanceof Error ? err.message : 'Terjadi kegagalan saat memproses pengiriman email.'
       console.warn('[EmailService] Gagal memicu notifikasi email:', msg)
       return {
         success: false,
