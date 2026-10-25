@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sertifikatService } from '@/lib/services/sertifikat.service'
 import { getPesertaList, type PesertaIdentitas } from '@/lib/helpers/peserta.helper'
+import { notifikasiService } from '@/lib/services/notifikasi.service'
 import type { SKMSubmissionPayload, SKMResponse } from '@/types/skm.types'
 
 export async function POST(request: Request): Promise<NextResponse<SKMResponse>> {
@@ -89,7 +90,7 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
     // 4. Verifikasi Hak Akses & Ambil Data Lengkap Pengajuan Beserta Anggota
     const { data: pengajuan, error: pengajuanErr } = await supabase
       .from('pengajuans')
-      .select('id, user_id, status, nama_lengkap, nim_nis, anggota, jumlah_anggota')
+      .select('id, public_id, user_id, status, nama_lengkap, nim_nis, anggota, jumlah_anggota, asal_instansi')
       .eq('id', pengajuanId)
       .single()
 
@@ -342,6 +343,21 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
       await sertifikatService.checkAndTriggerNotification(pengajuanId)
     } catch (certNotifErr) {
       console.warn('[SKM API] Pengecekan notifikasi sertifikat dilewati secara aman:', certNotifErr)
+    }
+
+    // 11. Pemicu Notifikasi Admin (Pengisian SKM Selesai & Siap Terbitkan Sertifikat)
+    try {
+      const namaPeserta = pengajuan.nama_lengkap || user.user_metadata?.name || 'Peserta'
+      const instansi = pengajuan.asal_instansi ? ` (${pengajuan.asal_instansi})` : ''
+      const identifier = pengajuan.public_id || `#${pengajuan.id}`
+
+      await notifikasiService.notifyAdmins({
+        judul: 'Survei SKM Diselesaikan',
+        pesan: `${namaPeserta}${instansi} telah mengisi Survei Kepuasan Masyarakat (SKM) untuk pengajuan ${identifier}. Siap untuk penerbitan sertifikat.`,
+        link: '/admin/sertifikat',
+      })
+    } catch (notifErr) {
+      console.warn('[SKM API] Gagal memicu notifikasi admin:', notifErr)
     }
 
     // 11. Berhasil Disimpan

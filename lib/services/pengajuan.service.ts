@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 import { emailService } from '@/lib/services/email.service'
+import { notifikasiService } from '@/lib/services/notifikasi.service'
 import { PengajuanInsertPayload } from '@/types/pengajuan.types'
 import { parseRpcError } from '@/lib/helpers/rpc-error-parser'
 import { normalizeWhatsApp } from '@/lib/constants/pengajuan.constants'
@@ -34,16 +35,16 @@ export const pengajuanService = {
       }
 
       // Validasi ukuran berkas (Maksimal 5MB)
-      const maxBytes = 5 * 1024 * 1024
+      const maxBytes = 20 * 1024 * 1024
       if (file.size > maxBytes) {
         return {
           url: null,
-          error: 'Ukuran berkas melebihi batas maksimal 5 MB.',
+          error: 'Ukuran berkas melebihi batas maksimal 20 MB.',
         }
       }
 
       const supabase = createClient()
-      
+
       // Ambil user ID dari session Supabase Auth
       const {
         data: { user },
@@ -373,6 +374,27 @@ export const pengajuanService = {
         })
       } catch (emailErr) {
         console.warn('[PengajuanService] Gagal memicu email konfirmasi pendaftaran:', emailErr)
+      }
+
+      // Notifikasi in-app untuk seluruh administrator
+      try {
+        const { data: bDataInfo } = await supabase
+          .from('bidangs')
+          .select('nama')
+          .eq('id', Number(payload.bidang_id))
+          .single()
+
+        const namaBidang = bDataInfo?.nama || `Bidang #${payload.bidang_id}`
+        const namaPemohon = payload.nama_lengkap || user.user_metadata?.name || 'Peserta'
+        const instansi = payload.asal_instansi || 'Instansi'
+
+        await notifikasiService.notifyAdmins({
+          judul: 'Pengajuan Magang Baru',
+          pesan: `${namaPemohon} dari ${instansi} telah mengajukan permohonan magang untuk ${namaBidang}. Silakan verifikasi berkas permohonan.`,
+          link: data.public_id ? `/admin/riwayat-pengajuan/${data.public_id}` : '/admin/riwayat-pengajuan',
+        })
+      } catch (notifErr) {
+        console.warn('[PengajuanService] Gagal membuat notifikasi admin:', notifErr)
       }
 
       return {

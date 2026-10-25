@@ -6,6 +6,7 @@ import Link from 'next/link'
 interface BlockedApplicationCardProps {
   status: string
   bidangNama?: string
+  nomor_surat?: string
   publicId?: string
   id?: number | string
   createdDate?: string
@@ -15,6 +16,7 @@ interface BlockedApplicationCardProps {
 export function BlockedApplicationCard({
   status,
   bidangNama,
+  nomor_surat,
   publicId,
   id,
   createdDate,
@@ -24,29 +26,29 @@ export function BlockedApplicationCard({
 
   const theme = isMenunggu
     ? {
-        border: '#fde68a',
-        bg: '#fffdf5',
-        badgeBg: '#fef3c7',
-        badgeColor: '#92400e',
-        badgeBorder: '#fde68a',
-        icon: '⏳',
-        title: 'Pengajuan Magang Sedang Diproses',
-        desc:
-          reason ||
-          'Anda memiliki permohonan magang yang saat ini sedang dalam proses verifikasi oleh sekretariat BRMP. Sesuai ketentuan, Anda baru dapat mengajukan kembali apabila permohonan ini ditolak atau dibatalkan.',
-      }
+      border: '#fde68a',
+      bg: '#fffdf5',
+      badgeBg: '#fef3c7',
+      badgeColor: '#92400e',
+      badgeBorder: '#fde68a',
+      icon: '⏳',
+      title: 'Pengajuan Magang Sedang Diproses',
+      desc:
+        reason ||
+        'Anda memiliki permohonan magang yang saat ini sedang dalam proses verifikasi oleh sekretariat BRMP. Sesuai ketentuan, Anda baru dapat mengajukan kembali apabila permohonan ini ditolak atau dibatalkan.',
+    }
     : {
-        border: '#bbf7d0',
-        bg: '#f6fef9',
-        badgeBg: '#dcfce7',
-        badgeColor: '#15803d',
-        badgeBorder: '#86efac',
-        icon: '👨‍💼',
-        title: 'Anda Sedang Menjalani Periode Magang',
-        desc:
-          reason ||
-          'Anda tercatat aktif sedang melaksanakan program magang/PKL di BRMP. Satu peserta hanya diperbolehkan mengikuti satu kegiatan magang pada satu waktu.',
-      }
+      border: '#bbf7d0',
+      bg: '#f6fef9',
+      badgeBg: '#dcfce7',
+      badgeColor: '#15803d',
+      badgeBorder: '#86efac',
+      icon: '👨‍💼',
+      title: 'Anda Sedang Menjalani Periode Magang',
+      desc:
+        reason ||
+        'Anda tercatat aktif sedang melaksanakan program magang/PKL di BRMP. Satu peserta hanya diperbolehkan mengikuti satu kegiatan magang pada satu waktu.',
+    }
 
   return (
     <div
@@ -141,8 +143,8 @@ export function BlockedApplicationCard({
             <strong style={{ color: '#0f172a' }}>{bidangNama || '-'}</strong>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b' }}>
-            <span>Nomor / ID Pengajuan:</span>
-            <strong style={{ color: '#0f172a' }}>{publicId || `#${id || '-'}`}</strong>
+            <span>Nomor Surat Pengajuan:</span>
+            <strong style={{ color: '#0f172a' }}>{nomor_surat || `#${id || '-'}`}</strong>
           </div>
           {createdDate && (
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b' }}>
@@ -177,7 +179,6 @@ export function BlockedApplicationCard({
               boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
             }}
           >
-            <span>📋</span>
             <span>Lihat Riwayat &amp; Status</span>
           </Link>
 
@@ -194,7 +195,7 @@ export function BlockedApplicationCard({
               border: '1px solid #cbd5e1',
             }}
           >
-            🏠 Kembali ke Beranda
+            Kembali ke Beranda
           </Link>
         </div>
       </div>

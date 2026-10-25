@@ -65,7 +65,6 @@ export default async function UserSertifikatPage() {
         {/* Header Breadcrumb & Title */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>🎓</span>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
               Sertifikat Kelulusan Magang
             </h1>

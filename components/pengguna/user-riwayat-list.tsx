@@ -214,24 +214,9 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
       {/* 1. Ringkasan Statistik (4 Kartu dengan Hover Animasi) */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '0.75rem'
       }}>
-        {/* Total */}
-        <div
-          onClick={() => setActiveTab('semua')}
-          className="stat-card total"
-          style={{
-            borderColor: activeTab === 'semua' ? '#94a3b8' : '#e2e8f0',
-            backgroundColor: activeTab === 'semua' ? '#f8fafc' : '#ffffff'
-          }}
-        >
-          <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>Total</span>
-          <span style={{ fontSize: '19px', fontWeight: 600, color: '#0f172a', lineHeight: 1.2 }}>
-            {countTotal}
-          </span>
-        </div>
-
         {/* Menunggu */}
         <div
           onClick={() => setActiveTab('menunggu')}

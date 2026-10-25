@@ -178,7 +178,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
               Pemberitahuan
             </span>
             <span className="announcement-text-mobile">
-              Penerimaan periode magang aktif: <strong>Mahasiswa &amp; Siswa SMK</strong>.
+              Penerimaan periode magang untuk <strong>Mahasiswa &amp; Siswa SMK</strong>.
             </span>
           </div>
 
@@ -192,7 +192,7 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
             flexShrink: 0
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#22c55e', display: 'inline-block' }} />
-            <span>Portal Aktif 2025/2026</span>
+            <span>Portal Aktif</span>
           </div>
         </div>
       </div>
@@ -333,7 +333,6 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                         gap: '0.375rem'
                       }}
                     >
-                      <span>📄</span>
                       <span>Riwayat</span>
                     </Link>
 
@@ -353,7 +352,6 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                         gap: '0.375rem'
                       }}
                     >
-                      <span>🎓</span>
                       <span>Sertifikat</span>
                     </Link>
                   </>
