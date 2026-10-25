@@ -53,7 +53,7 @@ function getBidangMeta(bidang: { id: string | number; nama: string; deskripsi?: 
       ],
       unitType: 'Unit kerja',
       unitName: 'Subbagian Tata Usaha & Kearsipan',
-      lokasi: 'Ruang Tata Usaha & Sekretariat, Gedung Utama BRMP'
+      lokasi: 'Kantor BRMP-PH'
     }
   }
 
@@ -78,7 +78,7 @@ function getBidangMeta(bidang: { id: string | number; nama: string; deskripsi?: 
       ],
       unitType: 'Unit kerja',
       unitName: 'Subbagian Hubungan Masyarakat & TIK',
-      lokasi: 'Ruang TIK & Studio Multimedia, Gedung A BRMP'
+      lokasi: 'Kantor BRMP-PH'
     }
   }
 
@@ -102,7 +102,7 @@ function getBidangMeta(bidang: { id: string | number; nama: string; deskripsi?: 
       ],
       unitType: 'Fasilitas layanan',
       unitName: 'Perpustakaan & Repositori Ilmiah',
-      lokasi: 'Gedung Perpustakaan & Dokumentasi BRMP'
+      lokasi: 'Kantor BRMP-PH'
     }
   }
 
@@ -126,7 +126,7 @@ function getBidangMeta(bidang: { id: string | number; nama: string; deskripsi?: 
       ],
       unitType: 'Unit kerja',
       unitName: 'Subbagian Kerjasama & Program',
-      lokasi: 'Ruang Komisi Standardisasi, Gedung B BRMP'
+      lokasi: 'Kantor BRMP-PH'
     }
   }
 
@@ -149,7 +149,7 @@ function getBidangMeta(bidang: { id: string | number; nama: string; deskripsi?: 
     ],
     unitType: 'Laboratorium lapangan',
     unitName: 'Kebun Riset & Agroklimat',
-    lokasi: 'Gelanggang Riset, Kebun Percobaan IP2TP'
+    lokasi: 'Kantor BRMP-PH'
   }
 }
 
@@ -896,16 +896,6 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                         {meta.lokasi}
                       </span>
                     </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem' }}>
-                    <Image
-                      src="/icon_jadwal.png"
-                      alt="Jadwal"
-                      width={20}
-                      height={20}
-                      style={{ width: '20px', height: '20px', objectFit: 'contain', flexShrink: 0, marginTop: '0.125rem' }}
-                    />
                   </div>
                 </div>
 

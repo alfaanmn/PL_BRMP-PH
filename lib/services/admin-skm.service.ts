@@ -373,7 +373,10 @@ export const adminSKMService = {
    * - Tingkat Kepuasan (% skor 3 & 4)
    * - Breakdown rata-rata & distribusi skor 1–4 per unsur
    */
-  async getRekapStats(periodFilter: string = 'all'): Promise<{ data: AdminSKMStats; error: string | null }> {
+  async getRekapStats(
+    periodFilter: string = 'all',
+    customRange?: { startDate?: string; endDate?: string }
+  ): Promise<{ data: AdminSKMStats; error: string | null }> {
     try {
       const supabase = createClient()
 
@@ -402,7 +405,18 @@ export const adminSKMService = {
         .select('id, pengajuan_id, skm_pertanyaan_id, jawaban, peserta_nama, peserta_nim, created_at')
 
       // Filter periode tanggal jika dipilih
-      if (periodFilter !== 'all') {
+      if (periodFilter === 'custom' && customRange) {
+        if (customRange.startDate) {
+          const start = new Date(customRange.startDate)
+          start.setHours(0, 0, 0, 0)
+          query = query.gte('created_at', start.toISOString())
+        }
+        if (customRange.endDate) {
+          const end = new Date(customRange.endDate)
+          end.setHours(23, 59, 59, 999)
+          query = query.lte('created_at', end.toISOString())
+        }
+      } else if (periodFilter !== 'all') {
         const now = new Date()
         let startDate: Date | null = null
 
@@ -573,6 +587,7 @@ export const adminSKMService = {
     page: number
     limit: number
     periodFilter?: string
+    customRange?: { startDate?: string; endDate?: string }
   }): Promise<{ data: AdminSKMTextItem[]; totalCount: number; error: string | null }> {
     try {
       const supabase = createClient()
@@ -614,10 +629,21 @@ export const adminSKMService = {
         `, { count: 'exact' })
         .eq('skm_pertanyaan_id', qData.id)
         .not('jawaban', 'is', null)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
       // Filter periode
-      if (params.periodFilter && params.periodFilter !== 'all') {
+      if (params.periodFilter === 'custom' && params.customRange) {
+        if (params.customRange.startDate) {
+          const start = new Date(params.customRange.startDate)
+          start.setHours(0, 0, 0, 0)
+          query = query.gte('created_at', start.toISOString())
+        }
+        if (params.customRange.endDate) {
+          const end = new Date(params.customRange.endDate)
+          end.setHours(23, 59, 59, 999)
+          query = query.lte('created_at', end.toISOString())
+        }
+      } else if (params.periodFilter && params.periodFilter !== 'all') {
         const now = new Date()
         let startDate: Date | null = null
 
@@ -675,6 +701,7 @@ export const adminSKMService = {
     limit: number
     search?: string
     periodFilter?: string
+    customRange?: { startDate?: string; endDate?: string }
   }): Promise<{ data: AdminSKMSubmissionItem[]; totalCount: number; error: string | null }> {
     try {
       const supabase = createClient()
@@ -712,7 +739,7 @@ export const adminSKMService = {
             )
           )
         `)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
       if (aErr || !allAnswers) {
         return { data: [], totalCount: 0, error: aErr?.message || 'Gagal memuat riwayat pengisian.' }
@@ -819,11 +846,11 @@ export const adminSKMService = {
         const avg =
           val.choiceScores.length > 0
             ? Number(
-                (
-                  val.choiceScores.reduce((a, b) => a + b, 0) /
-                  val.choiceScores.length
-                ).toFixed(2)
-              )
+              (
+                val.choiceScores.reduce((a, b) => a + b, 0) /
+                val.choiceScores.length
+              ).toFixed(2)
+            )
             : null
 
         const prof = p?.user_id ? profileMap.get(p.user_id) : null
@@ -893,7 +920,28 @@ export const adminSKMService = {
       })
 
       // 4. Terapkan Filter Periode jika ada
-      if (params.periodFilter && params.periodFilter !== 'all') {
+      if (params.periodFilter === 'custom' && params.customRange) {
+        let startTime: number | null = null
+        let endTime: number | null = null
+
+        if (params.customRange.startDate) {
+          const s = new Date(params.customRange.startDate)
+          s.setHours(0, 0, 0, 0)
+          startTime = s.getTime()
+        }
+        if (params.customRange.endDate) {
+          const e = new Date(params.customRange.endDate)
+          e.setHours(23, 59, 59, 999)
+          endTime = e.getTime()
+        }
+
+        if (startTime !== null) {
+          list = list.filter((item) => new Date(item.tanggalPengisian).getTime() >= startTime!)
+        }
+        if (endTime !== null) {
+          list = list.filter((item) => new Date(item.tanggalPengisian).getTime() <= endTime!)
+        }
+      } else if (params.periodFilter && params.periodFilter !== 'all') {
         const now = new Date()
         let startDate: Date | null = null
 
@@ -906,6 +954,9 @@ export const adminSKMService = {
           list = list.filter((item) => new Date(item.tanggalPengisian).getTime() >= startTime)
         }
       }
+
+      // 4.1 Pastikan urutan selalu terurut kronologis (dari awal ke baru)
+      list.sort((a, b) => new Date(a.tanggalPengisian).getTime() - new Date(b.tanggalPengisian).getTime() || a.pengajuanId - b.pengajuanId)
 
       // 5. Terapkan Search jika ada
       if (params.search && params.search.trim().length > 0) {
@@ -1064,7 +1115,10 @@ export const adminSKMService = {
   /**
    * Mengambil data terstruktur untuk ekspor SKM (beserta jawaban Q1-Q17 per responden)
    */
-  async getExportData(periodFilter: string = 'all'): Promise<{
+  async getExportData(
+    periodFilter: string = 'all',
+    customRange?: { startDate?: string; endDate?: string }
+  ): Promise<{
     submissions: AdminSKMSubmissionItem[]
     answerLookup: Map<string, string>
     error: string | null
@@ -1074,6 +1128,7 @@ export const adminSKMService = {
         page: 1,
         limit: 10000,
         periodFilter,
+        customRange,
       })
 
       if (subErr || !submissions) {
@@ -1107,10 +1162,13 @@ export const adminSKMService = {
   /**
    * Menghasilkan berkas Excel asli (.xlsx) menggunakan pustaka xlsx
    */
-  async generateXLSXBuffer(periodFilter: string = 'all'): Promise<{ buffer: Uint8Array | null; error: string | null }> {
+  async generateXLSXBuffer(
+    periodFilter: string = 'all',
+    customRange?: { startDate?: string; endDate?: string }
+  ): Promise<{ buffer: Uint8Array | null; error: string | null }> {
     try {
       const XLSX = await import('xlsx')
-      const { submissions, answerLookup, error } = await this.getExportData(periodFilter)
+      const { submissions, answerLookup, error } = await this.getExportData(periodFilter, customRange)
       if (error) return { buffer: null, error }
 
       const headers = [
@@ -1161,13 +1219,14 @@ export const adminSKMService = {
         }
 
         const dateStr = item.tanggalPengisian
-          ? new Date(item.tanggalPengisian).toLocaleString('id-ID', {
+          ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
               hour: '2-digit',
               minute: '2-digit',
-            })
+              second: '2-digit',
+            }).replace(/\./g, ':')
           : '-'
 
         rows.push([
@@ -1268,10 +1327,10 @@ export const adminSKMService = {
 
         const dateStr = item.tanggalPengisian
           ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            })
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })
           : '-'
 
         const row = [
