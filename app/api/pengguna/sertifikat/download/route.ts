@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { evaluateSKMCompletion } from '@/lib/helpers/peserta.helper'
 
 export const runtime = 'nodejs'
 
@@ -8,21 +9,18 @@ export async function GET(request: Request) {
   try {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
+    const sertifikatIdStr = searchParams.get('sertifikat_id')
     const pengajuanIdStr = searchParams.get('pengajuan_id')
     const isDownload = searchParams.get('download') === 'true'
     const shouldRedirect = searchParams.get('redirect') === 'true' || searchParams.get('redirect') === '1'
+    const isListMode = searchParams.get('list') === 'true'
 
-    if (!pengajuanIdStr) {
-      return NextResponse.json(
-        { success: false, error: 'ID Pengajuan wajib disertakan.' },
-        { status: 400 }
-      )
-    }
+    const sertifikatId = sertifikatIdStr ? parseInt(sertifikatIdStr, 10) : null
+    const pengajuanId = pengajuanIdStr ? parseInt(pengajuanIdStr, 10) : null
 
-    const pengajuanId = parseInt(pengajuanIdStr, 10)
-    if (isNaN(pengajuanId)) {
+    if (!sertifikatId && !pengajuanId) {
       return NextResponse.json(
-        { success: false, error: 'ID Pengajuan tidak valid.' },
+        { success: false, error: 'ID Sertifikat atau ID Pengajuan wajib disertakan.' },
         { status: 400 }
       )
     }
@@ -40,24 +38,136 @@ export async function GET(request: Request) {
       )
     }
 
-    // Cek apakah user adalah administrator
-    const { data: isAdmin } = await supabase.rpc('is_admin')
+    // Cek peran administrator (RPC + profile fallback)
+    let isAdmin = false
+    const { data: isAdminRpc } = await supabase.rpc('is_admin')
+    if (isAdminRpc) {
+      isAdmin = true
+    } else {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+      if (profile?.role === 'administrator') {
+        isAdmin = true
+      }
+    }
 
-    // 2. Ambil data pengajuan untuk validasi hak kepemilikan & status
+    // 2. KASUS A: Mode List (Mengambil daftar sertifikat yang tersedia untuk pengajuan)
+    if (isListMode && pengajuanId) {
+      const { data: pengajuan, error: pErr } = await supabase
+        .from('pengajuans')
+        .select('id, user_id, status, nama_lengkap, nim_nis, anggota, jumlah_anggota')
+        .eq('id', pengajuanId)
+        .maybeSingle()
+
+      if (pErr || !pengajuan) {
+        return NextResponse.json({ success: false, error: 'Data pengajuan tidak ditemukan.' }, { status: 404 })
+      }
+
+      if (!isAdmin && pengajuan.user_id !== user.id) {
+        return NextResponse.json({ success: false, error: 'Akses ditolak.' }, { status: 403 })
+      }
+
+      if (!isAdmin && pengajuan.status !== 'Selesai') {
+        return NextResponse.json(
+          { success: false, error: 'Sertifikat hanya dapat diakses setelah kegiatan magang berstatus Selesai.' },
+          { status: 403 }
+        )
+      }
+
+      if (!isAdmin) {
+        const [{ data: dbAnggotas }, { data: skmRows }] = await Promise.all([
+          supabase
+            .from('pengajuan_anggotas')
+            .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+            .eq('pengajuan_id', pengajuanId),
+          supabase
+            .from('skm_jawaban')
+            .select('peserta_nama, peserta_nim, is_ketua, is_legacy')
+            .eq('pengajuan_id', pengajuanId),
+        ])
+
+        const skmEval = evaluateSKMCompletion(pengajuan, dbAnggotas, skmRows)
+        if (!skmEval.isComplete) {
+          const progressMsg = skmEval.isKelompok
+            ? `Wajib melengkapi SKM seluruh anggota terlebih dahulu (${skmEval.submittedCount}/${skmEval.totalPeserta} terisi).`
+            : 'Wajib mengisi SKM terlebih dahulu untuk membuka akses sertifikat.'
+          return NextResponse.json(
+            { success: false, error: progressMsg },
+            { status: 403 }
+          )
+        }
+      }
+
+      const { data: certs, error: certsErr } = await supabase
+        .from('sertifikats')
+        .select('id, pengajuan_id, file_name, file_size, mime_type, peserta_nama, peserta_nim, is_ketua, anggota_id, uploaded_at')
+        .eq('pengajuan_id', pengajuanId)
+        .order('is_ketua', { ascending: false })
+        .order('id', { ascending: true })
+
+      if (certsErr) {
+        return NextResponse.json({ success: false, error: certsErr.message }, { status: 500 })
+      }
+
+      return NextResponse.json({ success: true, data: certs || [] })
+    }
+
+    // 3. KASUS B: Unduh / Pratinjau Berkas Spesifik
+    let targetCert: {
+      id: number
+      pengajuan_id: number
+      file_path: string
+      file_name: string
+      peserta_nama: string
+      is_ketua: boolean
+    } | null = null
+
+    if (sertifikatId) {
+      // Identifikasi berkas dari ID sertifikat di database (BUKAN path dari client!)
+      const { data: cert, error: certErr } = await supabase
+        .from('sertifikats')
+        .select('id, pengajuan_id, file_path, file_name, peserta_nama, is_ketua')
+        .eq('id', sertifikatId)
+        .maybeSingle()
+
+      if (certErr || !cert) {
+        return NextResponse.json({ success: false, error: 'Berkas sertifikat tidak ditemukan.' }, { status: 404 })
+      }
+      targetCert = cert
+    } else if (pengajuanId) {
+      // Fallback untuk backward compatibility: Ambil sertifikat ketua atau sertifikat pertama
+      const { data: certs, error: certsErr } = await supabase
+        .from('sertifikats')
+        .select('id, pengajuan_id, file_path, file_name, peserta_nama, is_ketua')
+        .eq('pengajuan_id', pengajuanId)
+
+      if (certsErr || !certs || certs.length === 0) {
+        return NextResponse.json(
+          { success: false, error: 'Berkas sertifikat sedang dalam proses penerbitan oleh administrator.' },
+          { status: 404 }
+        )
+      }
+      targetCert = certs.find((c) => c.is_ketua) || certs[0]
+    }
+
+    if (!targetCert || !targetCert.file_path) {
+      return NextResponse.json({ success: false, error: 'Berkas sertifikat tidak valid.' }, { status: 404 })
+    }
+
+    // 4. Validasi Server: Pastikan sertifikat ini milik pengajuan dengan user_id = user login
     const { data: pengajuan, error: pErr } = await supabase
       .from('pengajuans')
-      .select('id, user_id, status')
-      .eq('id', pengajuanId)
+      .select('id, user_id, status, nama_lengkap, nim_nis, anggota, jumlah_anggota')
+      .eq('id', targetCert.pengajuan_id)
       .maybeSingle()
 
     if (pErr || !pengajuan) {
-      return NextResponse.json(
-        { success: false, error: 'Data pengajuan tidak ditemukan.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ success: false, error: 'Data pengajuan tidak ditemukan.' }, { status: 404 })
     }
 
-    // Syarat 1: Kepemilikan (Pemohon yang login atau Admin)
     if (!isAdmin && pengajuan.user_id !== user.id) {
       return NextResponse.json(
         { success: false, error: 'Akses ditolak. Anda tidak memiliki izin untuk mengakses sertifikat ini.' },
@@ -65,8 +175,7 @@ export async function GET(request: Request) {
       )
     }
 
-    // Syarat 2: Status pengajuan harus "Selesai" (Berlaku baik pemohon maupun admin untuk konsistensi bisnis)
-    if (pengajuan.status !== 'Selesai') {
+    if (!isAdmin && pengajuan.status !== 'Selesai') {
       return NextResponse.json(
         {
           success: false,
@@ -76,67 +185,55 @@ export async function GET(request: Request) {
       )
     }
 
-    // Syarat 3: SKM harus sudah terisi (Dikecualikan sepenuhnya untuk admin agar bisa audit/pratinjau)
     if (!isAdmin) {
-      const { data: skmCheck } = await supabase
-        .from('skm_jawaban')
-        .select('id')
-        .eq('pengajuan_id', pengajuanId)
-        .limit(1)
+      const [{ data: dbAnggotas }, { data: skmRows }] = await Promise.all([
+        supabase
+          .from('pengajuan_anggotas')
+          .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+          .eq('pengajuan_id', targetCert.pengajuan_id),
+        supabase
+          .from('skm_jawaban')
+          .select('peserta_nama, peserta_nim, is_ketua, is_legacy')
+          .eq('pengajuan_id', targetCert.pengajuan_id),
+      ])
 
-      if (!skmCheck || skmCheck.length === 0) {
+      const skmEval = evaluateSKMCompletion(pengajuan, dbAnggotas, skmRows)
+      if (!skmEval.isComplete) {
+        const progressMsg = skmEval.isKelompok
+          ? `Sertifikat terkunci. Seluruh anggota kelompok wajib mengisi Survei Kepuasan Masyarakat (SKM) terlebih dahulu (Progres: ${skmEval.submittedCount}/${skmEval.totalPeserta}).`
+          : 'Sertifikat terkunci. Anda wajib melengkapi Survei Kepuasan Masyarakat (SKM) terlebih dahulu untuk mengunduh sertifikat.'
         return NextResponse.json(
           {
             success: false,
-            error: 'Sertifikat terkunci. Anda wajib melengkapi Survei Kepuasan Masyarakat (SKM) terlebih dahulu untuk mengunduh sertifikat.',
+            error: progressMsg,
           },
           { status: 403 }
         )
       }
     }
 
-    // 4. Ambil metadata berkas sertifikat menggunakan .maybeSingle()
-    const { data: cert, error: certErr } = await supabase
-      .from('sertifikats')
-      .select('file_path, file_name')
-      .eq('pengajuan_id', pengajuanId)
-      .maybeSingle()
-
-    if (certErr || !cert || !cert.file_path) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Berkas sertifikat sedang dalam proses penerbitan oleh administrator.',
-        },
-        { status: 404 }
-      )
-    }
-
-    // 5. Inisialisasi Admin Client (Service Role) karena bucket 'sertifikat' bersifat privat tanpa policy pemohon
+    // 5. Inisialisasi Admin Client (Service Role) karena bucket privat
     const adminClient = createAdminClient()
     if (!adminClient) {
       console.error(
         '[DownloadSertifikat] createAdminClient() mengembalikan null. SUPABASE_SERVICE_ROLE_KEY atau SUPABASE_SECRET_KEY belum disetel atau tidak valid di .env.local.'
       )
-      return NextResponse.json(
-        { success: false, error: 'Layanan sementara tidak tersedia.' },
-        { status: 503 }
-      )
+      return NextResponse.json({ success: false, error: 'Layanan sementara tidak tersedia.' }, { status: 503 })
     }
 
-    // 6. Buat Signed URL berbatas waktu singkat (TTL: 300 detik / 5 menit) via admin client
+    // 6. Buat Signed URL berbatas waktu singkat (TTL: 300 detik / 5 menit)
     const expiresIn = 300
     const { data: signedData, error: signedErr } = await adminClient.storage
       .from('sertifikat')
       .createSignedUrl(
-        cert.file_path,
+        targetCert.file_path,
         expiresIn,
-        isDownload ? { download: cert.file_name } : undefined
+        isDownload ? { download: targetCert.file_name } : undefined
       )
 
     if (signedErr || !signedData?.signedUrl) {
       console.error(
-        `[DownloadSertifikat] Gagal createSignedUrl untuk file_path="${cert.file_path}". Error asli:`,
+        `[DownloadSertifikat] Gagal createSignedUrl untuk file_path="${targetCert.file_path}". Error asli:`,
         signedErr
       )
       return NextResponse.json(
@@ -153,8 +250,11 @@ export async function GET(request: Request) {
       success: true,
       data: {
         signedUrl: signedData.signedUrl,
-        fileName: cert.file_name,
         expiresIn,
+        fileName: targetCert.file_name,
+        pesertaNama: targetCert.peserta_nama,
+        isKetua: targetCert.is_ketua,
+        sertifikatId: targetCert.id,
       },
     })
   } catch (err: unknown) {

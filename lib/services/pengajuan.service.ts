@@ -450,7 +450,7 @@ export const pengajuanService = {
   },
 
   /**
-   * Mengambil detail satu pengajuan magang
+   * Mengambil detail satu pengajuan magang berdasarkan ID numerik
    */
   async getPengajuanDetail(id: number | string, userId: string): Promise<{ data: any | null; error: string | null }> {
     try {
@@ -463,20 +463,105 @@ export const pengajuanService = {
             id,
             nama,
             deskripsi
+          ),
+          pembimbings (
+            id,
+            nama,
+            nip,
+            jabatan
           )
         `)
         .eq('id', id)
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
-      if (error || !data) {
-        return { data: null, error: error?.message || 'Pengajuan tidak ditemukan.' }
+      if (error) {
+        return { data: null, error: error.message || 'Pengajuan tidak ditemukan.' }
       }
 
-      return { data, error: null }
+      return { data: data || null, error: null }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat mengambil detail pengajuan.'
       return { data: null, error: msg }
     }
   },
+
+  /**
+   * Mengambil detail satu pengajuan magang berdasarkan public_id (hex string)
+   * Terproteksi khusus untuk user_id pemilik pengajuan
+   */
+  async getPengajuanDetailByPublicId(publicId: string, userId: string): Promise<{ data: any | null; error: string | null }> {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pengajuans')
+        .select(`
+          *,
+          bidangs (
+            id,
+            nama,
+            deskripsi
+          ),
+          pembimbings (
+            id,
+            nama,
+            nip,
+            jabatan,
+            email,
+            no_hp
+          )
+        `)
+        .eq('public_id', publicId)
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (error) {
+        return { data: null, error: error.message || 'Pengajuan tidak ditemukan.' }
+      }
+
+      return { data: data || null, error: null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat mengambil detail pengajuan.'
+      return { data: null, error: msg }
+    }
+  },
+
+  /**
+   * Membatalkan pengajuan magang sendiri yang masih berstatus 'Menunggu Verifikasi'
+   * Memanggil RPC PostgreSQL atomic batalkan_pengajuan
+   */
+  async batalkanPengajuan(publicId: string, alasan?: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      const supabase = createClient()
+
+      const { data, error } = await supabase.rpc('batalkan_pengajuan', {
+        p_public_id: publicId,
+        p_alasan: alasan?.trim() || null,
+      })
+
+      if (error) {
+        return {
+          success: false,
+          error: error.message || 'Gagal membatalkan pengajuan magang.',
+        }
+      }
+
+      if (data && data.success === false) {
+        return {
+          success: false,
+          error: data.error?.message || 'Gagal membatalkan pengajuan magang.',
+        }
+      }
+
+      return {
+        success: true,
+        message: data?.message || 'Pengajuan berhasil dibatalkan.',
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem saat membatalkan pengajuan.'
+      return { success: false, error: msg }
+    }
+  },
 }
+
+

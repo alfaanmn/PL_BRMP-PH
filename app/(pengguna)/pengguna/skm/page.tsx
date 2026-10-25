@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Navbar } from '@/components/layout/navbar'
 import { SKMForm } from '@/components/pengguna/skm-form'
+import { getPesertaList, evaluateSKMCompletion } from '@/lib/helpers/peserta.helper'
 import type { AppRole } from '@/types/auth.types'
 
 export const dynamic = 'force-dynamic'
@@ -61,6 +62,10 @@ export default async function UserSKMPage({ searchParams }: UserSKMPageProps) {
       public_id,
       status,
       sertifikat_url,
+      nama_lengkap,
+      nim_nis,
+      anggota,
+      jumlah_anggota,
       created_at,
       bidangs (
         id,
@@ -70,34 +75,63 @@ export default async function UserSKMPage({ searchParams }: UserSKMPageProps) {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  // 7. Ambil Riwayat Pengisian SKM untuk Seluruh Pengajuan User
+  // 7. Ambil Riwayat Pengisian SKM dan Data Anggota untuk Seluruh Pengajuan User
   const pengajuanIds = (rawPengajuans || []).map((p) => p.id)
-  const submittedSet = new Set<number>()
+  let dbAnggotasMap = new Map<number, any[]>()
+  let skmRowsMap = new Map<number, any[]>()
 
   if (pengajuanIds.length > 0) {
-    const { data: existingAnswers } = await supabase
-      .from('skm_jawaban')
-      .select('pengajuan_id')
-      .in('pengajuan_id', pengajuanIds)
+    const [{ data: dbAnggotas }, { data: existingAnswers }] = await Promise.all([
+      supabase
+        .from('pengajuan_anggotas')
+        .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+        .in('pengajuan_id', pengajuanIds),
+      supabase
+        .from('skm_jawaban')
+        .select('id, pengajuan_id, peserta_nama, peserta_nim, is_ketua, is_legacy, created_at')
+        .in('pengajuan_id', pengajuanIds),
+    ])
+
+    if (dbAnggotas) {
+      dbAnggotas.forEach((a) => {
+        const arr = dbAnggotasMap.get(a.pengajuan_id) || []
+        arr.push(a)
+        dbAnggotasMap.set(a.pengajuan_id, arr)
+      })
+    }
 
     if (existingAnswers) {
       existingAnswers.forEach((ans) => {
         if (ans.pengajuan_id) {
-          submittedSet.add(ans.pengajuan_id)
+          const arr = skmRowsMap.get(ans.pengajuan_id) || []
+          arr.push(ans)
+          skmRowsMap.set(ans.pengajuan_id, arr)
         }
       })
     }
   }
 
-  const userPengajuans = (rawPengajuans || []).map((p: any) => ({
-    id: p.id,
-    public_id: p.public_id,
-    status: p.status,
-    sertifikat_url: p.sertifikat_url || null,
-    bidang_nama: p.bidangs?.nama || 'Bidang Magang BRMP',
-    created_at: p.created_at,
-    hasSubmittedSKM: submittedSet.has(p.id),
-  }))
+  const userPengajuans = (rawPengajuans || []).map((p: any) => {
+    const dbAnggotas = dbAnggotasMap.get(p.id) || []
+    const skmRows = skmRowsMap.get(p.id) || []
+    const skmEval = evaluateSKMCompletion(p, dbAnggotas, skmRows)
+
+    return {
+      id: p.id,
+      public_id: p.public_id,
+      status: p.status,
+      sertifikat_url: p.sertifikat_url || null,
+      bidang_nama: p.bidangs?.nama || 'Bidang Magang BRMP',
+      created_at: p.created_at,
+      hasSubmittedSKM: skmEval.isComplete,
+      isKelompok: skmEval.isKelompok,
+      totalPeserta: skmEval.totalPeserta,
+      submittedCount: skmEval.submittedCount,
+      hasLegacy: skmEval.hasLegacy,
+      pesertas: skmEval.pesertaList,
+      submittedPesertaKeys: Array.from(skmEval.submittedPesertaKeys),
+    }
+  })
 
   // 8. Evaluasi Validasi Khusus Parameter `pengajuan_id`
   let accessError: { title: string; message: string; actionUrl: string; actionText: string } | null = null

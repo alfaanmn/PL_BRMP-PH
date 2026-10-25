@@ -6,6 +6,13 @@ import { useRouter } from 'next/navigation'
 import type { SKMPertanyaan } from '@/types/skm.types'
 import { skmService } from '@/lib/services/skm.service'
 
+interface PesertaItem {
+  id?: number | null
+  nama: string
+  nim_nis: string
+  is_ketua: boolean
+}
+
 interface UserPengajuanItem {
   id: number
   public_id: string | null
@@ -14,12 +21,22 @@ interface UserPengajuanItem {
   created_at: string
   hasSubmittedSKM: boolean
   sertifikat_url?: string | null
+  isKelompok?: boolean
+  totalPeserta?: number
+  submittedCount?: number
+  hasLegacy?: boolean
+  pesertas?: PesertaItem[]
+  submittedPesertaKeys?: string[]
 }
 
 interface SKMFormProps {
   questions: SKMPertanyaan[]
   userPengajuans: UserPengajuanItem[]
   preselectedPengajuanId?: number | null
+}
+
+function getPesertaKey(p: { nama: string; nim_nis: string }): string {
+  return `${(p.nama || '').trim().toLowerCase()}__${(p.nim_nis || '').trim().toLowerCase()}`
 }
 
 export function SKMForm({
@@ -34,10 +51,85 @@ export function SKMForm({
     if (preselectedPengajuanId && userPengajuans.some((p) => p.id === preselectedPengajuanId)) {
       return preselectedPengajuanId
     }
-    // Default: ambil pengajuan pertama yang belum diisi SKM, atau pengajuan pertama
+    // Default: ambil pengajuan pertama yang belum lengkap diisi SKM, atau pengajuan pertama
     const unsubmitted = userPengajuans.find((p) => !p.hasSubmittedSKM)
     return unsubmitted ? unsubmitted.id : userPengajuans[0]?.id || null
   })
+
+  // State pelacakan responden lokal (memungkinkan mutasi reaktif di client)
+  const [localSubmittedKeysMap, setLocalSubmittedKeysMap] = useState<Record<number, string[]>>(() => {
+    const map: Record<number, string[]> = {}
+    userPengajuans.forEach((p) => {
+      map[p.id] = p.submittedPesertaKeys || []
+    })
+    return map
+  })
+
+  const [modeLengkapiOpsional, setModeLengkapiOpsional] = useState(false)
+  const [memberSuccessNotice, setMemberSuccessNotice] = useState<string | null>(null)
+
+  // Pengajuan aktif
+  const currentPengajuan = useMemo(() => {
+    return userPengajuans.find((p) => p.id === selectedPengajuanId) || null
+  }, [userPengajuans, selectedPengajuanId])
+
+  const isKelompok = currentPengajuan?.isKelompok || false
+  const pesertaList: PesertaItem[] = useMemo(() => {
+    if (!currentPengajuan) return []
+    if (currentPengajuan.pesertas && currentPengajuan.pesertas.length > 0) {
+      return currentPengajuan.pesertas
+    }
+    return [
+      {
+        id: null,
+        nama: 'Pemohon Magang',
+        nim_nis: '',
+        is_ketua: true,
+      },
+    ]
+  }, [currentPengajuan])
+
+  // Set responden yang sudah mengisi
+  const currentSubmittedKeys = useMemo(() => {
+    if (!currentPengajuan) return new Set<string>()
+    const list = localSubmittedKeysMap[currentPengajuan.id] || currentPengajuan.submittedPesertaKeys || []
+    return new Set(list)
+  }, [localSubmittedKeysMap, currentPengajuan])
+
+  // Peserta yang saat ini dipilih untuk mengisi
+  const [selectedPesertaKey, setSelectedPesertaKey] = useState<string>(() => {
+    const unsubmitted = pesertaList.find((p) => !currentSubmittedKeys.has(getPesertaKey(p)))
+    return unsubmitted ? getPesertaKey(unsubmitted) : getPesertaKey(pesertaList[0] || { nama: '', nim_nis: '' })
+  })
+
+  // Sinkronkan peserta terpilih saat pengajuan berganti
+  React.useEffect(() => {
+    if (!currentPengajuan) return
+    const unsubmitted = pesertaList.find((p) => !currentSubmittedKeys.has(getPesertaKey(p)))
+    setSelectedPesertaKey(unsubmitted ? getPesertaKey(unsubmitted) : getPesertaKey(pesertaList[0]))
+    setAnswers({})
+    setErrorMessage(null)
+    setMemberSuccessNotice(null)
+  }, [selectedPengajuanId, currentPengajuan])
+
+  const activePeserta = useMemo(() => {
+    return (
+      pesertaList.find((p) => getPesertaKey(p) === selectedPesertaKey) ||
+      pesertaList[0] || { id: null, nama: 'Pemohon Magang', nim_nis: '', is_ketua: true }
+    )
+  }, [pesertaList, selectedPesertaKey])
+
+  const isActivePesertaSubmitted = currentSubmittedKeys.has(getPesertaKey(activePeserta))
+
+  // Kelompok dianggap sudah lengkap jika seluruh peserta terisi ATAU pengajuan kelompok legacy (is_legacy=true)
+  const isEntirePengajuanComplete = useMemo(() => {
+    if (!currentPengajuan) return false
+    if (!isKelompok) {
+      return currentSubmittedKeys.size >= 1 || currentPengajuan.hasSubmittedSKM
+    }
+    // Kelompok: lengkap jika seluruh peserta terisi atau punya baris legacy
+    return currentSubmittedKeys.size >= pesertaList.length || (currentPengajuan.hasLegacy && currentSubmittedKeys.size >= 1)
+  }, [currentPengajuan, isKelompok, currentSubmittedKeys, pesertaList])
 
   // State Form Jawaban: Record<skmPertanyaanId, string>
   const [answers, setAnswers] = useState<Record<number, string>>({})
@@ -45,13 +137,6 @@ export function SKMForm({
   const [submittedSuccess, setSubmittedSuccess] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [unansweredHighlight, setUnansweredHighlight] = useState<number[]>([])
-
-  // Cek apakah pengajuan yang dipilih saat ini sudah pernah diisi
-  const currentPengajuan = useMemo(() => {
-    return userPengajuans.find((p) => p.id === selectedPengajuanId) || null
-  }, [userPengajuans, selectedPengajuanId])
-
-  const isAlreadySubmitted = currentPengajuan?.hasSubmittedSKM || false
 
   // Pertanyaan pilihan ganda dan pertanyaan esai/teks berdasarkan kolom tipe dari database
   const choiceQuestions = useMemo(() => {
@@ -62,7 +147,7 @@ export function SKMForm({
     return questions.filter((q) => q.tipe === 'teks')
   }, [questions])
 
-  // Hitung progres pengisian
+  // Hitung progres pengisian butir pertanyaan
   const totalQuestions = questions.length
   const answeredCount = useMemo(() => {
     return questions.reduce((acc, q) => {
@@ -79,7 +164,6 @@ export function SKMForm({
       ...prev,
       [questionId]: String(score),
     }))
-    // Bersihkan highlight error pada butir ini
     setUnansweredHighlight((prev) => prev.filter((id) => id !== questionId))
     if (errorMessage) setErrorMessage(null)
   }
@@ -96,6 +180,16 @@ export function SKMForm({
     }
   }
 
+  // Ganti peserta yang dinilai (khusus kelompok)
+  const handleSwitchPeserta = (peserta: PesertaItem) => {
+    const key = getPesertaKey(peserta)
+    setSelectedPesertaKey(key)
+    setAnswers({})
+    setErrorMessage(null)
+    setUnansweredHighlight([])
+    setMemberSuccessNotice(null)
+  }
+
   // Handler submit formulir
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -105,12 +199,12 @@ export function SKMForm({
       return
     }
 
-    if (isAlreadySubmitted) {
-      setErrorMessage('Survei untuk pengajuan ini sudah selesai diisi sebelumnya.')
+    if (isActivePesertaSubmitted) {
+      setErrorMessage(`Peserta "${activePeserta.nama}" sudah pernah mengisi survei kepuasan.`)
       return
     }
 
-    // 1. Validasi 16 pertanyaan pilihan (wajib diisi)
+    // 1. Validasi pertanyaan pilihan (wajib diisi)
     const missingChoiceIds: number[] = []
     choiceQuestions.forEach((q) => {
       const val = answers[q.id]
@@ -119,7 +213,7 @@ export function SKMForm({
       }
     })
 
-    // 2. Validasi pertanyaan teks terbuka nomor 17 (wajib diisi)
+    // 2. Validasi pertanyaan teks terbuka (wajib diisi)
     const missingTextIds: number[] = []
     textQuestions.forEach((q) => {
       const val = answers[q.id]
@@ -148,11 +242,12 @@ export function SKMForm({
       return
     }
 
+    // Anti double-click
     setSubmitting(true)
     setErrorMessage(null)
 
     try {
-      // Susun payload submission (isAnonim = false)
+      // Susun payload submission dengan identitas responden terikat
       const formattedAnswers = questions.map((q) => ({
         skmPertanyaanId: q.id,
         jawaban: (answers[q.id] || '').trim(),
@@ -160,13 +255,44 @@ export function SKMForm({
 
       const response = await skmService.submitSKMJawaban({
         pengajuanId: selectedPengajuanId,
+        pesertaNama: activePeserta.nama,
+        pesertaNim: activePeserta.nim_nis,
+        isKetua: activePeserta.is_ketua,
+        anggotaId: activePeserta.id || null,
         isAnonim: false,
         answers: formattedAnswers,
       })
 
       if (response.success) {
-        setSubmittedSuccess(true)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        const submittedKey = getPesertaKey(activePeserta)
+        const updatedKeys = Array.from(new Set([...Array.from(currentSubmittedKeys), submittedKey]))
+
+        setLocalSubmittedKeysMap((prev) => ({
+          ...prev,
+          [selectedPengajuanId]: updatedKeys,
+        }))
+
+        // Cek apakah sekarang sudah seluruh peserta terisi
+        const isNowAllDone = isKelompok
+          ? updatedKeys.length >= pesertaList.length
+          : true
+
+        if (isNowAllDone) {
+          setSubmittedSuccess(true)
+          setModeLengkapiOpsional(false)
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        } else {
+          // Masih ada anggota yang belum mengisi
+          setMemberSuccessNotice(`✅ Jawaban SKM atas nama "${activePeserta.nama}" berhasil disimpan! Silakan lanjutkan untuk peserta berikutnya.`)
+          // Pindahkan otomatis ke peserta berikutnya yang belum mengisi
+          const nextUnsubmitted = pesertaList.find((p) => !updatedKeys.includes(getPesertaKey(p)))
+          if (nextUnsubmitted) {
+            setSelectedPesertaKey(getPesertaKey(nextUnsubmitted))
+          }
+          setAnswers({})
+          setUnansweredHighlight([])
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
       } else {
         setErrorMessage(response.error?.message || 'Gagal mengirim survei kepuasan. Silakan coba kembali.')
       }
@@ -177,9 +303,8 @@ export function SKMForm({
       setSubmitting(false)
     }
   }
-
-  // JIKA SUDAH PERNAH DIISI ATAU BARU SAJA SUKSES SUBMIT
-  if (submittedSuccess || isAlreadySubmitted) {
+  // KONDISI TAMPILAN SUKSES / TELAH LENGKAP:
+  if ((submittedSuccess || isEntirePengajuanComplete) && !modeLengkapiOpsional) {
     const isSelesai = currentPengajuan?.status === 'Selesai'
     const hasSertifikat = Boolean(currentPengajuan?.sertifikat_url)
 
@@ -212,13 +337,15 @@ export function SKMForm({
         </div>
 
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-          {submittedSuccess ? 'Terima Kasih Atas Penilaian Anda!' : 'Survei Kepuasan Telah Diisi'}
+          {submittedSuccess ? 'Terima Kasih Atas Penilaian Anda!' : 'Survei Kepuasan Telah Lengkap'}
         </h2>
 
-        <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.6, maxWidth: '480px', margin: '0 auto 1.5rem auto' }}>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.6, maxWidth: '520px', margin: '0 auto 1.5rem auto' }}>
           {submittedSuccess
-            ? 'Penilaian dan masukan Anda telah tersimpan secara resmi. Partisipasi Anda sangat berharga dalam meningkatkan mutu pelayanan publik BRMP Pengelola Hasil Kementerian Pertanian RI.'
-            : `Survei Kepuasan Masyarakat untuk pengajuan #${selectedPengajuanId} (${currentPengajuan?.bidang_nama || 'Magang BRMP'}) telah tercatat dalam sistem kami.`}
+            ? 'Seluruh butir penilaian survei kepuasan telah berhasil disimpan secara resmi. Partisipasi Anda sangat berharga bagi BRMP Pengelola Hasil Kementerian Pertanian RI.'
+            : isKelompok
+            ? `Seluruh responden (${currentSubmittedKeys.size} dari ${pesertaList.length} peserta) telah mengisi kuesioner SKM untuk pengajuan ini.`
+            : `Survei Kepuasan Masyarakat untuk pengajuan #${selectedPengajuanId} (${currentPengajuan?.bidang_nama || 'Magang BRMP'}) telah lengkap tercatat dalam sistem kami.`}
         </p>
 
         {/* Info Card Pengajuan */}
@@ -233,13 +360,18 @@ export function SKMForm({
             fontSize: '0.8125rem'
           }}>
             <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '0.375rem' }}>
-              Rincian Pengajuan:
+              Rincian Permohonan:
             </div>
             <div style={{ color: '#475569', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <div>• ID Pengajuan: <strong>#{currentPengajuan.id}</strong> {currentPengajuan.public_id ? `(${currentPengajuan.public_id})` : ''}</div>
               <div>• Bidang: <strong>{currentPengajuan.bidang_nama}</strong></div>
               <div>• Status Magang: <span style={{ color: '#16a34a', fontWeight: 600 }}>{currentPengajuan.status}</span></div>
-              <div>• Status SKM: <span style={{ color: '#16a34a', fontWeight: 600 }}>✓ Selesai / Lengkap</span></div>
+              <div>
+                • Status SKM:{' '}
+                <span style={{ color: '#16a34a', fontWeight: 600 }}>
+                  ✓ {isKelompok ? `Lengkap (${currentSubmittedKeys.size}/${pesertaList.length} Peserta)` : 'Selesai / Lengkap'}
+                </span>
+              </div>
             </div>
           </div>
         )}
@@ -265,7 +397,7 @@ export function SKMForm({
               </div>
               <div style={{ color: hasSertifikat ? '#15803d' : '#b45309', fontSize: '0.75rem', marginTop: '2px' }}>
                 {hasSertifikat
-                  ? 'Kuesioner SKM telah lengkap dan sertifikat magang resmi Anda telah diterbitkan.'
+                  ? 'Kuesioner SKM telah lengkap dan sertifikat magang resmi Anda telah dapat diunduh.'
                   : 'Kuesioner SKM telah lengkap. Sertifikat magang resmi akan segera diunggah oleh administrator BRMP.'}
               </div>
             </div>
@@ -274,6 +406,29 @@ export function SKMForm({
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {isKelompok && currentSubmittedKeys.size < pesertaList.length && (
+            <button
+              type="button"
+              onClick={() => {
+                setModeLengkapiOpsional(true)
+                setSubmittedSuccess(false)
+              }}
+              style={{
+                padding: '0.625rem 1.25rem',
+                backgroundColor: '#0F6E56',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(15, 110, 86, 0.25)'
+              }}
+            >
+              + Lengkapi Isian Anggota Lain ({currentSubmittedKeys.size}/{pesertaList.length})
+            </button>
+          )}
+
           <Link
             href={isSelesai && hasSertifikat ? '/pengguna/sertifikat' : '/pengguna/riwayat'}
             style={{
@@ -394,6 +549,221 @@ export function SKMForm({
           }
         }
       `}</style>
+
+      {/* Notifikasi anggota berhasil diisi */}
+      {memberSuccessNotice && (
+        <div style={{
+          backgroundColor: '#ecfdf5',
+          border: '1px solid #a7f3d0',
+          borderRadius: '10px',
+          padding: '0.875rem 1.25rem',
+          color: '#065f46',
+          fontSize: '0.875rem',
+          fontWeight: 500,
+        }}>
+          {memberSuccessNotice}
+        </div>
+      )}
+
+      {/* 1. Standalone Banner Hijau Info Bidang Magang */}
+      {currentPengajuan && (
+        <div className="skm-bidang-banner">
+          {/* Sisi Kiri: Label Uppercase & Nama Bidang */}
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              color: 'rgba(255, 255, 255, 0.7)',
+              letterSpacing: '0.04em',
+              marginBottom: '4px'
+            }}>
+              Sedang menilai pelayanan pengajuan magang
+            </div>
+            <div style={{
+              fontSize: '16px',
+              fontWeight: 500,
+              color: '#ffffff',
+              lineHeight: 1.4
+            }}>
+              {currentPengajuan.bidang_nama}
+            </div>
+          </div>
+
+          {/* Sisi Kanan: Badge Pill Nomor Pengajuan / Selector */}
+          <div>
+            {userPengajuans.length > 1 ? (
+              <select
+                value={selectedPengajuanId || ''}
+                onChange={(e) => setSelectedPengajuanId(Number(e.target.value))}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.18)',
+                  color: '#ffffff',
+                  borderRadius: '9999px',
+                  padding: '6px 14px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  WebkitAppearance: 'none'
+                }}
+              >
+                {userPengajuans.map((p) => (
+                  <option key={p.id} value={p.id} style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>
+                    Pengajuan #{p.id} — {p.bidang_nama}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                borderRadius: '9999px',
+                padding: '6px 14px',
+                fontSize: '13px',
+                fontWeight: 500,
+                display: 'inline-flex',
+                alignItems: 'center',
+                whiteSpace: 'nowrap'
+              }}>
+                Pengajuan #{currentPengajuan.id}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 2. KHUSUS KELOMPOK: KARTU PROGRES RESPONDEN & PEMILIH PESERTA */}
+      {isKelompok && (
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '1.25rem 1.5rem',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0F6E56', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Pengajuan Kelompok ({pesertaList.length} Orang)
+              </div>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', margin: '2px 0 0 0' }}>
+                Progres Responden: {currentSubmittedKeys.size} dari {pesertaList.length} Terisi
+              </h3>
+            </div>
+
+            <div style={{
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              padding: '4px 10px',
+              borderRadius: '9999px',
+              backgroundColor: isEntirePengajuanComplete ? '#ecfdf5' : '#fffbeb',
+              color: isEntirePengajuanComplete ? '#166534' : '#b45309',
+              border: `1px solid ${isEntirePengajuanComplete ? '#bbf7d0' : '#fde68a'}`,
+            }}>
+              {isEntirePengajuanComplete ? '✓ SKM Lengkap (Sertifikat Terbuka)' : '⏳ Belum Lengkap (Sertifikat Terkunci)'}
+            </div>
+          </div>
+
+          <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
+            Kuesioner SKM diisi satu kali per peserta atas nama masing-masing. Silakan pilih peserta yang ingin diisi kuesionernya:
+          </p>
+
+          {/* Selector Peserta (Chips) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.625rem' }}>
+            {pesertaList.map((p, idx) => {
+              const key = getPesertaKey(p)
+              const isSelected = key === selectedPesertaKey
+              const isDone = currentSubmittedKeys.has(key)
+
+              return (
+                <div
+                  key={key || idx}
+                  onClick={() => handleSwitchPeserta(p)}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderRadius: '8px',
+                    border: isSelected
+                      ? '2px solid #0F6E56'
+                      : isDone
+                      ? '1px solid #bbf7d0'
+                      : '1px solid #cbd5e1',
+                    backgroundColor: isSelected
+                      ? '#f0fdf4'
+                      : isDone
+                      ? '#f8fafc'
+                      : '#ffffff',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    transition: 'all 0.15s ease',
+                    boxShadow: isSelected ? '0 0 0 2px rgba(15, 110, 86, 0.15)' : 'none',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: p.is_ketua ? '#0F6E56' : '#64748b', textTransform: 'uppercase' }}>
+                      Responden #{idx + 1} • {p.is_ketua ? 'Ketua' : 'Anggota'}
+                    </span>
+                    <span style={{
+                      fontSize: '0.6875rem',
+                      fontWeight: 600,
+                      color: isDone ? '#16a34a' : '#d97706',
+                    }}>
+                      {isDone ? 'Sudah Diisi ✓' : 'Belum Diisi'}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0f172a' }}>
+                    {p.nama}
+                  </div>
+                  {p.nim_nis && (
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      NIM: {p.nim_nis}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Info Status Peserta Aktif */}
+          {isActivePesertaSubmitted ? (
+            <div style={{
+              backgroundColor: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              fontSize: '0.8125rem',
+              color: '#166534',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+            }}>
+              <span>✓</span>
+              <span>
+                Peserta <strong>{activePeserta.nama}</strong> sudah selesai mengisi kuesioner SKM ini. Silakan klik peserta lain di atas jika ada yang belum mengisi.
+              </span>
+            </div>
+          ) : (
+            <div style={{
+              backgroundColor: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              fontSize: '0.8125rem',
+              color: '#334155',
+            }}>
+              Sedang mengisi survei atas nama: <strong>{activePeserta.nama}</strong> ({activePeserta.is_ketua ? 'Ketua Kelompok' : 'Anggota'})
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 1. Standalone Banner Hijau Info Bidang Magang */}
       {currentPengajuan && (
@@ -806,16 +1176,16 @@ export function SKMForm({
 
           <button
             type="submit"
-            disabled={submitting || isAlreadySubmitted || answeredCount < totalQuestions}
+            disabled={submitting || isActivePesertaSubmitted || answeredCount < totalQuestions}
             style={{
               padding: '0.625rem 1.5rem',
-              backgroundColor: submitting || isAlreadySubmitted || answeredCount < totalQuestions ? '#94a3b8' : '#16a34a',
+              backgroundColor: submitting || isActivePesertaSubmitted || answeredCount < totalQuestions ? '#94a3b8' : '#16a34a',
               color: '#ffffff',
               borderRadius: '8px',
               border: 'none',
               fontSize: '0.875rem',
               fontWeight: 600,
-              cursor: submitting || isAlreadySubmitted || answeredCount < totalQuestions ? 'not-allowed' : 'pointer',
+              cursor: submitting || isActivePesertaSubmitted || answeredCount < totalQuestions ? 'not-allowed' : 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
@@ -831,7 +1201,7 @@ export function SKMForm({
               </>
             ) : (
               <>
-                <span>Kirim Survei Kepuasan</span>
+                <span>{isKelompok ? `Kirim Survei untuk ${activePeserta.nama}` : 'Kirim Survei Kepuasan'}</span>
                 <span>→</span>
               </>
             )}

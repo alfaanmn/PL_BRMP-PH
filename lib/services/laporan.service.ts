@@ -673,6 +673,10 @@ export const laporanService = {
           skm_pertanyaan_id,
           jawaban,
           is_anonim,
+          peserta_nama,
+          peserta_nim,
+          is_ketua,
+          is_legacy,
           created_at,
           skm_pertanyaan (
             urutan,
@@ -687,7 +691,7 @@ export const laporanService = {
       const qMapById = new Map<number, LaporanSKMQuestionMeta>()
       skmQuestions.forEach((q) => qMapById.set(q.id, q))
 
-      const skmMap = new Map<number, any>()
+      const skmMap = new Map<string, any>()
       if (skmAnswers && skmAnswers.length > 0) {
         for (const ans of skmAnswers as any[]) {
           const pId = ans.pengajuan_id
@@ -702,8 +706,9 @@ export const laporanService = {
           }
 
           const qInfo = ans.skm_pertanyaan || qMapById.get(ans.skm_pertanyaan_id)
+          const respondentKey = `${pId}:::${ans.peserta_nama || ''}:::${ans.peserta_nim || ''}`
 
-          if (!skmMap.has(pId)) {
+          if (!skmMap.has(respondentKey)) {
             let gender = '-'
             if (!ans.is_anonim) {
               const rawG = pInfo?.jenis_kelamin || (pInfo?.user_id ? profileGenderMap.get(String(pInfo.user_id)) : null)
@@ -715,10 +720,14 @@ export const laporanService = {
               }
             }
 
-            skmMap.set(pId, {
+            const namaResponden = ans.is_anonim
+              ? '🔒 Responden Anonim'
+              : (ans.peserta_nama || pInfo?.nama_lengkap || 'Pemohon')
+
+            skmMap.set(respondentKey, {
               pengajuanId: pId,
               publicId: pInfo?.public_id || String(pId),
-              namaPemohon: ans.is_anonim ? '🔒 Responden Anonim' : (pInfo?.nama_lengkap || 'Pemohon'),
+              namaPemohon: namaResponden,
               jenisKelamin: gender,
               asalInstansi: ans.is_anonim ? 'Peserta Magang' : (pInfo?.asal_instansi || '-'),
               bidangNama: pInfo?.bidangs?.nama || '-',
@@ -729,7 +738,7 @@ export const laporanService = {
             })
           }
 
-          const entry = skmMap.get(pId)!
+          const entry = skmMap.get(respondentKey)!
           const urutan = qInfo?.urutan || ans.skm_pertanyaan_id
           if (urutan) {
             entry.answers[urutan] = ans.jawaban || ''
@@ -746,7 +755,7 @@ export const laporanService = {
 
       const skmData: LaporanSKMRow[] = []
       let skmCounter = 1
-      skmMap.forEach((entry, pId) => {
+      skmMap.forEach((entry) => {
         const avg =
           entry.choiceScores.length > 0
             ? (entry.choiceScores.reduce((a: number, b: number) => a + b, 0) / entry.choiceScores.length).toFixed(2)
@@ -754,7 +763,7 @@ export const laporanService = {
 
         skmData.push({
           no: skmCounter++,
-          idPermohonan: pId,
+          idPermohonan: entry.pengajuanId,
           publicId: entry.publicId,
           tanggalPengisian: entry.tanggalPengisian,
           namaPemohon: entry.namaPemohon,

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Navbar } from '@/components/layout/navbar'
 import { UserRiwayatList } from '@/components/pengguna/user-riwayat-list'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
+import { evaluateSKMCompletion } from '@/lib/helpers/peserta.helper'
 import type { AppRole } from '@/types/auth.types'
 
 export const dynamic = 'force-dynamic'
@@ -78,27 +79,40 @@ export default async function UserRiwayatPage() {
   // Cek status pengisian SKM untuk masing-masing pengajuan
   const pengajuanList = rawPengajuans || []
   const pengajuanIds = pengajuanList.map((p) => p.id)
-  const submittedSKMSet = new Set<number>()
+
+  let dbAnggotas: any[] = []
+  let dbAnswers: any[] = []
 
   if (pengajuanIds.length > 0) {
-    const { data: answeredRows } = await supabase
-      .from('skm_jawaban')
-      .select('pengajuan_id')
-      .in('pengajuan_id', pengajuanIds)
+    const [anggotasRes, answersRes] = await Promise.all([
+      supabase
+        .from('pengajuan_anggotas')
+        .select('id, pengajuan_id, nama, nim')
+        .in('pengajuan_id', pengajuanIds),
+      supabase
+        .from('skm_jawaban')
+        .select('pengajuan_id, peserta_nama, peserta_nim, is_ketua, is_legacy')
+        .in('pengajuan_id', pengajuanIds),
+    ])
 
-    if (answeredRows) {
-      answeredRows.forEach((row) => {
-        if (row.pengajuan_id) {
-          submittedSKMSet.add(row.pengajuan_id)
-        }
-      })
-    }
+    if (anggotasRes.data) dbAnggotas = anggotasRes.data
+    if (answersRes.data) dbAnswers = answersRes.data
   }
 
-  const pengajuans = pengajuanList.map((p) => ({
-    ...p,
-    hasSubmittedSKM: submittedSKMSet.has(p.id),
-  }))
+  const pengajuans = pengajuanList.map((p) => {
+    const relatedAnggotas = dbAnggotas.filter((a) => a.pengajuan_id === p.id)
+    const relatedAnswers = dbAnswers.filter((a) => a.pengajuan_id === p.id)
+    const skmEval = evaluateSKMCompletion(p, relatedAnggotas, relatedAnswers)
+
+    return {
+      ...p,
+      hasSubmittedSKM: skmEval.isComplete,
+      isKelompok: skmEval.isKelompok,
+      totalPeserta: skmEval.totalPeserta,
+      submittedSKMCount: skmEval.submittedCount,
+      hasLegacy: skmEval.hasLegacy,
+    }
+  })
 
   return (
     <div style={{

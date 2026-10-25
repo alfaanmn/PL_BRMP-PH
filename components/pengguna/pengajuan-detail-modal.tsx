@@ -1,27 +1,52 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
+import { ModalBatalPengajuan } from '@/components/pengguna/modal-batal-pengajuan'
 import { EyeIcon, ExternalLinkIcon, FileTextIcon, DownloadIcon, LoaderIcon } from '@/components/ui/admin-icons'
 
 interface PengajuanDetailModalProps {
   isOpen: boolean
   onClose: () => void
   pengajuan: any | null
+  onPengajuanCancelled?: (publicId: string) => void
 }
 
 export function PengajuanDetailModal({
   isOpen,
   onClose,
   pengajuan,
+  onPengajuanCancelled,
 }: PengajuanDetailModalProps) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
   const [openingDocKey, setOpeningDocKey] = useState<string | null>(null)
 
-  const handlePreviewSertifikat = async (pengajuanId: number, title: string) => {
+  // Multi-sertifikat state
+  const [sertifikatList, setSertifikatList] = useState<any[]>([])
+  const [loadingCerts, setLoadingCerts] = useState(false)
+  const [downloadingSeq, setDownloadingSeq] = useState(false)
+  const [downloadingZip, setDownloadingZip] = useState(false)
+
+  useEffect(() => {
+    if (isOpen && pengajuan?.status === 'Selesai') {
+      setLoadingCerts(true)
+      fetch(`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuan.id}&list=true`)
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.success && Array.isArray(json.data)) {
+            setSertifikatList(json.data)
+          }
+        })
+        .catch((err) => console.warn('Gagal memuat sertifikat modal:', err))
+        .finally(() => setLoadingCerts(false))
+    }
+  }, [isOpen, pengajuan?.id, pengajuan?.status])
+
+  const handlePreviewSertifikatById = async (sertifikatId: number, title: string) => {
     try {
-      const res = await fetch(`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuanId}`)
+      const res = await fetch(`/api/pengguna/sertifikat/download?sertifikat_id=${sertifikatId}`)
       const json = await res.json()
       if (json.success && json.data?.signedUrl) {
         setPreviewDoc({ url: json.data.signedUrl, title })
@@ -30,6 +55,71 @@ export function PengajuanDetailModal({
       }
     } catch {
       alert('Terjadi kesalahan saat memuat berkas sertifikat.')
+    }
+  }
+
+  // Unduh Semua (ZIP Server-Side)
+  const handleDownloadZip = async () => {
+    if (!pengajuan?.public_id) return
+    try {
+      setDownloadingZip(true)
+      const res = await fetch(`/api/pengguna/sertifikat/download-zip?public_id=${pengajuan.public_id}`)
+      if (!res.ok) {
+        let errorMsg = 'Gagal membuat arsip ZIP sertifikat.'
+        try {
+          const json = await res.json()
+          if (json.error) errorMsg = json.error
+        } catch {}
+        alert(errorMsg)
+        return
+      }
+
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = `Sertifikat_Kelompok_${pengajuan.public_id}.zip`
+      document.body.appendChild(a)
+      a.click()
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url)
+        if (document.body.contains(a)) document.body.removeChild(a)
+      }, 1000)
+    } catch {
+      alert('Terjadi kesalahan saat mengunduh arsip ZIP.')
+    } finally {
+      setDownloadingZip(false)
+    }
+  }
+
+  // Tahap 1: Unduh Berurutan (Fallback)
+  const handleDownloadAllSequential = async () => {
+    if (sertifikatList.length === 0) return
+    try {
+      setDownloadingSeq(true)
+      for (let i = 0; i < sertifikatList.length; i++) {
+        const cert = sertifikatList[i]
+        const downloadUrl = `/api/pengguna/sertifikat/download?sertifikat_id=${cert.id}&download=true&redirect=1`
+        const iframe = document.createElement('iframe')
+        iframe.style.display = 'none'
+        iframe.src = downloadUrl
+        document.body.appendChild(iframe)
+
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe)
+          }
+        }, 10000)
+
+        if (i < sertifikatList.length - 1) {
+          await new Promise((r) => setTimeout(r, 700))
+        }
+      }
+    } catch {
+      alert('Gagal mengunduh berkas secara berurutan.')
+    } finally {
+      setTimeout(() => setDownloadingSeq(false), 1000)
     }
   }
 
@@ -701,11 +791,15 @@ export function PengajuanDetailModal({
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1rem' }}>⚠️</span>
                     <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#92400e', margin: 0 }}>
-                      Survei Kepuasan Masyarakat (SKM) Wajib Diisi
+                      {pengajuan.isKelompok && !pengajuan.hasLegacy
+                        ? `Survei Kepuasan Masyarakat (SKM) Belum Lengkap (${pengajuan.submittedSKMCount || 0}/${pengajuan.totalPeserta || 1} Peserta)`
+                        : 'Survei Kepuasan Masyarakat (SKM) Wajib Diisi'}
                     </h4>
                   </div>
                   <p style={{ fontSize: '0.8125rem', color: '#b45309', margin: 0, lineHeight: 1.5 }}>
-                    Kegiatan magang Anda telah selesai. Mohon lengkapi kuesioner SKM terlebih dahulu agar sertifikat magang dapat diakses dan diunduh.
+                    {pengajuan.isKelompok && !pengajuan.hasLegacy
+                      ? `Kegiatan magang kelompok Anda telah selesai. Seluruh peserta (${pengajuan.totalPeserta || 1} orang) wajib mengisi kuesioner SKM agar sertifikat magang dapat diakses dan diunduh.`
+                      : 'Kegiatan magang Anda telah selesai. Mohon lengkapi kuesioner SKM terlebih dahulu agar sertifikat magang dapat diakses dan diunduh.'}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                     <a
@@ -773,118 +867,178 @@ export function PengajuanDetailModal({
                     </span>
                   </div>
 
-                  {pengajuan.sertifikat_url ? (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.625rem 0.75rem',
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #86efac',
-                      borderRadius: '8px',
-                      fontSize: '0.8125rem',
-                      gap: '0.5rem',
-                      flexWrap: 'wrap'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ color: '#15803d', display: 'flex' }}>
-                          <FileTextIcon width={16} height={16} />
+                  {sertifikatList.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                      }}>
+                        <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>
+                          {sertifikatList.length} sertifikat resmi peserta tersedia
                         </div>
-                        <div>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>Sertifikat Kelulusan Magang</div>
-                          <div style={{ fontSize: '0.6875rem', color: '#15803d' }}>Dokumen resmi diterbitkan</div>
-                        </div>
+                        {sertifikatList.length > 1 && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                            {/* Tombol Unduh ZIP (Server-Side) */}
+                            <button
+                              type="button"
+                              onClick={handleDownloadZip}
+                              disabled={downloadingZip || downloadingSeq}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                color: '#ffffff',
+                                fontWeight: 700,
+                                fontSize: '0.75rem',
+                                backgroundColor: '#0284c7',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                border: 'none',
+                                minHeight: '28px',
+                                cursor: (downloadingZip || downloadingSeq) ? 'not-allowed' : 'pointer',
+                                boxShadow: '0 1px 2px rgba(2, 132, 199, 0.2)',
+                              }}
+                            >
+                              <span>📦</span>
+                              <span>{downloadingZip ? 'Menyiapkan ZIP...' : `Unduh ZIP (${sertifikatList.length})`}</span>
+                            </button>
+
+                            {/* Tombol Unduh Berurutan (Fallback) */}
+                            <button
+                              type="button"
+                              onClick={handleDownloadAllSequential}
+                              disabled={downloadingSeq || downloadingZip}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                color: '#15803d',
+                                fontWeight: 700,
+                                fontSize: '0.75rem',
+                                backgroundColor: '#ffffff',
+                                border: '1px solid #86efac',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                minHeight: '28px',
+                                cursor: (downloadingSeq || downloadingZip) ? 'not-allowed' : 'pointer',
+                              }}
+                              title="Unduh file satu per satu secara berurutan"
+                            >
+                              <DownloadIcon width={12} height={12} />
+                              <span>{downloadingSeq ? 'Mengunduh...' : 'Berurutan'}</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handlePreviewSertifikat(
-                              pengajuan.id,
-                              `Sertifikat Magang - ${pengajuan.bidangs?.nama || 'BRMP PH'}`
-                            )
-                          }
+
+                      {sertifikatList.map((c, idx) => (
+                        <div
+                          key={c.id}
                           style={{
-                            display: 'inline-flex',
+                            display: 'flex',
                             alignItems: 'center',
-                            gap: '0.25rem',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            backgroundColor: '#ecfdf5',
-                            border: '1px solid #bbf7d0',
-                            color: '#15803d',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            minHeight: '32px',
-                          }}
-                        >
-                          <EyeIcon width={12} height={12} />
-                          <span>Lihat</span>
-                        </button>
-                        <a
-                          href={`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuan.id}&redirect=1`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.25rem',
-                            color: '#475569',
-                            fontWeight: 600,
-                            textDecoration: 'none',
-                            fontSize: '0.75rem',
+                            justifyContent: 'space-between',
+                            padding: '0.625rem 0.75rem',
                             backgroundColor: '#ffffff',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            border: '1px solid #cbd5e1',
-                            minHeight: '32px',
-                            boxSizing: 'border-box',
+                            border: '1px solid #86efac',
+                            borderRadius: '8px',
+                            fontSize: '0.8125rem',
+                            gap: '0.5rem',
+                            flexWrap: 'wrap',
                           }}
                         >
-                          <ExternalLinkIcon width={12} height={12} />
-                          <span>Tab Baru</span>
-                        </a>
-                        <a
-                          href={`/api/pengguna/sertifikat/download?pengajuan_id=${pengajuan.id}&download=true&redirect=1`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.25rem',
-                            color: '#ffffff',
-                            fontWeight: 600,
-                            textDecoration: 'none',
-                            fontSize: '0.75rem',
-                            backgroundColor: '#15803d',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            minHeight: '32px',
-                            boxSizing: 'border-box',
-                            boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
-                          }}
-                        >
-                          <DownloadIcon width={12} height={12} />
-                          <span>Unduh</span>
-                        </a>
-                      </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ color: '#15803d', display: 'flex' }}>
+                              <FileTextIcon width={16} height={16} />
+                            </div>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                <span style={{
+                                  fontSize: '0.6875rem',
+                                  fontWeight: 700,
+                                  padding: '1px 5px',
+                                  borderRadius: '4px',
+                                  backgroundColor: c.is_ketua ? '#eff6ff' : '#f1f5f9',
+                                  color: c.is_ketua ? '#1d4ed8' : '#475569',
+                                  border: c.is_ketua ? '1px solid #bfdbfe' : '1px solid #cbd5e1',
+                                }}>
+                                  {c.is_ketua ? 'Ketua' : `Anggota #${idx}`}
+                                </span>
+                                <span style={{ fontWeight: 700, color: '#0f172a' }}>{c.peserta_nama}</span>
+                              </div>
+                              <div style={{ fontSize: '0.6875rem', color: '#64748b' }}>
+                                {c.file_name} &bull; {(c.file_size / 1024).toFixed(1)} KB
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                            <button
+                              type="button"
+                              onClick={() => handlePreviewSertifikatById(c.id, `Sertifikat Magang - ${c.peserta_nama}`)}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                backgroundColor: '#ecfdf5',
+                                border: '1px solid #bbf7d0',
+                                color: '#15803d',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                minHeight: '30px',
+                              }}
+                            >
+                              <EyeIcon width={12} height={12} />
+                              <span>Lihat</span>
+                            </button>
+                            <a
+                              href={`/api/pengguna/sertifikat/download?sertifikat_id=${c.id}&download=true&redirect=1`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                color: '#ffffff',
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                fontSize: '0.75rem',
+                                backgroundColor: '#15803d',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                border: 'none',
+                                minHeight: '30px',
+                                boxSizing: 'border-box',
+                                boxShadow: '0 1px 2px rgba(21, 128, 61, 0.2)',
+                              }}
+                            >
+                              <DownloadIcon width={12} height={12} />
+                              <span>Unduh</span>
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : loadingCerts ? (
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic' }}>
+                      Memuat data berkas sertifikat...
                     </div>
                   ) : (
                     <div style={{
                       padding: '0.625rem 0.75rem',
-                      backgroundColor: '#ffffff',
-                      border: '1px dashed #cbd5e1',
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #e2e8f0',
                       borderRadius: '8px',
-                      fontSize: '0.8125rem',
+                      fontSize: '0.75rem',
                       color: '#64748b',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
                     }}>
-                      <span>⏳</span>
-                      <span>Sertifikat sedang dalam proses penerbitan oleh administrator BRMP. Mohon periksa kembali secara berkala.</span>
+                      Sertifikat sedang dalam proses penerbitan oleh administrator.
                     </div>
                   )}
                 </div>
@@ -898,11 +1052,34 @@ export function PengajuanDetailModal({
           padding: '1rem 1.5rem',
           borderTop: '1px solid #e2e8f0',
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: pengajuan.status === 'Menunggu Verifikasi' ? 'space-between' : 'flex-end',
+          alignItems: 'center',
           backgroundColor: '#f8fafc',
           borderBottomLeftRadius: '16px',
           borderBottomRightRadius: '16px'
         }}>
+          {pengajuan.status === 'Menunggu Verifikasi' && (
+            <button
+              type="button"
+              onClick={() => setIsCancelModalOpen(true)}
+              style={{
+                padding: '0.45rem 0.875rem',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                color: '#dc2626',
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              ✕ Batalkan Pengajuan
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onClose}
@@ -929,6 +1106,20 @@ export function PengajuanDetailModal({
         title={previewDoc?.title || 'Pratinjau Dokumen'}
         subtitle={`Pengajuan #${pengajuan.id} - ${pengajuan.nama_lengkap || 'Pemohon'}`}
         onClose={() => setPreviewDoc(null)}
+      />
+
+      {/* Dialog Konfirmasi Pembatalan Pengajuan */}
+      <ModalBatalPengajuan
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        publicId={pengajuan.public_id || String(pengajuan.id)}
+        bidangNama={pengajuan.bidangs?.nama}
+        onSuccess={() => {
+          if (onPengajuanCancelled) {
+            onPengajuanCancelled(pengajuan.public_id || String(pengajuan.id))
+          }
+          onClose()
+        }}
       />
     </div>
   )

@@ -488,13 +488,15 @@ WAJIB Implementation Plan + approval eksplisit.
 BAGIAN 15 — RPC
 ===============
 
-RPC merupakan bagian resmi dari mutation layer project.
+RPC resmi project antara lain:
 
-RPC yang sudah tersedia antara lain:
-
+submit_pengajuan_atomic()
+admin_verifikasi_anggota_atomic()
 batalkan_pengajuan()
 
-submit_skm()
+Catatan mutasi:
+- batalkan_pengajuan() merupakan jalur mutasi resmi pembatalan mandiri oleh pemohon (khusus status 'Menunggu Verifikasi').
+- Alur submit SKM dikelola melalui API route terproteksi (/api/skm/submit).
 
 Agent WAJIB menggunakan RPC apabila business rule memang menentukan
 RPC tersebut sebagai jalur resmi.

@@ -139,12 +139,12 @@ export default function AdminRekapSKMPage() {
   }, [loadSubmissions])
 
   // Open Detail Modal
-  const handleOpenDetail = async (pengajuanId: number) => {
+  const handleOpenDetail = async (pengajuanId: number, pesertaNama?: string) => {
     setSelectedSubmissionId(pengajuanId)
     setIsDetailOpen(true)
     setDetailLoading(true)
     try {
-      const res = await adminSKMService.getSubmissionDetail(pengajuanId)
+      const res = await adminSKMService.getSubmissionDetail(pengajuanId, pesertaNama)
       if (res.data) {
         setDetailData(res.data)
       } else {
@@ -160,18 +160,18 @@ export default function AdminRekapSKMPage() {
     }
   }
 
-  // Columns definition untuk PDF & Word
+  // Columns definition untuk PDF & Word (sesuai aturan rekap per responden)
   const exportColumns: ExportTableColumn[] = useMemo(
     () => [
       { header: 'No', key: 'no' },
       { header: 'ID Pengajuan', key: 'idPermohonan' },
-      { header: 'Public ID', key: 'publicId' },
-      { header: 'Tanggal', key: 'tanggalPengisian' },
-      { header: 'Nama Pemohon', key: 'namaPemohon' },
-      { header: 'Jenis Kelamin', key: 'jenisKelamin' },
-      { header: 'NIM/NIS', key: 'nimNis' },
-      { header: 'Asal Instansi', key: 'asalInstansi' },
-      { header: 'Bidang Magang', key: 'bidangNama' },
+      { header: 'Nama Responden', key: 'namaResponden' },
+      { header: 'NIM', key: 'nim' },
+      { header: 'Peran', key: 'peran' },
+      { header: 'Nama Ketua', key: 'namaKetua' },
+      { header: 'Email Akun (Ketua)', key: 'emailKetua' },
+      { header: 'Jumlah Anggota', key: 'jumlahAnggota' },
+      { header: 'Waktu Isi SKM', key: 'tanggalPengisian' },
       { header: 'Skor (1-4)', key: 'rataRataSkor' },
     ],
     []
@@ -224,7 +224,12 @@ export default function AdminRekapSKMPage() {
       const rows = list.map((item, idx) => ({
         no: idx + 1,
         idPermohonan: item.isAnonim ? '-' : item.pengajuanId,
-        publicId: item.publicId || '-',
+        namaResponden: item.namaResponden || item.namaPemohon,
+        nim: item.nim || item.nimNis || '-',
+        peran: item.peran || (item.isKetua ? 'Ketua' : 'Anggota'),
+        namaKetua: item.namaKetua || item.namaPemohon,
+        emailKetua: item.emailKetua || '-',
+        jumlahAnggota: item.jumlahAnggota || 1,
         tanggalPengisian: item.tanggalPengisian
           ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
               day: '2-digit',
@@ -232,11 +237,6 @@ export default function AdminRekapSKMPage() {
               year: 'numeric',
             })
           : '-',
-        namaPemohon: item.namaPemohon,
-        jenisKelamin: item.jenisKelamin || '-',
-        nimNis: item.nimNis || '-',
-        asalInstansi: item.asalInstansi || '-',
-        bidangNama: item.bidangNama,
         rataRataSkor: item.rataRataSkor !== null ? item.rataRataSkor.toFixed(2) : '-',
       }))
 
@@ -283,7 +283,12 @@ export default function AdminRekapSKMPage() {
       const rows = list.map((item, idx) => ({
         no: idx + 1,
         idPermohonan: item.isAnonim ? '-' : item.pengajuanId,
-        publicId: item.publicId || '-',
+        namaResponden: item.namaResponden || item.namaPemohon,
+        nim: item.nim || item.nimNis || '-',
+        peran: item.peran || (item.isKetua ? 'Ketua' : 'Anggota'),
+        namaKetua: item.namaKetua || item.namaPemohon,
+        emailKetua: item.emailKetua || '-',
+        jumlahAnggota: item.jumlahAnggota || 1,
         tanggalPengisian: item.tanggalPengisian
           ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
               day: '2-digit',
@@ -291,11 +296,6 @@ export default function AdminRekapSKMPage() {
               year: 'numeric',
             })
           : '-',
-        namaPemohon: item.namaPemohon,
-        jenisKelamin: item.jenisKelamin || '-',
-        nimNis: item.nimNis || '-',
-        asalInstansi: item.asalInstansi || '-',
-        bidangNama: item.bidangNama,
         rataRataSkor: item.rataRataSkor !== null ? item.rataRataSkor.toFixed(2) : '-',
       }))
 
@@ -783,77 +783,119 @@ export default function AdminRekapSKMPage() {
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '0.75rem 1rem', width: '90px' }}>ID Permohonan</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Nama Pemohon / Instansi</th>
-                  <th style={{ padding: '0.75rem 1rem', width: '110px' }}>Jenis Kelamin</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Nama Responden & NIM</th>
+                  <th style={{ padding: '0.75rem 1rem', width: '100px', textAlign: 'center' }}>Peran</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Ketua / Akun Pemohon</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Bidang Magang</th>
-                  <th style={{ padding: '0.75rem 1rem', width: '130px' }}>Tanggal Pengisian</th>
+                  <th style={{ padding: '0.75rem 1rem', width: '130px' }}>Waktu Isi SKM</th>
                   <th style={{ padding: '0.75rem 1rem', width: '110px', textAlign: 'center' }}>Rata-Rata Skor</th>
                   <th style={{ padding: '0.75rem 1rem', width: '100px', textAlign: 'center' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {submissions.map((row) => (
-                  <tr key={row.pengajuanId} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.875rem 1rem', fontWeight: 600, color: '#0f172a' }}>
-                      {row.isAnonim ? (
-                        <span style={{ color: '#64748b', fontSize: '0.8125rem', fontWeight: 500 }}>
-                          🔒 Anonim
-                        </span>
-                      ) : (
-                        `#${row.pengajuanId}`
-                      )}
-                    </td>
-                    <td style={{ padding: '0.875rem 1rem' }}>
-                      <div style={{ fontWeight: 600, color: row.isAnonim ? '#02482e' : '#0f172a' }}>{row.namaPemohon}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.asalInstansi || '-'}</div>
-                    </td>
-                    <td style={{ padding: '0.875rem 1rem', color: '#475569', fontSize: '0.8125rem' }}>
-                      {row.isAnonim ? '-' : (row.jenisKelamin || '-')}
-                    </td>
-                    <td style={{ padding: '0.875rem 1rem', color: '#334155' }}>
-                      {row.bidangNama}
-                    </td>
-                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.8125rem', color: '#64748b' }}>
-                      {new Date(row.tanggalPengisian).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td style={{ padding: '0.875rem 1rem', textAlign: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        fontSize: '0.8125rem',
-                        fontWeight: 700,
-                        color: '#02482e',
-                        backgroundColor: '#f0fdf4',
-                        border: '1px solid #bbf7d0',
-                        padding: '2px 8px',
-                        borderRadius: '6px',
-                      }}>
-                        {row.rataRataSkor !== null ? `${row.rataRataSkor.toFixed(2)} / 4` : '-'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.875rem 1rem', textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={() => handleOpenDetail(row.pengajuanId)}
-                        style={{
-                          padding: '0.35rem 0.75rem',
-                          backgroundColor: '#ffffff',
-                          color: '#16a34a',
-                          border: '1px solid #bbf7d0',
-                          borderRadius: '6px',
+                {submissions.map((row) => {
+                  const rowKey = `${row.pengajuanId}_${row.namaResponden || row.namaPemohon}_${row.nim || ''}`
+                  return (
+                    <tr key={rowKey} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '0.875rem 1rem', fontWeight: 600, color: '#0f172a' }}>
+                        {row.isAnonim ? (
+                          <span style={{ color: '#64748b', fontSize: '0.8125rem', fontWeight: 500 }}>
+                            🔒 Anonim
+                          </span>
+                        ) : (
+                          `#${row.pengajuanId}`
+                        )}
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem' }}>
+                        <div style={{ fontWeight: 600, color: row.isAnonim ? '#02482e' : '#0f172a' }}>
+                          {row.namaResponden || row.namaPemohon}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                          {row.nim ? `NIM: ${row.nim}` : row.asalInstansi || '-'}
+                        </div>
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem', textAlign: 'center' }}>
+                        <span style={{
+                          display: 'inline-block',
                           fontSize: '0.75rem',
                           fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Lihat Rincian
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                          backgroundColor:
+                            row.peran === 'Ketua'
+                              ? '#dcfce7'
+                              : row.peran === 'Anggota'
+                              ? '#e0f2fe'
+                              : '#f1f5f9',
+                          color:
+                            row.peran === 'Ketua'
+                              ? '#166534'
+                              : row.peran === 'Anggota'
+                              ? '#075985'
+                              : '#475569',
+                          border:
+                            row.peran === 'Ketua'
+                              ? '1px solid #bbf7d0'
+                              : row.peran === 'Anggota'
+                              ? '1px solid #bae6fd'
+                              : '1px solid #e2e8f0',
+                        }}>
+                          {row.peran || (row.isKetua ? 'Ketua' : 'Individu')}
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem' }}>
+                        <div style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#334155' }}>
+                          {row.namaKetua || row.namaPemohon}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                          {row.emailKetua || '-'}
+                        </div>
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem', color: '#334155' }}>
+                        {row.bidangNama}
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem', fontSize: '0.8125rem', color: '#64748b' }}>
+                        {new Date(row.tanggalPengisian).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem', textAlign: 'center' }}>
+                        <span style={{
+                          display: 'inline-block',
+                          fontSize: '0.8125rem',
+                          fontWeight: 700,
+                          color: '#02482e',
+                          backgroundColor: '#f0fdf4',
+                          border: '1px solid #bbf7d0',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                        }}>
+                          {row.rataRataSkor !== null ? `${row.rataRataSkor.toFixed(2)} / 4` : '-'}
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.875rem 1rem', textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenDetail(row.pengajuanId, row.namaResponden)}
+                          style={{
+                            padding: '0.35rem 0.75rem',
+                            backgroundColor: '#ffffff',
+                            color: '#16a34a',
+                            border: '1px solid #bbf7d0',
+                            borderRadius: '6px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Lihat Rincian
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -975,7 +1017,7 @@ export default function AdminRekapSKMPage() {
                 </div>
               ) : (
                 <>
-                  {/* Info Pemohon Card */}
+                  {/* Info Pemohon & Responden Card */}
                   <div style={{
                     backgroundColor: '#f8fafc',
                     border: '1px solid #e2e8f0',
@@ -987,16 +1029,27 @@ export default function AdminRekapSKMPage() {
                     fontSize: '0.8125rem',
                   }}>
                     <div>
-                      <div style={{ color: '#64748b' }}>Nama Pemohon:</div>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>{detailData.pengajuan.namaPemohon}</div>
+                      <div style={{ color: '#64748b' }}>Nama Responden:</div>
+                      <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                        {detailData.pengajuan.namaResponden || detailData.pengajuan.namaPemohon}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                        {detailData.pengajuan.nim ? `NIM: ${detailData.pengajuan.nim}` : '-'}
+                      </div>
                     </div>
                     <div>
-                      <div style={{ color: '#64748b' }}>Asal Instansi:</div>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>{detailData.pengajuan.asalInstansi || '-'}</div>
+                      <div style={{ color: '#64748b' }}>Peran / Ketua:</div>
+                      <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                        {detailData.pengajuan.peran || 'Pemohon'}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                        Ketua: {detailData.pengajuan.namaPemohon}
+                      </div>
                     </div>
                     <div>
-                      <div style={{ color: '#64748b' }}>Bidang Magang:</div>
+                      <div style={{ color: '#64748b' }}>Bidang & Instansi:</div>
                       <div style={{ fontWeight: 600, color: '#0f172a' }}>{detailData.pengajuan.bidangNama}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{detailData.pengajuan.asalInstansi || '-'}</div>
                     </div>
                     <div>
                       <div style={{ color: '#64748b' }}>Rata-Rata Skor (Q1–Q16):</div>

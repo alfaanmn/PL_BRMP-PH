@@ -236,28 +236,78 @@ export default async function HomePage() {
           }
         }
 
-        @media (max-width: 640px) {
-          .hero-section {
-            padding: 2rem 1rem 2.5rem 1rem !important;
-            overflow: hidden !important;
+        /* Hero Visual & Responsive Layout */
+        .hero-visual-column {
+          display: none !important;
+          min-height: 0 !important;
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+
+        .hero-text-column {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1fr !important;
+          gap: 1.5rem !important;
+          align-items: center;
+        }
+
+        @media (min-width: 768px) {
+          .hero-visual-column {
+            position: relative;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            min-height: 520px !important;
+            height: auto !important;
+            width: 100% !important;
+            max-width: 640px !important;
+            margin: 0 auto !important;
+            overflow: visible !important;
           }
-          .floating-bidang-card {
-            animation: none !important;
-            max-width: 125px !important;
-            padding: 0.35rem 0.5rem !important;
-            border-radius: 8px !important;
+
+          .hero-text-column {
+            max-width: 540px !important;
+          }
+
+          .hero-grid {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;
+            gap: 2.5rem !important;
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+          .hero-grid {
+            gap: 1.5rem !important;
           }
           .floating-bidang-card.left {
-            transform: translateX(-6px) !important;
+            transform: translateX(-16px) !important;
           }
           .floating-bidang-card.right {
-            transform: translateX(6px) !important;
+            transform: translateX(16px) !important;
           }
-          .floating-icon-box {
-            width: 24px !important;
-            height: 24px !important;
-            font-size: 0.75rem !important;
-            border-radius: 6px !important;
+        }
+
+        @media (max-width: 640px) {
+          .hero-section {
+            padding: 2.25rem 1rem 2.5rem 1rem !important;
+            overflow: hidden !important;
+          }
+          .hero-cta-group {
+            flex-direction: column !important;
+            width: 100% !important;
+            gap: 0.75rem !important;
+          }
+          .hero-cta-btn {
+            width: 100% !important;
+            justify-content: center !important;
+            text-align: center !important;
           }
           .bidang-cover-container {
             height: 140px !important;
@@ -289,16 +339,13 @@ export default async function HomePage() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        <div style={{
+        <div className="hero-grid" style={{
           maxWidth: '1240px',
           margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-          gap: '2.5rem',
           alignItems: 'center'
         }}>
           {/* Kolom Kiri: Headline & CTA */}
-          <div style={{ maxWidth: '540px' }}>
+          <div className="hero-text-column">
             <div style={{ marginBottom: '1.25rem' }}>
               <h1 style={{
                 color: '#ffffff',
@@ -335,9 +382,10 @@ export default async function HomePage() {
             </p>
 
             {/* CTA Buttons: Emas Kementan & Biru Solid */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="hero-cta-group" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <a
                 href="#bidang"
+                className="hero-cta-btn"
                 style={{
                   padding: '0.875rem 2rem',
                   backgroundColor: '#F5C400',
@@ -360,6 +408,7 @@ export default async function HomePage() {
 
               <Link
                 href={user ? dashboardUrl : '/register'}
+                className="hero-cta-btn"
                 style={{
                   padding: '0.875rem 1.75rem',
                   backgroundColor: '#1A6FC4',
@@ -381,17 +430,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Kolom Kanan: Karakter Utama Halus di Tengah & 4 Floating Cards di Sisi Luar */}
-          <div style={{
-            position: 'relative',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '520px',
-            width: '100%',
-            maxWidth: '640px',
-            margin: '0 auto'
-          }}>
+          {/* Kolom Kanan: Karakter Utama Halus di Tengah & 4 Floating Cards di Sisi Luar (Disembunyikan di Mobile) */}
+          <div className="hero-visual-column">
             {/* Backdrop Persegi Melengkung Halus (Ala SIP Biogen) */}
             <div style={{
               position: 'absolute',
@@ -413,7 +453,7 @@ export default async function HomePage() {
                 alt="Peserta Magang BRMP Kementan"
                 width={315}
                 height={333}
-                priority
+                sizes="(min-width: 768px) 315px, 0px"
                 style={{
                   width: '100%',
                   height: '100%',

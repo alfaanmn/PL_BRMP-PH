@@ -21,6 +21,11 @@ export interface SKMJawaban {
   skm_pertanyaan_id: number
   jawaban: string
   is_anonim?: boolean
+  peserta_nama: string
+  peserta_nim: string
+  is_ketua: boolean
+  anggota_id?: number | null
+  is_legacy?: boolean
   created_at: string
 }
 
@@ -31,6 +36,10 @@ export interface SKMAnswerInput {
 
 export interface SKMSubmissionPayload {
   pengajuanId: number
+  pesertaNama?: string
+  pesertaNim?: string
+  isKetua?: boolean
+  anggotaId?: number | null
   isAnonim?: boolean
   answers: SKMAnswerInput[]
 }

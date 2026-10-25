@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sertifikatService } from '@/lib/services/sertifikat.service'
+import { getPesertaList, type PesertaIdentitas } from '@/lib/helpers/peserta.helper'
 import type { SKMSubmissionPayload, SKMResponse } from '@/types/skm.types'
 
 export async function POST(request: Request): Promise<NextResponse<SKMResponse>> {
@@ -85,10 +86,10 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
       )
     }
 
-    // 4. Verifikasi Hak Akses & Kepemilikan Pengajuan
+    // 4. Verifikasi Hak Akses & Ambil Data Lengkap Pengajuan Beserta Anggota
     const { data: pengajuan, error: pengajuanErr } = await supabase
       .from('pengajuans')
-      .select('id, user_id, status')
+      .select('id, user_id, status, nama_lengkap, nim_nis, anggota, jumlah_anggota')
       .eq('id', pengajuanId)
       .single()
 
@@ -146,31 +147,73 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
       )
     }
 
-    // 6. Pencegahan Double-Submission (Cek apakah pengajuan sudah pernah dinilai)
-    const { count, error: countErr } = await supabase
-      .from('skm_jawaban')
-      .select('id', { count: 'exact', head: true })
+    // 6. Validasi Identitas Responden dari Server (TIDAK PERCAYA DATA CLIENT)
+    const { data: dbAnggotas } = await supabase
+      .from('pengajuan_anggotas')
+      .select('id, pengajuan_id, nama, nim_nis, is_ketua')
       .eq('pengajuan_id', pengajuanId)
 
-    if (countErr) {
-      console.error('[SKM API] Error checking duplicate submission:', countErr)
+    const pesertaList = getPesertaList(pengajuan, dbAnggotas)
+    const isKelompok = pesertaList.length > 1
+
+    let targetPeserta: PesertaIdentitas | null = null
+
+    if (!isKelompok) {
+      // Individu: selalu atas nama ketua
+      targetPeserta = pesertaList[0]
+    } else {
+      // Kelompok: cocokkan dengan peserta yang dikirim oleh ketua
+      const reqNama = String(payload.pesertaNama || '').trim().toLowerCase()
+      const reqNim = String(payload.pesertaNim || '').trim().toLowerCase()
+      const reqAnggotaId = payload.anggotaId ? Number(payload.anggotaId) : null
+      const reqIsKetua = Boolean(payload.isKetua)
+
+      targetPeserta =
+        pesertaList.find((p) => {
+          if (reqAnggotaId && p.id && p.id === reqAnggotaId) return true
+          if (reqIsKetua && p.is_ketua) return true
+          const pNama = p.nama.trim().toLowerCase()
+          const pNim = p.nim_nis.trim().toLowerCase()
+          return pNama === reqNama && (!reqNim || pNim === reqNim)
+        }) || null
+
+      if (!targetPeserta) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'INVALID_PARTICIPANT',
+              message: 'Peserta yang dipilih tidak terdaftar dalam daftar anggota pengajuan magang ini.',
+            },
+          },
+          { status: 400 }
+        )
+      }
     }
 
-    if ((count || 0) > 0) {
-      console.warn('[SKM API] Duplicate submission detected for pengajuanId:', pengajuanId, 'Existing count:', count)
+    // 7. Pencegahan Double-Submission per Peserta
+    const { data: existingParticipantAnswer } = await supabase
+      .from('skm_jawaban')
+      .select('id')
+      .eq('pengajuan_id', pengajuanId)
+      .eq('peserta_nama', targetPeserta.nama)
+      .eq('peserta_nim', targetPeserta.nim_nis)
+      .limit(1)
+
+    if (existingParticipantAnswer && existingParticipantAnswer.length > 0) {
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'ALREADY_SUBMITTED',
-            message: 'Survei Kepuasan Masyarakat untuk permohonan ini sudah pernah dikirim sebelumnya.',
+            message: `Peserta "${targetPeserta.nama}" sudah pernah mengisi survei kepuasan untuk permohonan ini.`,
           },
         },
         { status: 409 }
       )
     }
 
-    // 7. Ambil Pertanyaan Aktif dari Database & Validasi Kelayakan Jawaban
+    // 8. Ambil Pertanyaan Aktif dari Database & Validasi Kelayakan Jawaban
     const { data: activeQuestions, error: qErr } = await supabase
       .from('skm_pertanyaan')
       .select('id, urutan, tipe')
@@ -239,19 +282,24 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
       }
     }
 
-    // 8. Format dan Susun Baris Data Jawaban (seluruh 17 butir disimpan dengan is_anonim = false)
+    // 9. Format dan Susun Baris Data Jawaban (seluruh 17 butir disimpan dengan identitas responden)
     const rowsToInsert = activeQuestions.map((q) => ({
       pengajuan_id: pengajuanId,
       skm_pertanyaan_id: q.id,
       jawaban: answerMap.get(q.id) || '',
       is_anonim: false,
+      peserta_nama: targetPeserta.nama,
+      peserta_nim: targetPeserta.nim_nis,
+      is_ketua: targetPeserta.is_ketua,
+      anggota_id: targetPeserta.id || null,
+      is_legacy: false,
     }))
 
-    // 9. Eksekusi Batch INSERT ke Database Supabase
+    // 10. Eksekusi Batch INSERT ke Database Supabase secara atomik
     const { data: insertedData, error: insertError } = await supabase
       .from('skm_jawaban')
       .insert(rowsToInsert)
-      .select('id, pengajuan_id, skm_pertanyaan_id, jawaban, is_anonim, created_at')
+      .select('id, pengajuan_id, skm_pertanyaan_id, jawaban, is_anonim, peserta_nama, peserta_nim, is_ketua, created_at')
 
     if (insertError) {
       console.error('[SKM API] INSERT skm_jawaban failed:', {
@@ -260,6 +308,21 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
         details: insertError.details,
         hint: insertError.hint,
       })
+
+      // Kode PostgreSQL 23505 = Unique Violation
+      if (insertError.code === '23505') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'ALREADY_SUBMITTED',
+              message: `Peserta "${targetPeserta.nama}" sudah pernah mengisi survei kepuasan.`,
+            },
+          },
+          { status: 409 }
+        )
+      }
+
       return NextResponse.json(
         {
           success: false,
@@ -274,7 +337,7 @@ export async function POST(request: Request): Promise<NextResponse<SKMResponse>>
 
     console.log('[SKM API] Successfully inserted answers count:', insertedData?.length || rowsToInsert.length)
 
-    // 10. Pemicu Pengecekan Notifikasi Sertifikat (Diisolasi dalam try/catch terpisah sesuai Koreksi 3)
+    // 11. Pemicu Pengecekan Notifikasi Sertifikat (Diisolasi dalam try/catch terpisah)
     try {
       await sertifikatService.checkAndTriggerNotification(pengajuanId)
     } catch (certNotifErr) {

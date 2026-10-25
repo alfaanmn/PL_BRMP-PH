@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getPesertaList, evaluateSKMCompletion } from '@/lib/helpers/peserta.helper'
 import {
   getEmailSubject,
   renderEmailHtml,
@@ -77,6 +78,7 @@ export const sertifikatService = {
           durasi_bulan,
           status,
           user_id,
+          anggota,
           bidangs (
             id,
             nama
@@ -97,43 +99,102 @@ export const sertifikatService = {
 
       const pengajuanIds = pengajuans.map((p) => p.id)
 
-      // 2. Ambil data sertifikat yang sudah ada
+      // 2. Ambil seluruh sertifikat yang terkait dengan pengajuan-pengajuan ini
       const { data: sertifikats, error: sErr } = await supabase
         .from('sertifikats')
         .select('*')
         .in('pengajuan_id', pengajuanIds)
+        .order('is_ketua', { ascending: false })
+        .order('id', { ascending: true })
 
       if (sErr) {
         console.warn('Gagal memuat sertifikats:', sErr.message)
       }
 
-      const sertifikatMap = new Map<number, SertifikatRecord>()
+      const sertifikatsByPengajuan = new Map<number, SertifikatRecord[]>()
       sertifikats?.forEach((s: any) => {
-        sertifikatMap.set(s.pengajuan_id, s as SertifikatRecord)
+        const arr = sertifikatsByPengajuan.get(s.pengajuan_id) || []
+        arr.push(s as SertifikatRecord)
+        sertifikatsByPengajuan.set(s.pengajuan_id, arr)
       })
 
-      // 3. Ambil data status SKM dari tabel skm_jawaban
+      // 3. Ambil data anggota kelompok dari pengajuan_anggotas
+      const { data: anggotasRows, error: aErr } = await supabase
+        .from('pengajuan_anggotas')
+        .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+        .in('pengajuan_id', pengajuanIds)
+        .order('id', { ascending: true })
+
+      if (aErr) {
+        console.warn('Gagal memuat pengajuan_anggotas:', aErr.message)
+      }
+
+      const anggotasByPengajuan = new Map<number, any[]>()
+      anggotasRows?.forEach((a: any) => {
+        const arr = anggotasByPengajuan.get(a.pengajuan_id) || []
+        arr.push(a)
+        anggotasByPengajuan.set(a.pengajuan_id, arr)
+      })
+
+      // 4. Ambil data status SKM dari tabel skm_jawaban beserta identitas responden
       const { data: skmRows, error: skmErr } = await supabase
         .from('skm_jawaban')
-        .select('pengajuan_id, created_at')
+        .select('pengajuan_id, peserta_nama, peserta_nim, is_ketua, is_legacy, created_at')
         .in('pengajuan_id', pengajuanIds)
 
       if (skmErr) {
         console.warn('Gagal memuat skm_jawaban:', skmErr.message)
       }
 
-      const skmMap = new Map<number, string>()
+      const skmRowsByPengajuan = new Map<number, any[]>()
       skmRows?.forEach((r: any) => {
         if (r.pengajuan_id) {
-          skmMap.set(r.pengajuan_id, r.created_at || 'filled')
+          const arr = skmRowsByPengajuan.get(r.pengajuan_id) || []
+          arr.push(r)
+          skmRowsByPengajuan.set(r.pengajuan_id, arr)
         }
       })
 
-      // 4. Susun list item
+      // 5. Susun list item beserta daftar peserta dan sertifikat masing-masing
       let list: AdminSertifikatListItem[] = pengajuans.map((p: any) => {
-        const sertifikat = sertifikatMap.get(p.id) || null
-        const skmSubmittedAt = skmMap.get(p.id) || null
-        const hasSubmittedSKM = Boolean(skmSubmittedAt)
+        const certsForThis = sertifikatsByPengajuan.get(p.id) || []
+        const dbAnggotas = anggotasByPengajuan.get(p.id) || []
+        const skmRowsForThis = skmRowsByPengajuan.get(p.id) || []
+
+        const skmEval = evaluateSKMCompletion(p, dbAnggotas, skmRowsForThis)
+        const hasSubmittedSKM = skmEval.isComplete
+        const skmSubmittedAt = skmRowsForThis[0]?.created_at || null
+
+        // Susun daftar peserta definitif menggunakan helper
+        const basePesertas = getPesertaList(p, dbAnggotas)
+        const pesertas: Array<{
+          id?: number
+          nama: string
+          nim_nis: string
+          is_ketua: boolean
+          sertifikat?: SertifikatRecord | null
+        }> = basePesertas.map((bp) => ({
+          id: bp.id || undefined,
+          nama: bp.nama,
+          nim_nis: bp.nim_nis,
+          is_ketua: bp.is_ketua,
+          sertifikat: null,
+        }))
+
+        // Pasangkan sertifikat terunggah dengan tiap peserta
+        pesertas.forEach((peserta) => {
+          const matched = certsForThis.find((c) => {
+            if (peserta.id && c.anggota_id && c.anggota_id === peserta.id) return true
+            if (peserta.is_ketua && c.is_ketua) return true
+            return (
+              c.peserta_nama.trim().toLowerCase() === peserta.nama.trim().toLowerCase() &&
+              (peserta.nim_nis ? c.peserta_nim.trim() === peserta.nim_nis.trim() : true)
+            )
+          })
+          peserta.sertifikat = matched || null
+        })
+
+        const ketuaCert = certsForThis.find((c) => c.is_ketua) || certsForThis[0] || null
 
         return {
           pengajuanId: p.id,
@@ -146,14 +207,17 @@ export const sertifikatService = {
           tanggalMulai: p.tanggal_mulai || '',
           tanggalSelesai: p.tanggal_selesai || '',
           durasiBulan: p.durasi_bulan || 1,
+          jumlahAnggota: pesertas.length,
+          pesertas,
           hasSubmittedSKM,
           skmSubmittedAt,
-          sertifikat,
-          notifiedAt: sertifikat?.notified_at || null,
+          sertifikat: ketuaCert,
+          sertifikats: certsForThis,
+          notifiedAt: certsForThis.find((c) => c.notified_at !== null)?.notified_at || null,
         }
       })
 
-      // 5. Terapkan filter di memory
+      // 6. Terapkan filter di memory
       if (filters?.search) {
         const kw = filters.search.toLowerCase().trim()
         list = list.filter(
@@ -162,7 +226,8 @@ export const sertifikatService = {
             item.publicId.toLowerCase().includes(kw) ||
             item.asalInstansi.toLowerCase().includes(kw) ||
             item.nimNis.toLowerCase().includes(kw) ||
-            item.bidangNama.toLowerCase().includes(kw)
+            item.bidangNama.toLowerCase().includes(kw) ||
+            item.pesertas.some((peserta) => peserta.nama.toLowerCase().includes(kw))
         )
       }
 
@@ -173,7 +238,7 @@ export const sertifikatService = {
 
       if (filters?.sertifikatStatus && filters.sertifikatStatus !== 'semua') {
         const needUploaded = filters.sertifikatStatus === 'sudah'
-        list = list.filter((item) => Boolean(item.sertifikat) === needUploaded)
+        list = list.filter((item) => (item.sertifikats.length > 0) === needUploaded)
       }
 
       if (filters?.notifikasiStatus && filters.notifikasiStatus !== 'semua') {
@@ -227,33 +292,62 @@ export const sertifikatService = {
 
       const pengajuanIds = pengajuans.map((p) => p.id)
 
-      // Cek SKM jawaban
-      const { data: skmRows } = await supabase
-        .from('skm_jawaban')
-        .select('pengajuan_id')
+      // Ambil data anggota untuk pengajuan kelompok
+      const { data: anggotasRows } = await supabase
+        .from('pengajuan_anggotas')
+        .select('id, pengajuan_id, nama, nim_nis, is_ketua')
         .in('pengajuan_id', pengajuanIds)
 
-      const skmSet = new Set<number>()
-      skmRows?.forEach((r: any) => {
-        if (r.pengajuan_id) skmSet.add(r.pengajuan_id)
+      const anggotasByPengajuan = new Map<number, any[]>()
+      anggotasRows?.forEach((a: any) => {
+        const arr = anggotasByPengajuan.get(a.pengajuan_id) || []
+        arr.push(a)
+        anggotasByPengajuan.set(a.pengajuan_id, arr)
       })
 
-      // Cek sertifikats
-      const { data: sertifikats } = await supabase
-        .from('sertifikats')
-        .select('pengajuan_id, file_name, uploaded_at')
+      // Cek SKM jawaban dengan kolom identitas dan is_legacy
+      const { data: skmRows } = await supabase
+        .from('skm_jawaban')
+        .select('pengajuan_id, peserta_nama, peserta_nim, is_ketua, is_legacy')
         .in('pengajuan_id', pengajuanIds)
 
-      const sertifikatMap = new Map<number, { file_name: string; uploaded_at: string }>()
+      const skmRowsByPengajuan = new Map<number, any[]>()
+      skmRows?.forEach((r: any) => {
+        if (r.pengajuan_id) {
+          const arr = skmRowsByPengajuan.get(r.pengajuan_id) || []
+          arr.push(r)
+          skmRowsByPengajuan.set(r.pengajuan_id, arr)
+        }
+      })
+
+      // Ambil seluruh sertifikat
+      const { data: sertifikats } = await supabase
+        .from('sertifikats')
+        .select('*')
+        .in('pengajuan_id', pengajuanIds)
+        .order('is_ketua', { ascending: false })
+        .order('id', { ascending: true })
+
+      const sertifikatsByPengajuan = new Map<number, SertifikatRecord[]>()
       sertifikats?.forEach((s: any) => {
-        sertifikatMap.set(s.pengajuan_id, {
-          file_name: s.file_name,
-          uploaded_at: s.uploaded_at,
-        })
+        const arr = sertifikatsByPengajuan.get(s.pengajuan_id) || []
+        arr.push(s as SertifikatRecord)
+        sertifikatsByPengajuan.set(s.pengajuan_id, arr)
       })
 
       const list: UserSertifikatItem[] = pengajuans.map((p: any) => {
-        const sertifikatData = sertifikatMap.get(p.id)
+        const certs = sertifikatsByPengajuan.get(p.id) || []
+        const primaryCert = certs.find((c) => c.is_ketua) || certs[0] || null
+
+        let certName = primaryCert?.file_name
+        if (certs.length > 1) {
+          certName = `${certs.length} Berkas Sertifikat (${certs.map((c) => c.peserta_nama).join(', ')})`
+        }
+
+        const dbAnggotas = anggotasByPengajuan.get(p.id) || []
+        const skmRowsForThis = skmRowsByPengajuan.get(p.id) || []
+        const skmEval = evaluateSKMCompletion(p, dbAnggotas, skmRowsForThis)
+
         return {
           pengajuanId: p.id,
           publicId: p.public_id || String(p.id),
@@ -263,10 +357,11 @@ export const sertifikatService = {
           tanggalMulai: p.tanggal_mulai || '',
           tanggalSelesai: p.tanggal_selesai || '',
           status: p.status,
-          hasSubmittedSKM: skmSet.has(p.id),
-          hasSertifikat: Boolean(sertifikatData),
-          sertifikatName: sertifikatData?.file_name,
-          uploadedAt: sertifikatData?.uploaded_at,
+          hasSubmittedSKM: skmEval.isComplete,
+          hasSertifikat: certs.length > 0,
+          sertifikatName: certName,
+          uploadedAt: primaryCert?.uploaded_at,
+          sertifikats: certs,
         }
       })
 
@@ -310,30 +405,37 @@ export const sertifikatService = {
         return { triggered: false, error: 'Pengajuan belum berstatus Selesai.' }
       }
 
-      // 2. Cek apakah SKM sudah diisi
-      const { data: skmCheck, error: skmErr } = await supabase
-        .from('skm_jawaban')
-        .select('id')
-        .eq('pengajuan_id', pengajuanId)
-        .limit(1)
+      // 2. Cek apakah seluruh peserta sudah mengisi SKM
+      const [{ data: dbAnggotas }, { data: skmRows }] = await Promise.all([
+        supabase
+          .from('pengajuan_anggotas')
+          .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+          .eq('pengajuan_id', pengajuanId),
+        supabase
+          .from('skm_jawaban')
+          .select('peserta_nama, peserta_nim, is_ketua, is_legacy')
+          .eq('pengajuan_id', pengajuanId),
+      ])
 
-      if (skmErr || !skmCheck || skmCheck.length === 0) {
-        return { triggered: false, error: 'SKM belum diisi oleh pemohon.' }
+      const skmEval = evaluateSKMCompletion(pengajuan, dbAnggotas, skmRows)
+      if (!skmEval.isComplete) {
+        return { triggered: false, error: 'SKM belum lengkap diisi oleh seluruh peserta magang.' }
       }
 
-      // 3. Cek apakah sertifikat sudah diunggah menggunakan maybeSingle()
-      const { data: certCheck, error: certErr } = await supabase
+      // 3. Cek apakah sertifikat sudah diunggah untuk pengajuan ini
+      const { data: certRows, error: certErr } = await supabase
         .from('sertifikats')
-        .select('id, file_path, file_name, mime_type, notified_at')
+        .select('id, file_path, file_name, mime_type, notified_at, peserta_nama, is_ketua')
         .eq('pengajuan_id', pengajuanId)
-        .maybeSingle()
 
-      if (certErr || !certCheck) {
+      if (certErr || !certRows || certRows.length === 0) {
         return { triggered: false, error: 'Berkas sertifikat belum diunggah admin.' }
       }
 
-      if (certCheck.notified_at !== null) {
-        // Sudah pernah dinotifikasi sebelumnya
+      // Cek apakah ada sertifikat yang belum pernah dinotifikasi
+      const hasUnnotified = certRows.some((c) => c.notified_at === null)
+      if (!hasUnnotified) {
+        // Semua sertifikat sudah pernah dinotifikasi
         return { triggered: false, error: null }
       }
 
@@ -376,7 +478,7 @@ export const sertifikatService = {
         return { triggered: true, error: null }
       }
 
-      // 7. Unduh berkas sertifikat dari bucket privat via Admin Client (Service Role) untuk dijadikan lampiran
+      // 7. Unduh seluruh berkas sertifikat yang terunggah dari bucket privat via Admin Client (Service Role)
       const attachments: Array<{
         filename: string
         content: Buffer
@@ -384,41 +486,40 @@ export const sertifikatService = {
       }> = []
 
       const adminClient = createAdminClient()
-      if (adminClient && certCheck.file_path) {
-        try {
-          const { data: blobData, error: dlErr } = await adminClient.storage
-            .from('sertifikat')
-            .download(certCheck.file_path)
+      if (adminClient) {
+        for (const certItem of certRows) {
+          if (!certItem.file_path) continue
+          try {
+            const { data: blobData, error: dlErr } = await adminClient.storage
+              .from('sertifikat')
+              .download(certItem.file_path)
 
-          if (dlErr || !blobData) {
-            console.warn(
-              `[SertifikatService] Unduh storage gagal untuk file_path="${certCheck.file_path}", email tetap dikirim tanpa lampiran. Error:`,
-              dlErr
-            )
-          } else {
-            const arrayBuffer = await blobData.arrayBuffer()
-            const fileBuffer = Buffer.from(arrayBuffer)
+            if (dlErr || !blobData) {
+              console.warn(
+                `[SertifikatService] Unduh storage gagal untuk file_path="${certItem.file_path}":`,
+                dlErr
+              )
+            } else {
+              const arrayBuffer = await blobData.arrayBuffer()
+              const fileBuffer = Buffer.from(arrayBuffer)
+              const isJpeg = certItem.mime_type === 'image/jpeg'
+              const ext = isJpeg ? 'jpg' : 'pdf'
+              const contentType = isJpeg ? 'image/jpeg' : 'application/pdf'
 
-            // Ekstensi dan Content-Type dari mime_type tabel sertifikats
-            const isJpeg = certCheck.mime_type === 'image/jpeg'
-            const ext = isJpeg ? 'jpg' : 'pdf'
-            const contentType = isJpeg ? 'image/jpeg' : 'application/pdf'
+              const cleanPeserta = (certItem.peserta_nama || profile.name || 'Peserta')
+                .replace(/[^a-zA-Z0-9\s._-]/g, '')
+                .trim()
+              const attachmentFilename = `Sertifikat Magang - ${cleanPeserta}.${ext}`
 
-            // Sanitasi nama lampiran: "Sertifikat Magang - {nama pemohon}.{pdf|jpg}"
-            const rawName = (profile.name || '').trim()
-            // Hapus karakter non-alfanumerik berbahaya
-            const sanitizedName = rawName.replace(/[^a-zA-Z0-9\s._-]/g, '').trim()
-            const finalRecipientName = sanitizedName || 'Peserta'
-            const attachmentFilename = `Sertifikat Magang - ${finalRecipientName}.${ext}`
-
-            attachments.push({
-              filename: attachmentFilename,
-              content: fileBuffer,
-              contentType,
-            })
+              attachments.push({
+                filename: attachmentFilename,
+                content: fileBuffer,
+                contentType,
+              })
+            }
+          } catch (storageErr) {
+            console.warn('[SertifikatService] Exception saat mengambil lampiran sertifikat:', storageErr)
           }
-        } catch (storageErr) {
-          console.warn('[SertifikatService] Exception saat mengambil lampiran sertifikat:', storageErr)
         }
       } else {
         console.warn('[SertifikatService] Admin client tidak tersedia, email dikirim tanpa lampiran.')

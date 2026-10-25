@@ -53,11 +53,20 @@ export interface AdminSKMTextItem {
 }
 
 export interface AdminSKMSubmissionItem {
+  id?: number
   pengajuanId: number
   publicId: string | null
+  namaResponden: string
   namaPemohon: string
-  jenisKelamin?: string
   nimNis: string | null
+  nim?: string | null
+  peran: 'Ketua' | 'Anggota' | 'Individu'
+  namaKetua: string
+  emailKetua: string
+  jumlahAnggota: number
+  isKelompok: boolean
+  isKetua: boolean
+  jenisKelamin?: string
   asalInstansi: string | null
   bidangNama: string
   tanggalPengisian: string
@@ -76,6 +85,9 @@ export interface AdminSKMSubmissionDetail {
     jurusan: string | null
     bidangNama: string
     status: string
+    namaResponden?: string
+    nim?: string | null
+    peran?: string
   }
   answers: Array<{
     pertanyaanId: number

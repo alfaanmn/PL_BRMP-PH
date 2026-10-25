@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { isPengajuanKelompok, getJumlahPeserta } from '@/lib/helpers/peserta.helper'
 import type {
   AdminSKMPertanyaanItem,
   AdminSKMPertanyaanStats,
@@ -398,7 +399,7 @@ export const adminSKMService = {
       // 2. Query data jawaban dari skm_jawaban
       let query = supabase
         .from('skm_jawaban')
-        .select('id, pengajuan_id, skm_pertanyaan_id, jawaban, created_at')
+        .select('id, pengajuan_id, skm_pertanyaan_id, jawaban, peserta_nama, peserta_nim, created_at')
 
       // Filter periode tanggal jika dipilih
       if (periodFilter !== 'all') {
@@ -433,11 +434,13 @@ export const adminSKMService = {
         }
       }
 
-      // 3. Hitung Responden Unik (berdasarkan pengajuan_id)
-      const respondentSet = new Set<number>()
-      answersData.forEach((ans) => {
+      // 3. Hitung Responden Unik (berdasarkan pengajuan_id + peserta_nama + peserta_nim)
+      const respondentSet = new Set<string>()
+      answersData.forEach((ans: any) => {
         if (ans.pengajuan_id) {
-          respondentSet.add(ans.pengajuan_id)
+          const pNama = (ans.peserta_nama || '').trim().toLowerCase()
+          const pNim = (ans.peserta_nim || '').trim().toLowerCase()
+          respondentSet.add(`${ans.pengajuan_id}__${pNama}__${pNim}`)
         }
       })
       const totalResponden = respondentSet.size
@@ -680,10 +683,14 @@ export const adminSKMService = {
       const { data: allAnswers, error: aErr } = await supabase
         .from('skm_jawaban')
         .select(`
+          id,
           pengajuan_id,
           skm_pertanyaan_id,
           jawaban,
           is_anonim,
+          peserta_nama,
+          peserta_nim,
+          is_ketua,
           created_at,
           skm_pertanyaan (
             urutan,
@@ -697,6 +704,8 @@ export const adminSKMService = {
             nim_nis,
             jenis_kelamin,
             asal_instansi,
+            anggota,
+            jumlah_anggota,
             created_at,
             bidangs (
               nama
@@ -709,7 +718,7 @@ export const adminSKMService = {
         return { data: [], totalCount: 0, error: aErr?.message || 'Gagal memuat riwayat pengisian.' }
       }
 
-      // Ambil user_id unik untuk fallback profil jika jenis_kelamin pengajuan kosong
+      // Ambil user_id unik untuk profil (email & gender)
       const userIds = Array.from(
         new Set(
           allAnswers
@@ -717,16 +726,21 @@ export const adminSKMService = {
             .filter((uid: any) => typeof uid === 'string' && uid.length > 0)
         )
       )
-      const profileGenderMap = new Map<string, string>()
+      const profileMap = new Map<string, { gender: string; email: string }>()
       if (userIds.length > 0) {
         try {
           const { data: profs } = await supabase
             .from('profiles')
-            .select('id, jenis_kelamin')
+            .select('id, jenis_kelamin, email')
             .in('id', userIds)
           if (profs) {
             profs.forEach((p: any) => {
-              if (p.id) profileGenderMap.set(p.id, p.jenis_kelamin || '')
+              if (p.id) {
+                profileMap.set(p.id, {
+                  gender: p.jenis_kelamin || '',
+                  email: p.email || '',
+                })
+              }
             })
           }
         } catch {
@@ -747,10 +761,14 @@ export const adminSKMService = {
         return raw.trim() || '-'
       }
 
-      // 2. Kelompokkan berdasarkan pengajuan_id
-      const groupedMap = new Map<
-        number,
+      // 2. Kelompokkan per responden unik: (pengajuan_id + peserta_nama + peserta_nim)
+      const respondentMap = new Map<
+        string,
         {
+          pengajuanId: number
+          pesertaNama: string
+          pesertaNim: string
+          isKetua: boolean
           pengajuan: any
           submittedAt: string
           choiceScores: number[]
@@ -763,8 +781,16 @@ export const adminSKMService = {
         const pId = row.pengajuan_id
         if (!pId) return
 
-        if (!groupedMap.has(pId)) {
-          groupedMap.set(pId, {
+        const pNama = (row.peserta_nama || row.pengajuans?.nama_lengkap || 'Responden').trim()
+        const pNim = (row.peserta_nim || '').trim()
+        const respKey = `${pId}__${pNama.toLowerCase()}__${pNim.toLowerCase()}`
+
+        if (!respondentMap.has(respKey)) {
+          respondentMap.set(respKey, {
+            pengajuanId: pId,
+            pesertaNama: pNama,
+            pesertaNim: pNim,
+            isKetua: Boolean(row.is_ketua),
             pengajuan: row.pengajuans,
             submittedAt: row.created_at,
             choiceScores: [],
@@ -773,7 +799,7 @@ export const adminSKMService = {
           })
         }
 
-        const group = groupedMap.get(pId)!
+        const group = respondentMap.get(respKey)!
         group.totalAnswers += 1
 
         const isChoice = row.skm_pertanyaan?.tipe === 'pilihan'
@@ -787,7 +813,7 @@ export const adminSKMService = {
 
       // 3. Format ke daftar submission item
       let list: AdminSKMSubmissionItem[] = []
-      groupedMap.forEach((val, pId) => {
+      respondentMap.forEach((val) => {
         const p = val.pengajuan
         const isAnon = val.isAnonim !== false
         const avg =
@@ -800,19 +826,37 @@ export const adminSKMService = {
               )
             : null
 
-        // Gender: cek pengajuan, fallback profil, fallback '-' (jika anonim wajib '-')
+        const prof = p?.user_id ? profileMap.get(p.user_id) : null
         let gender = '-'
         if (!isAnon) {
-          const rawGender = p?.jenis_kelamin || (p?.user_id ? profileGenderMap.get(p.user_id) : null)
+          const rawGender = p?.jenis_kelamin || prof?.gender
           gender = normalizeGender(rawGender)
         }
 
+        const isKelompok = isPengajuanKelompok(p)
+        const peran: 'Ketua' | 'Anggota' | 'Individu' = !isKelompok
+          ? 'Individu'
+          : val.isKetua
+          ? 'Ketua'
+          : 'Anggota'
+
+        const emailKetua = prof?.email || '-'
+        const namaKetua = p?.nama_lengkap || 'Ketua'
+        const totalPeserta = getJumlahPeserta(p)
+
         list.push({
-          pengajuanId: pId,
+          pengajuanId: val.pengajuanId,
           publicId: isAnon ? null : (p?.public_id || null),
-          namaPemohon: isAnon ? '🔒 Responden Anonim' : (p?.nama_lengkap || 'Pemohon'),
+          namaResponden: val.pesertaNama,
+          namaPemohon: val.pesertaNama,
+          nimNis: isAnon ? null : (val.pesertaNim || null),
+          peran,
+          namaKetua,
+          emailKetua,
+          jumlahAnggota: totalPeserta,
+          isKelompok,
+          isKetua: val.isKetua,
           jenisKelamin: gender,
-          nimNis: isAnon ? null : (p?.nim_nis || null),
           asalInstansi: isAnon ? 'Peserta Magang' : (p?.asal_instansi || null),
           bidangNama: p?.bidangs?.nama || 'Bidang Magang BRMP',
           tanggalPengisian: val.submittedAt,
@@ -820,6 +864,32 @@ export const adminSKMService = {
           totalJawaban: val.totalAnswers,
           isAnonim: isAnon,
         })
+      })
+
+      // Kelompokkan baris satu kelompok berdekatan (Ketua dulu, lalu anggota)
+      // Urutan antar kelompok mengikuti submission time (yang pertama mengisi di atas)
+      const groupEarliestTime = new Map<number, number>()
+      list.forEach((item) => {
+        const t = new Date(item.tanggalPengisian).getTime()
+        const existing = groupEarliestTime.get(item.pengajuanId)
+        if (!existing || t < existing) {
+          groupEarliestTime.set(item.pengajuanId, t)
+        }
+      })
+
+      list.sort((a, b) => {
+        // 1. Kelompok yang mengisi lebih awal berada di atas
+        const timeA = groupEarliestTime.get(a.pengajuanId) || 0
+        const timeB = groupEarliestTime.get(b.pengajuanId) || 0
+        if (timeA !== timeB) {
+          return timeB - timeA // terbaru di atas
+        }
+        // 2. Jika pengajuan sama: Ketua di atas
+        if (a.isKetua !== b.isKetua) {
+          return a.isKetua ? -1 : 1
+        }
+        // 3. Antar anggota: berdasarkan waktu isi
+        return new Date(a.tanggalPengisian).getTime() - new Date(b.tanggalPengisian).getTime()
       })
 
       // 4. Terapkan Filter Periode jika ada
@@ -867,9 +937,12 @@ export const adminSKMService = {
   },
 
   /**
-   * Mengambil rincian lengkap 15 jawaban untuk satu responden (pengajuan_id)
+   * Mengambil rincian lengkap jawaban untuk satu responden (pengajuan_id & opsional pesertaNama)
    */
-  async getSubmissionDetail(pengajuanId: number): Promise<{ data: AdminSKMSubmissionDetail | null; error: string | null }> {
+  async getSubmissionDetail(
+    pengajuanId: number,
+    pesertaNama?: string
+  ): Promise<{ data: AdminSKMSubmissionDetail | null; error: string | null }> {
     try {
       const supabase = createClient()
 
@@ -906,16 +979,24 @@ export const adminSKMService = {
       }
 
       // Ambil jawaban untuk pengajuan ini
-      const { data: answers, error: aErr } = await supabase
+      let query = supabase
         .from('skm_jawaban')
-        .select('id, skm_pertanyaan_id, jawaban, is_anonim, created_at')
+        .select('id, skm_pertanyaan_id, jawaban, is_anonim, peserta_nama, peserta_nim, is_ketua, created_at')
         .eq('pengajuan_id', pengajuanId)
 
-      if (aErr || !answers) {
+      if (pesertaNama && pesertaNama.trim().length > 0) {
+        query = query.eq('peserta_nama', pesertaNama.trim())
+      }
+
+      const { data: rawAnswers, error: aErr } = await query
+
+      if (aErr || !rawAnswers || rawAnswers.length === 0) {
         return { data: null, error: aErr?.message || 'Gagal memuat jawaban responden.' }
       }
 
-      const isAnon = answers.length > 0 ? answers[0].is_anonim !== false : true
+      const answers = rawAnswers
+      const targetPeserta = answers[0]
+      const isAnon = answers[0].is_anonim !== false
       const answerMap = new Map<number, string>()
       let submittedAt = answers[0]?.created_at || new Date().toISOString()
       answers.forEach((ans) => {
@@ -960,8 +1041,8 @@ export const adminSKMService = {
           pengajuan: {
             id: pengajuan.id,
             publicId: isAnon ? null : pengajuan.public_id,
-            namaPemohon: isAnon ? '🔒 Responden Anonim' : (pengajuan.nama_lengkap || 'Pemohon'),
-            nimNis: isAnon ? null : pengajuan.nim_nis,
+            namaPemohon: isAnon ? '🔒 Responden Anonim' : (targetPeserta?.peserta_nama || pengajuan.nama_lengkap || 'Pemohon'),
+            nimNis: isAnon ? null : (targetPeserta?.peserta_nim || pengajuan.nim_nis || null),
             asalInstansi: isAnon ? 'Peserta Magang' : (pengajuan.asal_instansi || null),
             jurusan: isAnon ? null : (pengajuan.jurusan || null),
             bidangNama: (pengajuan.bidangs as any)?.nama || 'Bidang Magang BRMP',
@@ -981,7 +1062,7 @@ export const adminSKMService = {
   },
 
   /**
-   * Mengambil data terstruktur untuk ekspor SKM (beserta jawaban Q1-Q17 dan jenis kelamin)
+   * Mengambil data terstruktur untuk ekspor SKM (beserta jawaban Q1-Q17 per responden)
    */
   async getExportData(periodFilter: string = 'all'): Promise<{
     submissions: AdminSKMSubmissionItem[]
@@ -1002,14 +1083,16 @@ export const adminSKMService = {
       const supabase = createClient()
       const { data: allAnswers } = await supabase
         .from('skm_jawaban')
-        .select('pengajuan_id, skm_pertanyaan_id, jawaban, skm_pertanyaan(urutan)')
+        .select('pengajuan_id, peserta_nama, peserta_nim, skm_pertanyaan_id, jawaban, skm_pertanyaan(urutan)')
 
       const answerLookup = new Map<string, string>()
       if (allAnswers) {
         allAnswers.forEach((a: any) => {
           const u = a.skm_pertanyaan?.urutan
           if (a.pengajuan_id && u) {
-            answerLookup.set(`${a.pengajuan_id}_${u}`, a.jawaban)
+            const pNama = (a.peserta_nama || '').trim().toLowerCase()
+            const pNim = (a.peserta_nim || '').trim().toLowerCase()
+            answerLookup.set(`${a.pengajuan_id}_${pNama}_${pNim}_${u}`, a.jawaban)
           }
         })
       }
@@ -1033,11 +1116,13 @@ export const adminSKMService = {
       const headers = [
         'No',
         'ID Pengajuan',
-        'Public ID',
-        'Tanggal Pengisian',
-        'Nama Pemohon',
-        'Jenis Kelamin',
-        'NIM/NIS',
+        'Nama Responden',
+        'NIM',
+        'Peran',
+        'Nama Ketua',
+        'Email Akun (Ketua)',
+        'Jumlah Anggota',
+        'Waktu Isi SKM',
         'Asal Instansi',
         'Bidang Magang',
         'Q1 (Informasi Pelayanan)',
@@ -1064,27 +1149,37 @@ export const adminSKMService = {
 
       submissions.forEach((item, idx) => {
         const qAnswers: string[] = []
+        const pNama = (item.namaResponden || '').trim().toLowerCase()
+        const pNim = (item.nimNis || '').trim().toLowerCase()
+
         for (let i = 1; i <= 17; i++) {
-          const ans = answerLookup.get(`${item.pengajuanId}_${i}`) || '-'
+          const ans =
+            answerLookup.get(`${item.pengajuanId}_${pNama}_${pNim}_${i}`) ||
+            answerLookup.get(`${item.pengajuanId}___${i}`) ||
+            '-'
           qAnswers.push(ans)
         }
 
         const dateStr = item.tanggalPengisian
-          ? new Date(item.tanggalPengisian).toLocaleDateString('id-ID', {
+          ? new Date(item.tanggalPengisian).toLocaleString('id-ID', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
             })
           : '-'
 
         rows.push([
           idx + 1,
           item.isAnonim ? '-' : item.pengajuanId,
-          item.publicId || '-',
-          dateStr,
-          item.namaPemohon,
-          item.jenisKelamin || '-',
+          item.namaResponden,
           item.nimNis || '-',
+          item.peran,
+          item.namaKetua,
+          item.emailKetua,
+          item.jumlahAnggota,
+          dateStr,
           item.asalInstansi || '-',
           item.bidangNama,
           ...qAnswers.slice(0, 16),

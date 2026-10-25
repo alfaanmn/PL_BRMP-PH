@@ -38,6 +38,10 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const pengajuanIdStr = formData.get('pengajuan_id') as string | null
     const file = formData.get('file') as File | null
+    const pesertaNamaRaw = (formData.get('peserta_nama') as string | null) || ''
+    const pesertaNimRaw = (formData.get('peserta_nim') as string | null) || ''
+    const isKetuaRaw = formData.get('is_ketua') as string | null
+    const anggotaIdRaw = formData.get('anggota_id') as string | null
 
     if (!pengajuanIdStr || !file) {
       return NextResponse.json(
@@ -54,10 +58,23 @@ export async function POST(request: Request) {
       )
     }
 
+    const pesertaNama = pesertaNamaRaw.trim()
+    if (!pesertaNama) {
+      return NextResponse.json(
+        { success: false, error: 'Nama peserta sertifikat wajib diisi.' },
+        { status: 400 }
+      )
+    }
+
+    const pesertaNim = pesertaNimRaw.trim()
+    const isKetua = isKetuaRaw === 'true'
+    const parsedAnggotaId = anggotaIdRaw ? parseInt(anggotaIdRaw, 10) : null
+    const anggotaId = parsedAnggotaId && !isNaN(parsedAnggotaId) ? parsedAnggotaId : null
+
     // 4. Verifikasi status pengajuan = 'Selesai'
     const { data: pengajuan, error: pErr } = await supabase
       .from('pengajuans')
-      .select('id, status, public_id, user_id')
+      .select('id, status, public_id, user_id, nama_lengkap, nim_nis')
       .eq('id', pengajuanId)
       .single()
 
@@ -105,13 +122,16 @@ export async function POST(request: Request) {
     const detectedMime = magicCheck.mimeType
     const ext = detectedMime === 'application/pdf' ? 'pdf' : 'jpg'
     const randomHex = crypto.randomBytes(6).toString('hex')
-    const storagePath = `${pengajuanId}/${Date.now()}_${randomHex}.${ext}`
+    const safePesertaSlug = pesertaNama.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 25)
+    const storagePath = `${pengajuanId}/${Date.now()}_${randomHex}_${safePesertaSlug}.${ext}`
 
-    // 7. Ambil berkas eksisting (jika ada) untuk penanganan ganti berkas (re-upload)
+    // 7. Ambil berkas eksisting (jika ada) untuk peserta ini (untuk hapus berkas lama jika ganti file)
     const { data: existingCert } = await supabase
       .from('sertifikats')
       .select('id, file_path, notified_at')
       .eq('pengajuan_id', pengajuanId)
+      .eq('peserta_nama', pesertaNama)
+      .eq('peserta_nim', pesertaNim)
       .maybeSingle()
 
     // 8. Unggah Berkas ke Bucket Privat 'sertifikat'
@@ -133,61 +153,42 @@ export async function POST(request: Request) {
 
     const nowIso = new Date().toISOString()
 
-    // 9. Simpan / Perbarui Metadata di Tabel sertifikats
-    if (existingCert) {
-      // Re-upload: Update kolom file saja, TIDAK menyentuh notified_at (Sesuai Koreksi 2)
-      const { error: updateErr } = await supabase
-        .from('sertifikats')
-        .update({
-          file_path: storagePath,
-          file_name: file.name,
-          mime_type: detectedMime,
-          file_size: file.size,
-          uploaded_by: user.id,
-          uploaded_at: nowIso,
-          updated_at: nowIso,
-        })
-        .eq('id', existingCert.id)
-
-      if (updateErr) {
-        console.error('[UploadSertifikat] Gagal update tabel sertifikats:', updateErr)
-        return NextResponse.json(
-          { success: false, error: `Gagal memperbarui data sertifikat: ${updateErr.message}` },
-          { status: 500 }
-        )
-      }
-
-      // Hapus berkas lama dari storage jika path berbeda
-      if (existingCert.file_path && existingCert.file_path !== storagePath) {
-        try {
-          await supabase.storage.from('sertifikat').remove([existingCert.file_path])
-        } catch (delErr) {
-          console.warn('[UploadSertifikat] Gagal menghapus berkas lama di storage:', delErr)
-        }
-      }
-    } else {
-      // Berkas Baru: Masukkan baris baru dengan notified_at = NULL
-      const { error: insertErr } = await supabase.from('sertifikats').insert([
+    // 9. Simpan / Perbarui Metadata di Tabel sertifikats via upsert (onConflict: 'pengajuan_id,peserta_nama,peserta_nim')
+    const { error: upsertErr } = await supabase
+      .from('sertifikats')
+      .upsert(
         {
           pengajuan_id: pengajuanId,
+          peserta_nama: pesertaNama,
+          peserta_nim: pesertaNim,
+          is_ketua: isKetua,
+          anggota_id: anggotaId,
           file_path: storagePath,
           file_name: file.name,
           mime_type: detectedMime,
           file_size: file.size,
           uploaded_by: user.id,
           uploaded_at: nowIso,
-          notified_at: null,
-          created_at: nowIso,
           updated_at: nowIso,
+          ...(existingCert ? {} : { notified_at: null }),
         },
-      ])
+        { onConflict: 'pengajuan_id,peserta_nama,peserta_nim' }
+      )
 
-      if (insertErr) {
-        console.error('[UploadSertifikat] Gagal insert tabel sertifikats:', insertErr)
-        return NextResponse.json(
-          { success: false, error: `Gagal menyimpan metadata sertifikat: ${insertErr.message}` },
-          { status: 500 }
-        )
+    if (upsertErr) {
+      console.error('[UploadSertifikat] Gagal upsert tabel sertifikats:', upsertErr)
+      return NextResponse.json(
+        { success: false, error: `Gagal menyimpan metadata sertifikat: ${upsertErr.message}` },
+        { status: 500 }
+      )
+    }
+
+    // Hapus berkas lama dari storage jika ada dan jalurnya berbeda
+    if (existingCert?.file_path && existingCert.file_path !== storagePath) {
+      try {
+        await supabase.storage.from('sertifikat').remove([existingCert.file_path])
+      } catch (delErr) {
+        console.warn('[UploadSertifikat] Gagal menghapus berkas lama di storage:', delErr)
       }
     }
 

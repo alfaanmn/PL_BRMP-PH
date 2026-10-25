@@ -89,6 +89,11 @@ export type Database = {
           skm_pertanyaan_id: number
           jawaban: string
           is_anonim: boolean
+          peserta_nama: string
+          peserta_nim: string
+          is_ketua: boolean
+          anggota_id: number | null
+          is_legacy: boolean
           created_at: string | null
         }
         Insert: {
@@ -97,6 +102,11 @@ export type Database = {
           skm_pertanyaan_id: number
           jawaban: string
           is_anonim?: boolean
+          peserta_nama?: string
+          peserta_nim?: string
+          is_ketua?: boolean
+          anggota_id?: number | null
+          is_legacy?: boolean
           created_at?: string | null
         }
         Update: {
@@ -105,6 +115,11 @@ export type Database = {
           skm_pertanyaan_id?: number
           jawaban?: string
           is_anonim?: boolean
+          peserta_nama?: string
+          peserta_nim?: string
+          is_ketua?: boolean
+          anggota_id?: number | null
+          is_legacy?: boolean
           created_at?: string | null
         }
       }
@@ -116,6 +131,10 @@ export type Database = {
           file_name: string
           mime_type: string
           file_size: number
+          peserta_nama: string
+          peserta_nim: string
+          is_ketua: boolean
+          anggota_id: number | null
           uploaded_by: string | null
           uploaded_at: string
           notified_at: string | null
@@ -129,6 +148,10 @@ export type Database = {
           file_name: string
           mime_type: string
           file_size: number
+          peserta_nama: string
+          peserta_nim?: string
+          is_ketua?: boolean
+          anggota_id?: number | null
           uploaded_by?: string | null
           uploaded_at?: string
           notified_at?: string | null
@@ -142,6 +165,10 @@ export type Database = {
           file_name?: string
           mime_type?: string
           file_size?: number
+          peserta_nama?: string
+          peserta_nim?: string
+          is_ketua?: boolean
+          anggota_id?: number | null
           uploaded_by?: string | null
           uploaded_at?: string
           notified_at?: string | null

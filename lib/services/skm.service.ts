@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { evaluateSKMCompletion } from '@/lib/helpers/peserta.helper'
 import type {
   SKMPertanyaan,
   SKMJawaban,
@@ -35,23 +36,34 @@ export const skmService = {
   },
 
   /**
-   * Mengecek apakah pengajuan tertentu sudah pernah diisi kuesioner SKM-nya
-   * Mencegah double-submission per pengajuan.
+   * Mengecek apakah pengajuan tertentu sudah selesai mengisi SKM
    */
   async checkHasSubmittedSKM(pengajuanId: number): Promise<{ hasSubmitted: boolean; error: string | null }> {
     try {
       const supabase = createClient()
-      const { count, error } = await supabase
-        .from('skm_jawaban')
-        .select('id', { count: 'exact', head: true })
-        .eq('pengajuan_id', pengajuanId)
 
-      if (error) {
-        console.error('Error checking skm_jawaban:', error)
-        return { hasSubmitted: false, error: error.message }
+      const [{ data: pengajuan }, { data: dbAnggotas }, { data: skmRows }] = await Promise.all([
+        supabase
+          .from('pengajuans')
+          .select('id, nama_lengkap, nim_nis, anggota, jumlah_anggota')
+          .eq('id', pengajuanId)
+          .maybeSingle(),
+        supabase
+          .from('pengajuan_anggotas')
+          .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+          .eq('pengajuan_id', pengajuanId),
+        supabase
+          .from('skm_jawaban')
+          .select('peserta_nama, peserta_nim, is_ketua, is_legacy')
+          .eq('pengajuan_id', pengajuanId),
+      ])
+
+      if (!pengajuan) {
+        return { hasSubmitted: false, error: 'Pengajuan tidak ditemukan' }
       }
 
-      return { hasSubmitted: (count || 0) > 0, error: null }
+      const evalResult = evaluateSKMCompletion(pengajuan, dbAnggotas, skmRows)
+      return { hasSubmitted: evalResult.isComplete, error: null }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal memeriksa status survei.'
       return { hasSubmitted: false, error: msg }
@@ -69,6 +81,10 @@ export const skmService = {
       bidang_nama: string
       created_at: string
       hasSubmittedSKM: boolean
+      isKelompok: boolean
+      submittedCount: number
+      totalPeserta: number
+      hasLegacy: boolean
     }>
     error: string | null
   }> {
@@ -82,6 +98,10 @@ export const skmService = {
           public_id,
           status,
           sertifikat_url,
+          nama_lengkap,
+          nim_nis,
+          anggota,
+          jumlah_anggota,
           created_at,
           bidangs (
             id,
@@ -95,34 +115,60 @@ export const skmService = {
         return { data: [], error: pError?.message || 'Gagal memuat data pengajuan.' }
       }
 
-      // Ambil pengajuan_ids yang sudah ada di skm_jawaban
       const pengajuanIds = pengajuans.map((p) => p.id)
-      let submittedSet = new Set<number>()
+      let dbAnggotasMap = new Map<number, any[]>()
+      let skmRowsMap = new Map<number, any[]>()
 
       if (pengajuanIds.length > 0) {
-        const { data: existingAnswers } = await supabase
-          .from('skm_jawaban')
-          .select('pengajuan_id')
-          .in('pengajuan_id', pengajuanIds)
+        const [{ data: dbAnggotas }, { data: existingAnswers }] = await Promise.all([
+          supabase
+            .from('pengajuan_anggotas')
+            .select('id, pengajuan_id, nama, nim_nis, is_ketua')
+            .in('pengajuan_id', pengajuanIds),
+          supabase
+            .from('skm_jawaban')
+            .select('pengajuan_id, peserta_nama, peserta_nim, is_ketua, is_legacy')
+            .in('pengajuan_id', pengajuanIds),
+        ])
+
+        if (dbAnggotas) {
+          dbAnggotas.forEach((a) => {
+            const arr = dbAnggotasMap.get(a.pengajuan_id) || []
+            arr.push(a)
+            dbAnggotasMap.set(a.pengajuan_id, arr)
+          })
+        }
 
         if (existingAnswers) {
           existingAnswers.forEach((ans) => {
             if (ans.pengajuan_id) {
-              submittedSet.add(ans.pengajuan_id)
+              const arr = skmRowsMap.get(ans.pengajuan_id) || []
+              arr.push(ans)
+              skmRowsMap.set(ans.pengajuan_id, arr)
             }
           })
         }
       }
 
-      const formatted = pengajuans.map((p: any) => ({
-        id: p.id,
-        public_id: p.public_id,
-        status: p.status,
-        sertifikat_url: p.sertifikat_url || null,
-        bidang_nama: p.bidangs?.nama || 'Bidang Magang BRMP',
-        created_at: p.created_at,
-        hasSubmittedSKM: submittedSet.has(p.id),
-      }))
+      const formatted = pengajuans.map((p: any) => {
+        const dbAnggotas = dbAnggotasMap.get(p.id) || []
+        const skmRows = skmRowsMap.get(p.id) || []
+        const skmEval = evaluateSKMCompletion(p, dbAnggotas, skmRows)
+
+        return {
+          id: p.id,
+          public_id: p.public_id,
+          status: p.status,
+          sertifikat_url: p.sertifikat_url || null,
+          bidang_nama: p.bidangs?.nama || 'Bidang Magang BRMP',
+          created_at: p.created_at,
+          hasSubmittedSKM: skmEval.isComplete,
+          isKelompok: skmEval.isKelompok,
+          submittedCount: skmEval.submittedCount,
+          totalPeserta: skmEval.totalPeserta,
+          hasLegacy: skmEval.hasLegacy,
+        }
+      })
 
       return { data: formatted, error: null }
     } catch (err: unknown) {
