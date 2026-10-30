@@ -629,7 +629,7 @@ export const adminSKMService = {
         `, { count: 'exact' })
         .eq('skm_pertanyaan_id', qData.id)
         .not('jawaban', 'is', null)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
 
       // Filter periode
       if (params.periodFilter === 'custom' && params.customRange) {
@@ -739,7 +739,7 @@ export const adminSKMService = {
             )
           )
         `)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
 
       if (aErr || !allAnswers) {
         return { data: [], totalCount: 0, error: aErr?.message || 'Gagal memuat riwayat pengisian.' }

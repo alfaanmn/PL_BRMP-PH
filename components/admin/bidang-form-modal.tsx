@@ -23,7 +23,7 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
     nama: '',
     deskripsi: '',
     kuota: 10,
-    jenjang: 'Mahasiswa',
+    target_peserta: 'Keduanya',
     persyaratan: '',
     tugas: '',
     is_active: true,
@@ -34,11 +34,12 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
 
   useEffect(() => {
     if (bidangToEdit) {
+      const initialTarget = (bidangToEdit.target_peserta as string) || (bidangToEdit.jenjang === 'Siswa' ? 'Siswa' : bidangToEdit.jenjang === 'Mahasiswa' ? 'Mahasiswa' : 'Keduanya')
       setFormData({
         nama: bidangToEdit.nama || '',
         deskripsi: bidangToEdit.deskripsi || '',
         kuota: bidangToEdit.kuota || 10,
-        jenjang: bidangToEdit.jenjang === 'Siswa' ? 'Siswa' : 'Mahasiswa',
+        target_peserta: initialTarget,
         persyaratan: bidangToEdit.persyaratan || '',
         tugas: bidangToEdit.tugas || '',
         is_active: bidangToEdit.is_active ?? true,
@@ -48,7 +49,7 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
         nama: '',
         deskripsi: '',
         kuota: 10,
-        jenjang: 'Mahasiswa',
+        target_peserta: 'Keduanya',
         persyaratan: '',
         tugas: '',
         is_active: true,
@@ -73,6 +74,11 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
       return
     }
 
+    if (!formData.target_peserta) {
+      setErrorMsg('Target peserta lowongan wajib dipilih.')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -81,7 +87,8 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
           nama: formData.nama.trim(),
           deskripsi: formData.deskripsi.trim() || null,
           kuota: Number(formData.kuota) || 0,
-          jenjang: formData.jenjang.trim() || null,
+          target_peserta: formData.target_peserta,
+          jenjang: formData.target_peserta === 'Siswa' ? 'Siswa' : 'Mahasiswa',
           persyaratan: formData.persyaratan.trim() || null,
           tugas: formData.tugas.trim() || null,
           is_active: formData.is_active,
@@ -97,7 +104,8 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
           nama: formData.nama.trim(),
           deskripsi: formData.deskripsi.trim() || null,
           kuota: Number(formData.kuota) || 0,
-          jenjang: formData.jenjang.trim() || null,
+          target_peserta: formData.target_peserta,
+          jenjang: formData.target_peserta === 'Siswa' ? 'Siswa' : 'Mahasiswa',
           persyaratan: formData.persyaratan.trim() || null,
           tugas: formData.tugas.trim() || null,
           is_active: formData.is_active,
@@ -274,32 +282,35 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
               />
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                Jenjang Pendidikan <span style={{ color: '#ef4444' }}>*</span>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '0.2rem' }}>
+                Target Peserta Lowongan <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.5rem' }}>
+              <p style={{ margin: '0 0 0.5rem 0', fontSize: '11px', color: '#64748b' }}>
+                Pilih kualifikasi pelamar yang berhak mendaftar pada bidang ini.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.5rem' }}>
                 <label style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.45rem 0.65rem',
+                  gap: '0.45rem',
+                  padding: '0.5rem 0.65rem',
                   borderRadius: '8px',
-                  border: formData.jenjang === 'Mahasiswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
-                  backgroundColor: formData.jenjang === 'Mahasiswa' ? '#f0fdf4' : '#ffffff',
+                  border: formData.target_peserta === 'Mahasiswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: formData.target_peserta === 'Mahasiswa' ? '#f0fdf4' : '#ffffff',
                   cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: formData.jenjang === 'Mahasiswa' ? 600 : 500,
-                  color: formData.jenjang === 'Mahasiswa' ? '#166534' : '#334155',
+                  fontSize: '12px',
+                  fontWeight: formData.target_peserta === 'Mahasiswa' ? 600 : 500,
+                  color: formData.target_peserta === 'Mahasiswa' ? '#166534' : '#334155',
                   userSelect: 'none',
                   boxSizing: 'border-box',
                 }}>
                   <input
                     type="radio"
-                    name="admin_bidang_jenjang"
+                    name="admin_bidang_target"
                     value="Mahasiswa"
-                    checked={formData.jenjang === 'Mahasiswa'}
-                    onChange={() => setFormData({ ...formData, jenjang: 'Mahasiswa' })}
+                    checked={formData.target_peserta === 'Mahasiswa'}
+                    onChange={() => setFormData({ ...formData, target_peserta: 'Mahasiswa' })}
                     style={{ accentColor: '#16a34a', width: '15px', height: '15px', cursor: 'pointer', margin: 0 }}
                   />
                   <span>Mahasiswa</span>
@@ -308,27 +319,53 @@ export function BidangFormModal({ isOpen, bidangToEdit, onClose, onSuccess }: Bi
                 <label style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.45rem 0.65rem',
+                  gap: '0.45rem',
+                  padding: '0.5rem 0.65rem',
                   borderRadius: '8px',
-                  border: formData.jenjang === 'Siswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
-                  backgroundColor: formData.jenjang === 'Siswa' ? '#f0fdf4' : '#ffffff',
+                  border: formData.target_peserta === 'Siswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: formData.target_peserta === 'Siswa' ? '#f0fdf4' : '#ffffff',
                   cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: formData.jenjang === 'Siswa' ? 600 : 500,
-                  color: formData.jenjang === 'Siswa' ? '#166534' : '#334155',
+                  fontSize: '12px',
+                  fontWeight: formData.target_peserta === 'Siswa' ? 600 : 500,
+                  color: formData.target_peserta === 'Siswa' ? '#166534' : '#334155',
                   userSelect: 'none',
                   boxSizing: 'border-box',
                 }}>
                   <input
                     type="radio"
-                    name="admin_bidang_jenjang"
+                    name="admin_bidang_target"
                     value="Siswa"
-                    checked={formData.jenjang === 'Siswa'}
-                    onChange={() => setFormData({ ...formData, jenjang: 'Siswa' })}
+                    checked={formData.target_peserta === 'Siswa'}
+                    onChange={() => setFormData({ ...formData, target_peserta: 'Siswa' })}
                     style={{ accentColor: '#16a34a', width: '15px', height: '15px', cursor: 'pointer', margin: 0 }}
                   />
                   <span>Siswa</span>
+                </label>
+
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.5rem 0.65rem',
+                  borderRadius: '8px',
+                  border: formData.target_peserta === 'Keduanya' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                  backgroundColor: formData.target_peserta === 'Keduanya' ? '#f0fdf4' : '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: formData.target_peserta === 'Keduanya' ? 600 : 500,
+                  color: formData.target_peserta === 'Keduanya' ? '#166534' : '#334155',
+                  userSelect: 'none',
+                  boxSizing: 'border-box',
+                }}>
+                  <input
+                    type="radio"
+                    name="admin_bidang_target"
+                    value="Keduanya"
+                    checked={formData.target_peserta === 'Keduanya'}
+                    onChange={() => setFormData({ ...formData, target_peserta: 'Keduanya' })}
+                    style={{ accentColor: '#16a34a', width: '15px', height: '15px', cursor: 'pointer', margin: 0 }}
+                  />
+                  <span>Mahasiswa &amp; Siswa</span>
                 </label>
               </div>
             </div>

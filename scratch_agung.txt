@@ -1,0 +1,344 @@
+
+--- PAGE 1 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 80 
+Pengembangan Database Sistem Penilaian dengan Manajemen Akses 
+Terjadwal dan Verifikasi OTP Email  
+1*Muhammad Agung, 2Baso Riadi Husda 
+12Universitas Negeri Makassar 1, JL. A.P. Pettarani 
+Email: agung@unm.ac.id1, baso.riadi@unm.ac.id2 
+ 
+ABSTRAK 
+Perkembangan teknologi informasi menyebabkan layanan akademik 
+menuntut sistem yang semakin andal dan aman, khususnya pada aspek 
+penilaian yang menjadi bagian krusial dalam proses pembelajaran. Penelitian 
+ini berangkat dari temuan adanya isu keamanan pada sistem penilaian di salah 
+satu perguruan tinggi, termasuk perubahan nilai oleh pihak yang tidak 
+berwenang dan kerentanan akibat penggunaan framework yang sudah tidak 
+diperbarui. Penelitian ini bertujuan mengembangkan rancangan database 
+sistem penilaian dengan manajemen akses terjadwal serta verifikasi One-
+Time Password (OTP) berbasis email untuk meningkatkan keamanan proses 
+penilaian. Metode yang digunakan adalah Research and Development (R&D) 
+yang diselaraskan dengan model System Development Life Cycle (SDLC) 
+prototyping. Hasil penelitian menunjukkan bahwa rancangan database baru 
+dengan PostgreSQL mampu mendukung pembatasan akses penilaian 
+berdasarkan jadwal, sementara integrasi OTP berhasil memberikan verifikasi 
+tambahan untuk mencegah penggunaan akun oleh pihak tidak sah. Pengujian 
+oleh supervisor menunjukkan bahwa hampir seluruh fitur utama berfungsi 
+dengan status “berhasil sepenuhnya”. Dengan demikian, produk yang 
+dikembangkan dinilai efektif dalam mengatasi permasalahan keamanan pada 
+sistem penilaian akademik dan dapat dijadikan acuan dalam pengembangan 
+sistem serupa di lingkungan perguruan tinggi.  
+Kata Kunci: Sistem Penilaian Akademik, Keamanan Sistem Informasi, 
+Verifikasi OTP, Manajemen Akses Terjadwal, Prototyping SDLC 
+ 
+ABSTRACT 
+The rapid advancement of information technology has driven academic 
+services to require increasingly reliable and secure systems, particularly in 
+the assessment domain, which plays a crucial role in the learning process. 
+This study was initiated based on findings of security issues in an existing 
+academic grading system at a higher education institution, including 
+unauthorized changes to student grades and vulnerabilities caused by 
+outdated frameworks. This research aims to develop a grading system 
+database design equipped with scheduled access management and One-Time 
+Password (OTP) email verification to enhance the security of assessment 
+processes. The study employs a Research and Development (R&D) approach 
+aligned with the System Development Life Cycle (SDLC) prototyping model. 
+The results indicate that the newly designed database using PostgreSQL 
+successfully supports access restriction based on assessment schedules, while 
+the integration of OTP verification effectively prevents unauthorized account 
+usage. System testing by a supervisor demonstrated that almost all key 
+features operated with “fully successful” status. Therefore, the developed 
+product is considered effective in resolving security issues within academic 
+grading systems and can serve as a reference for similar system development 
+efforts in higher education institutions.  
+Keywords: Academic Grading System, Information System Security, OTP 
+Verification, Scheduled Access Management, SDLC Prototyping 
+ 
+ 
+Received : 29 Juli 2025 
+Accepted : 18 Agustus 2024 
+Published : 2 September 2025 
+--- PAGE 2 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 81 
+1. PENDAHULUAN 
+ 
+Era akselerasi merupakan masa di mana teknologi berkembang pesat, hal ini tidak lepas dari cepatnya penyebaran 
+ilmu pengetahuan dan informasi. Tidak hanya cepat, namun juga mudah diakses, orang-orang di masa ini sudah 
+menggenggam informasi luas ditangannya melalui smartphone dan internet. 
+ 
+Ranah Akademik sebagai salah satu aspek penting dalam perkembangan peradaban, tentu tidak tertinggal dengan 
+adanya perkembangan ini. Kini mayoritas layanan akademik telah didukung oleh teknologi sistem informasi yang 
+dapat memudahkan dan mempersingkat prosesnya, sebagaimana yang dituliskan oleh (Mamuaya et al., 2020) 
+dalam penelitianya yang membahas tentang pemanfaatan knowledge management system di STIMK Multicom, 
+serta (Sucipto, 2022) yang mendapati bahwa penggunaan teknologi informasi memberikan pengaruh positif dan 
+signifikan terhadap efektivitas pembelajaran.  
+ 
+Bagian akademik yang paling krusial adalah penilaian peserta didik, sejalan dengan pernyataan (Kusainun, 2020) 
+bahwa penilaian dianggap penting karena bersinergi dengan aktivitas pembelajaran. Oeh karena itu pihak yang 
+bertanggung jawab pada bagian ini patut memperhatikan baik itu dari segi keandalan serta keamanan sistem 
+informasi. Mengingat pentingnya aspek keamanan pada sistem informasi yang menangani proses penilaian 
+dibidang akademik, maka peneliti berinisiatif untuk melakukan observasi terhadap penggunaan sistem penilaian 
+di salah satu perguruan tinggi, yaitu Universitas Negeri Makassar. Dalam observasi ini didapati bahwa ternyata 
+terdapat banyak isu keamanan pada sistem yang digunakan. 
+ 
+Berdasarkan hasil wawancara dari pihak pengelola, terkhusus admin pengelola sistem penilaian yang sudah ada, 
+didapati bahwa sistem tersebut mempunyai isu keamanan, yaitu adanya perubahan nilai yang tidak dilakukan oleh 
+pihak berwenang seperti dosen pengajar atau admin universitas (tidak sah). Setelah diselidiki, ditemukan bahwa 
+sistem yang digunakan memang sudah lama tidak dimaintenance dan hanya menerapkan teknologi framework 
+sistem informasi yang sudah mature (tidak dikembangkan lagi). Framework yang tertinggal berpotensi menjadi 
+celah keamanan bagi web yang menggunakannya, karena penggunaan framework mengandalkan library. (Rabbi 
+et al., 2025) menemukan bahwa banyak celah keamanan bersumber dari beberapa library pada sistem informasi 
+yang ia teliti. 
+ 
+2. METODE PENELITIAN 
+Metode penelitian yang dilakukan Adalah metode penelitian Research & Development atau Penelitian dan 
+Pengembangan. Berdasarkan tulisan (Waruwu, 2024), ia menyatakan bahwa metode Penelitian dan 
+pengembangan merupakan metode yang dimulai dari ditemukannya masalah, kemudian dengan masalah tersebut 
+peneliti berupaya mengembangkan sebuah produk dengan tujuan agar produk tersebut dapat mengatasi masalah 
+yang diangkat, sebelum dinyatakan layak, produk mengalami proses validasi, ujicoba dan revisi, sehingga menjadi 
+produk yang berkualitas tinggi. (Okpatrioka, 2025) mengemukakan hal senada, bahwa Penelitian dan 
+pengembangan adalah suatu kegiatan yang bertujuan untuk membuat atau meningkatkan kualitas produk, yang 
+mana produk tersebut dievaluasi efektivitasnya.  
+Dikarenakan penelitian yang dilaksanakan merupakan penelitian yang menghasilkan produk berupa program 
+berbasis web, maka tahapan dari metode penelitian diselaraskan dengan metode pengembangan perangkat lunak 
+yaitu SDLC (System Development Life Cycle), yang mana menurut (Ningsih & Nurfauziah, 2023) metode ini 
+memiliki dua model yang sering digunakan, yaitu waterfall dan prototype. Karena penelitian ini membutuhkan 
+tahap revisi maka prototype dianggap relevan dengan metode penelitian yang digunakan. 
+--- PAGE 3 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 82 
+ 
+Gambar 1. Model Prototype oleh Koshrow-Pour 
+Sumber: (Bariah & Pradina, 2024) 
+ Oleh sebab itu, penelitian ini dibagi menjadi 3 tahap, berdasarkan model prototype Koshrow-Pour yaitu: 
+2.1 Listen to Customer 
+Tahap ini berlangsung proses pengumpulan kebutuhan dari klien, yang mana pada penelitian ini Adalah 
+pihak pengelola layanan akademik di universitas. Ada beberapa poin penting dari hasil wawancara oleh 
+pihak admin akademik universitas, yaitu 1). Framework yang digunakan sistem sudah tidak up to date, 2). 
+Struktur database sistem sudah diketahui oleh peretas, 3). Beberapa oknum dosen pernah mempercayakan 
+akunnya ke asisten dosen yang merupakan mahasiswa.  
+ 
+Peneliti memilih framework Laravel sebagai framework yang dianggap up to date, mengingat framework ini 
+menyediakan banyak fitur yang memudahkan dalam pengembangnya, seperti Eloquent ORM yang 
+mempersingkat interaksi sistem dengan database, serta Blade Templating Engine yang memungkinkan 
+penggunaan sintaks sederhana pada pembuatan user interface, narasi ini sejalan dengan pendapat (Sinlae et 
+al., 2024) dalam penelitian. 
+ 
+Rancangan database baru sistem penilaian juga menggunakan engine baru yaitu PostgreSQL. Pemilihan 
+engine ini didasari oleh penelitian yang dilakukan oleh (Jesika Vinatalia Dachi & Jiyan Suhada, 2025) , 
+dimana ia mendapati bahwa PostgreSQL lebih unggul dibandingkan MySQL dalam aspek penanganan query 
+kompleks, proses transaksi dan memungkinkan untuk menyimpan tipe data yang lebih kompleks, serta 
+sangat patuh terhadap standar SQL dalam implementasinya. 
+ 
+Untuk mengatasi isu tersebarnya kredensial akun dosen ke pengguna yang tidak berwenang, peneliti 
+memutuskan untuk menggunakan konsep OTP melalui email, agar notifikasi peringatan terkirim setiap 
+adanya aktivitas login diakun tersebut, sejalan dengan ini (Miftah Farid & Erna Kumalasari Nurnawati*, 
+2024) mengungkapkan bahwa konsep OTP pada fitur login dapat meningkatkan keamanan sistem informasi 
+secara signifikan. 
+ 
+2.2 Build / Revise Mock-up 
+Tahap kedua adalah build mock-up, pada tahap ini dilakukan pembuatan purwarupa atau prototype. 
+Pembuatan prototype hanya membutuhkan waktu yang singkat, sehingga dapat  diperlihatkan ke klien di 
+tahap ketiga nanti agar memperoleh feedback secepat mungkin. Setelah mendapatkan feedback, proses 
+pengembangan kembali ke tahap ini, namun proses ini bukan build lagi melainkan revise atau revisi, guna 
+menyesuaikan fitur yang telah dikembangkan dengan feedback yang diterima dari klien. 
+ 
+  
+
+--- PAGE 4 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 83 
+2.3 Customer test drives mock-up 
+Tahap ketiga merupakan tahap pengujian, dimana dilakukan uji coba terhadap fitur yang telah 
+dikembangkan. Untuk penelitian ini scope-nya hanya pada fitur restriksi penilaian berdasarkan jadwal dan 
+fitur OTP melalui email. Pengujian dilakukan secara tertutup oleh supervisor sistem informasi dengan 
+melihat apakah fitur tersebut memberikan output yang sesuai. Dalam pengujiannya, supervisor memberikan 
+1 dari 3 status, yaitu “gagal” jika fitur tidak berfungsi, “berhasil sepenuhnya” jika fitur berfungsi, dan 
+“berhasil” jika fitur berfungsi namun ada sisi tampilan yang tidak sesuai, namun tidak mengganggu fungsi 
+dari fitur tersebut. 
+ 
+3. HASIL DAN PEMBAHASAN 
+Pelaksanaan metode penelitian dilakukan berdasarkan 3 tahapan model prototyping yang telah dikemukakan 
+sebelumnya di artikel ini, yaitu pada bagian Metode Penelitian. Berdasarkan tahapan tersebut penelitian ini 
+memiliki hasil sesuai dengan konteks dari tahapannya masing-masing, yaitu sebagai berikut 
+3.1 Listen to Customer 
+Berdasarkan hasil wawancara tersebut, peneliti menyusun beberapa poin yang dianggap dapat menjadi solusi 
+dari isu yang disampaikan oleh admin akademik, yaitu 1). Pengembangan sistem khusus penilaian dengan 
+framework baru, 2). Merancang desain database baru khusus untuk aktivitas penilaian, 3). Implementasi 
+OTP pada fitur login yang terintegrasi ke email dosen.  
+ 
+3.2 Build / Revise Mock-up 
+Tahap kedua adalah build mock-up, pada tahap ini dilakukan pembuatan purwarupa atau prototype. 
+Pembuatan prototype hanya membutuhkan waktu yang singkat, sehingga dapat  diperlihatkan ke klien di 
+tahap ketiga nanti agar memperoleh feedback secepat mungkin. Setelah mendapatkan feedback, proses 
+pengembangan kembali ke tahap ini, namun proses ini bukan build lagi melainkan revise atau revisi, guna 
+menyesuaikan fitur yang telah dikembangkan dengan feedback yang diterima dari klien. 
+ 
+ 
+ 
+Gambar 2. Prototype Database 
+Gambar diatas menunjukkan tampilan prototype rancangan database sistem penilaian, model logical ERD 
+sengaja digunakan untuk alasan keamanan. Berdasarkan diagram diatas, dapat dilihat bahwa proses penilaian 
+direstriksi oleh jadwal dan terdefinisi oleh KRS yang diprogramkan mahasiswa. Entitas dosen juga 
+direpresentasikan oleh data user sistem penilaian baru, sehingga memungkinkan untuk dilakukan integrasi 
+konsep OTP melalui email.  
+ 
+3.3 Customer test drives mock-up 
+Supervisor melakukan pengujian terhadap dua fitur utama yang diangkat pada penelitian ini. Fitur tersebut 
+ialah restriksi penilaian berdasarkan jadwal serta fitur pengiriman kode OTP ke email pengguna saat 
+melakukan login.  
+
+--- PAGE 5 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 84 
+ 
+ 
+Gambar 3. Tampilan penilaian saat jadwal tertutup 
+ 
+Saat jadwal matakuliah diatur agar tertutup, maka tombol yang muncul untuk matakuliah tersebut adalah 
+tombol PDF yang berfungsi untuk mencetak hasil input nilai saja dalam bentuk DPNA, tidak ada tombol 
+untuk melakukan input atau update nilai 
+ 
+ 
+Gambar 4. Tampilan penilaian saat jadwal terbuka 
+Saat jadwal matakuliah diatur agar terbuka, maka tombol yang muncul adalah tombol penilian yang 
+berfungsi menampilkan mahasiswa-mahasiswa yang dapat dinilai pada matakuliah tersebut. 
+ 
+ 
+Gambar 5. OTP Berhasil terkirim 
+
+--- PAGE 6 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 85 
+ 
+Setelah pengguna memasukkan username dan password, OTP akan dikirimkan ke email pengguna tersebut. 
+Kemudian OTP dapat digunakan pada isian verifikasi OTP yang tampil di sistem penilaian agar pengguna 
+dapat dinyatakan sah dalam mengakses sistem penilaian. 
+ 
+Berikut adalah tabel observasi dan hasil yang diberikan oleh sistem berdasarkan pengamatan dari supervisor. 
+  
+Tabel 1. Tabel Pengujian Fitur 
+No Fitur Status 
+1 Penjadwalan input nilai 
+berdasarkan Prodi 
+Berhasil 
+Sepenuhnya 
+2 Penjadwalan input nilai 
+berdasarkan Matakuliah 
+Berhasil 
+Sepenuhnya 
+3 Tutup penilaian Berhasil  
+4 Buka penilaian Berhasil 
+Sepenuhnya 
+5 OTP terkirim ke email saat 
+login 
+Berhasil 
+Sepenuhnya 
+6 Login berhasil saat OTP diinput 
+benar 
+Berhasil 
+Sepenuhnya 
+7 Login gagal saat OTP diinput 
+salah 
+Berhasil 
+Sepenuhnya 
+ 
+Tabel 1 menunjukkan bahwa hampir keseluruhan fitur utama yang menjadi scope dipenelitian ini “Berhasil 
+Sepenuhnya”. Terdapat 1 fitur yang memiliki status “Berhasil”, yaitu fitur penilaian yang tertutup jika url-
+nya diakses secara langsung (tanpa melalui tombol), maka hanya menampilkan teks “error, sehingga kurang 
+ramah pengguna secara tampilan. Namun ini tidak mengganggu fungsi dari fitur tersebut. 
+ 
+4. KESIMPULAN DAN SARAN 
+Penelitian ini menghasilkan rancangan database sistem penilaian yang dapat membatasi akses fitur input nilai 
+diluar dari jadwal yang ditentukan oleh admin. Penelitian ini juga membatasi akses oleh pengguna yang tidak 
+berwenang tanpa akses email yang sah dari sistem, sekaligus menjadi notifikasi bagi pemilik akun sah jika terdapat 
+upaya login yang menggunakan kredensialnya. Rancangan database dibuat dalam bentuk logical ERD, serta 
+dikembangkan dengan metode SDLC model prototyping. 
+  
+REFERENSI 
+Bariah, S. H., & Pradina, D. (2024). Implementasi SDLC Model Prototype Pada Sistem Informasi 
+Company Profile SMP PGRI Bungbulang Berbasis Website. JURNAL PETIK, 10(1), 85–97. 
+https://doi.org/10.31980/PETIK.V10I1.1030 
+Jesika Vinatalia Dachi, & Jiyan Suhada. (2025). Implementasi Basis Data Sederhana Menggunakan 
+MySQL/PostgreSQL. Router : Jurnal Teknik Informatika Dan Terapan , 3(2), 197–207. 
+https://doi.org/10.62951/router.v3i2.621 
+Mamuaya, S., Harisno, H., Mihuandayani, M., & Arundaa, R. (2020). Perencanaan Knowledge 
+Management System Untuk Tata Kelola Perguruan Tinggi. Jurnal Teknologi Informasi Dan 
+Terapan, 7(1), 6–15. https://doi.org/10.25047/JTIT.V7I1.122 
+--- PAGE 7 ---
+ 
+E-ISSN: 2986-7258 
+P-ISSN : 2986-724X 
+ 
+ 
+PISCES Volume 03 Nomor 02 September 2025 
+ 
+ 
+ 86 
+Miftah Farid, & Erna Kumalasari Nurnawati*. (2024). MENGADOPSI KODE OTP UNTUK 
+MEMVERIFIKASI AKUN APLIKASI WHATSAPP DAN EMAIL. PROSIDING SNAST, 
+E286-292. https://doi.org/10.34151/prosidingsnast.v1i1.5114 
+Ningsih, W., & Nurfauziah, H. (2023). PERBANDINGAN MODEL WATERFALL DAN METODE 
+PROTOTYPE UNTUK PENGEMBANGAN APLIKASI PADA SISTEM INFORMASI. Jurnal 
+Ilmiah METADATA, 5(1), 83–95. https://doi.org/10.47652/metadata.v5i1.311 
+Okpatrioka. (2025). Penelitian dan Pengembangan (Research And Development) Dalam Pendidikan 
+dan pengajaran. IKRA-ITH HUMANIORA : Jurnal Sosial Dan Humaniora, 9(2), 534–556. 
+Rabbi, M. F., Paul, R., Champa, A. I., & Zibran, M. F. (2025). Understanding Software Vulnerabilities 
+in the Maven Ecosystem: Patterns, Timelines, and Risks. http://arxiv.org/abs/2503.22391 
+Sinlae, F., Irwanda, E., Maulana, Z., & Syahputra, V. E. (2024). Penggunaan Framework Laravel dalam 
+Membangun Aplikasi Website Berbasis PHP. Jurnal Siber Multi Disiplin , 2(2), 119–132. 
+https://doi.org/10.38035/JSMD.V2I2.186 
+Sucipto, T. A. (2022). EFEKTIVITAS PENGGUNAAN TEKNOLOGI INFORMASI UNTUK 
+PEMBELAJARAN DARING DI MASA PANDEMI. Jurnal Sains, Nalar, Dan Aplikasi 
+Teknologi Informasi, 1(2). https://doi.org/10.20885/snati.v1i2.13 
+Kusainun, N. (2020). Analisis Standar Penilaian Pendidikan di Indonesia. JP (Jurnal Pendidikan) : 
+Teori Dan Praktik, 5(1). https://doi.org/10.26740/JP.V5N1.P 
+Waruwu, M. (2024). Metode Penelitian dan Pengembangan (R&amp;D): Konsep, Jenis, Tahapan dan 
+Kelebihan. Jurnal Ilmiah Profesi Pendidikan , 9(2), 1220 –1230. 
+https://doi.org/10.29303/jipp.v9i2.2141 
+  
+ 

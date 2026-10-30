@@ -215,7 +215,7 @@ export const adminPengajuanService = {
         query = query.or(`nama_lengkap.ilike.%${term}%,nim_nis.ilike.%${term}%,asal_instansi.ilike.%${term}%,jurusan.ilike.%${term}%,nomor_surat.ilike.%${term}%,public_id.ilike.%${term}%`)
       }
 
-      query = query.order('created_at', { ascending: true }).range(from, to)
+      query = query.order('created_at', { ascending: false }).range(from, to)
 
       const { data, count, error } = await query
 
@@ -580,35 +580,32 @@ export const adminPengajuanService = {
         notifLink = `/pengguna/skm?pengajuan_id=${payload.pengajuanId}`
       }
 
-      // Simpan web notifikasi pemohon dengan deduplikasi link untuk status 'Selesai'
+      // Simpan web notifikasi pemohon (Admin terotentikasi memiliki izin RLS INSERT & SELECT notifikasi)
       try {
-        if (typeof window === 'undefined') {
-          const { createNotificationServer } = await import('@/lib/services/server-notifikasi')
-          const { createAdminClient } = await import('@/lib/supabase/admin')
-          const adminClient = createAdminClient()
+        let isDuplicate = false
+        if (payload.status === 'Selesai') {
+          const { data: existingNotif } = await supabase
+            .from('notifikasi')
+            .select('id')
+            .eq('user_id', payload.userId)
+            .eq('link', notifLink)
+            .limit(1)
 
-          let isDuplicate = false
-          if (payload.status === 'Selesai' && adminClient) {
-            const { data: existingNotif } = await adminClient
-              .from('notifikasi')
-              .select('id')
-              .eq('user_id', payload.userId)
-              .eq('link', notifLink)
-              .limit(1)
-
-            if (existingNotif && existingNotif.length > 0) {
-              isDuplicate = true
-            }
+          if (existingNotif && existingNotif.length > 0) {
+            isDuplicate = true
           }
+        }
 
-          if (!isDuplicate) {
-            await createNotificationServer({
-              userId: payload.userId,
+        if (!isDuplicate) {
+          await supabase.from('notifikasi').insert([
+            {
+              user_id: payload.userId,
               judul: notifJudul,
               pesan: notifPesan,
               link: notifLink,
-            })
-          }
+              is_read: false,
+            },
+          ])
         }
       } catch (notifErr) {
         console.warn('Gagal membuat entri notifikasi user:', notifErr)
@@ -625,10 +622,13 @@ export const adminPengajuanService = {
             tanggal_mulai,
             tanggal_selesai,
             asal_instansi,
+            jurusan,
+            jenjang,
             profiles:user_id (
               id,
               name,
-              email
+              email,
+              status_peserta
             ),
             bidangs (
               id,
@@ -649,22 +649,18 @@ export const adminPengajuanService = {
           const bidangInfo = (pData as any).bidangs
           const pembimbingInfo = (pData as any).pembimbings
 
-          let emailContext: any = null
-          try {
-            const { getPengajuanEmailContext } = await import('@/lib/services/email-context.service')
-            emailContext = await getPengajuanEmailContext(pData.id)
-          } catch (ctxErr) {
-            console.warn('[AdminPengajuanService] Gagal load email context:', ctxErr)
-          }
-
           const basePengajuanData = {
             id: pData.id,
             publicId: pData.public_id || String(pData.id),
-            bidangNama: bidangInfo?.nama,
-            asalInstansi: pData.asal_instansi,
+            namaPemohon: userProfile?.name || 'Peserta Magang',
+            pemohonEmail: userProfile?.email || '',
+            bidangNama: bidangInfo?.nama || 'Bidang Magang',
+            asalInstansi: pData.asal_instansi || '-',
+            jurusan: pData.jurusan || '-',
+            jenjang: pData.jenjang || '-',
+            statusPeserta: userProfile?.status_peserta || null,
             tanggalMulai: pData.tanggal_mulai,
             tanggalSelesai: pData.tanggal_selesai,
-            ...(emailContext?.pengajuan || {}),
           }
 
           if (payload.status === 'Selesai') {

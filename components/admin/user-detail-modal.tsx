@@ -23,12 +23,14 @@ interface UserDetailModalProps {
   isOpen: boolean
   userId: string | null
   onClose: () => void
+  onManageAccount?: (user: any) => void
 }
 
 export function UserDetailModal({
   isOpen,
   userId,
   onClose,
+  onManageAccount,
 }: UserDetailModalProps) {
   const [detailData, setDetailData] = useState<AdminUserDetailItem | null>(null)
   const [loading, setLoading] = useState(true)
@@ -314,6 +316,32 @@ export function UserDetailModal({
                     {detailData.profile.email}
                   </p>
                 </div>
+
+                {onManageAccount && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose()
+                      onManageAccount(detailData.profile)
+                    }}
+                    style={{
+                      padding: '0.4rem 0.75rem',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      backgroundColor: '#ffffff',
+                      color: '#1d4ed8',
+                      border: '1px solid #bfdbfe',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <span>Kelola Status</span>
+                  </button>
+                )}
               </div>
 
               {/* Data Identitas Detail Grid */}
@@ -386,6 +414,30 @@ export function UserDetailModal({
                   <p style={{ margin: '0.35rem 0 0 0', fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
                     {detailData.profile.jenis_kelamin || '-'}
                   </p>
+                </div>
+
+                <div
+                  style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '10px',
+                    padding: '0.875rem 1rem',
+                  }}
+                >
+                  <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, display: 'block', textTransform: 'uppercase' }}>
+                    Status Peserta Magang
+                  </span>
+                  <div style={{ margin: '0.35rem 0 0 0', fontSize: '13px', fontWeight: 700 }}>
+                    {detailData.profile.role === 'administrator' ? (
+                      <span style={{ color: '#64748b' }}>- (Akun Administrator)</span>
+                    ) : detailData.profile.status_peserta === 'Mahasiswa' ? (
+                      <span style={{ color: '#1d4ed8' }}>🎓 Mahasiswa</span>
+                    ) : detailData.profile.status_peserta === 'Siswa' ? (
+                      <span style={{ color: '#b45309' }}>🎒 Siswa</span>
+                    ) : (
+                      <span style={{ color: '#dc2626' }}>⚠️ Belum Ditentukan (NULL)</span>
+                    )}
+                  </div>
                 </div>
 
                 <div

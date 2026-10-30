@@ -24,7 +24,7 @@ function LoginForm() {
     if (errorParam === 'inactive') {
       setErrorMessage('Akun Anda telah dinonaktifkan. Silakan hubungi administrator.')
     } else if (errorParam === 'auth_callback_failed') {
-      setErrorMessage('Autentikasi gagal atau tautan verifikasi telah kedaluwarsa.')
+      setErrorMessage('Link tidak valid atau sudah kedaluwarsa. Silakan login, atau minta kirim ulang email verifikasi.')
     }
   }, [searchParams])
 
@@ -56,17 +56,19 @@ function LoginForm() {
       }
 
       const role = response.data?.role
-      const redirectParam = searchParams.get('redirect')
+      const rawParam = searchParams.get('next') || searchParams.get('redirect')
+      // Validasi ketat: hanya path internal diawali "/" dan bukan "//" (cegah open redirect)
+      const safeRedirect = rawParam && rawParam.startsWith('/') && !rawParam.startsWith('//') ? rawParam : null
 
       let targetUrl = '/pengguna/dashboard'
       if (role === 'administrator') {
         targetUrl = '/admin/dashboard'
-        if (redirectParam && redirectParam.startsWith('/admin')) {
-          targetUrl = redirectParam
+        if (safeRedirect && safeRedirect.startsWith('/admin')) {
+          targetUrl = safeRedirect
         }
       } else {
-        if (redirectParam && redirectParam.startsWith('/') && redirectParam !== '/' && !redirectParam.startsWith('/admin')) {
-          targetUrl = redirectParam
+        if (safeRedirect && safeRedirect !== '/' && !safeRedirect.startsWith('/admin')) {
+          targetUrl = safeRedirect
         }
       }
 

@@ -18,7 +18,7 @@ export default async function CareerStep3Page() {
   if (user) {
     const { data: p } = await supabase
       .from('profiles')
-      .select('id, name, email, asal_instansi, jurusan, no_hp, jenis_kelamin')
+      .select('id, name, email, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta')
       .eq('id', user.id)
       .single()
 
@@ -32,6 +32,7 @@ export default async function CareerStep3Page() {
       jurusan: p?.jurusan || meta.jurusan || '',
       no_hp: p?.no_hp || meta.no_hp || meta.phone || '',
       jenis_kelamin: p?.jenis_kelamin || meta.jenis_kelamin || '',
+      status_peserta: p?.status_peserta || null,
     }
   }
 

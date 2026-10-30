@@ -22,6 +22,7 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
     asal_instansi: initialProfile.asal_instansi || '',
     jurusan: initialProfile.jurusan || '',
     jenis_kelamin: initialProfile.jenis_kelamin || 'Laki-laki',
+    status_peserta: initialProfile.status_peserta || '',
   })
 
   // Password fields
@@ -43,6 +44,7 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
       asal_instansi: profile.asal_instansi || '',
       jurusan: profile.jurusan || '',
       jenis_kelamin: profile.jenis_kelamin || 'Laki-laki',
+      status_peserta: profile.status_peserta || '',
     })
     setWantsPasswordChange(false)
     setNewPassword('')
@@ -90,14 +92,26 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
     setIsLoading(true)
 
     try {
-      // 1. Update Profile fields
-      const resProfile = await authService.updateProfile(profile.id, {
+      // 1. Update Profile fields (status_peserta HANYA dikirim jika saat ini masih NULL)
+      const updatePayload: {
+        name: string
+        no_hp?: string | null
+        asal_instansi?: string | null
+        jurusan?: string | null
+        jenis_kelamin?: string | null
+        status_peserta?: 'Mahasiswa' | 'Siswa' | null
+      } = {
         name: formData.name,
         no_hp: formData.no_hp,
         asal_instansi: formData.asal_instansi,
         jurusan: formData.jurusan,
         jenis_kelamin: formData.jenis_kelamin,
-      })
+      }
+      if (!profile.status_peserta && formData.status_peserta) {
+        updatePayload.status_peserta = formData.status_peserta as 'Mahasiswa' | 'Siswa'
+      }
+
+      const resProfile = await authService.updateProfile(profile.id, updatePayload)
 
       if (!resProfile.success || !resProfile.data) {
         setMessage({
@@ -338,6 +352,44 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
               </div>
             </div>
           </div>
+
+          {/* Field 5: Status Peserta (Mahasiswa / Siswa) */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem' }}>
+            <div style={{ color: '#16a34a', marginTop: '2px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Status peserta</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
+                {profile.status_peserta === 'Mahasiswa' ? (
+                  <div>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#1d4ed8' }}>
+                      🎓 Mahasiswa
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 400, marginLeft: '6px' }}>
+                      (Hubungi admin untuk mengubah status)
+                    </span>
+                  </div>
+                ) : profile.status_peserta === 'Siswa' ? (
+                  <div>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#b45309' }}>
+                      🎒 Siswa (SMK/SMA)
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 400, marginLeft: '6px' }}>
+                      (Hubungi admin untuk mengubah status)
+                    </span>
+                  </div>
+                ) : (
+                  <span style={{ color: '#dc2626', fontSize: '12px', fontWeight: 500 }}>
+                    ⚠️ Belum diatur (Klik Edit profil)
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -567,6 +619,98 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
                       }}
                     />
                   </div>
+                </div>
+
+                {/* Status Peserta (Mahasiswa / Siswa) */}
+                <div style={{
+                  padding: '0.75rem',
+                  backgroundColor: profile.status_peserta ? '#f8fafc' : '#eff6ff',
+                  border: `1px solid ${profile.status_peserta ? '#e2e8f0' : '#bfdbfe'}`,
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.4rem',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 700, color: profile.status_peserta ? '#334155' : '#1e40af' }}>
+                      Status Peserta (Kategori Pemohon) {!profile.status_peserta && <span style={{ color: '#dc2626' }}>*</span>}
+                    </label>
+                    {profile.status_peserta && (
+                      <span style={{ fontSize: '10px', backgroundColor: '#e2e8f0', color: '#475569', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                        Terkunci di Database
+                      </span>
+                    )}
+                  </div>
+
+                  {profile.status_peserta ? (
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {profile.status_peserta === 'Mahasiswa' ? '🎓 Mahasiswa (D3 / D4 / S1)' : '🎒 Siswa (SMK / SMA)'}
+                      </div>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                        Status peserta sudah terisi dan terkunci demi validitas pengajuan. Hubungi administrator jika terdapat kekeliruan data.
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '2px' }}>
+                        <label
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.45rem',
+                            padding: '0.5rem 0.65rem',
+                            borderRadius: '6px',
+                            border: formData.status_peserta === 'Mahasiswa' ? '2px solid #2563eb' : '1px solid #cbd5e1',
+                            backgroundColor: formData.status_peserta === 'Mahasiswa' ? '#dbeafe' : '#ffffff',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: formData.status_peserta === 'Mahasiswa' ? '#1e40af' : '#334155',
+                          }}
+                        >
+                          <input
+                            type="radio"
+                            name="status_peserta"
+                            value="Mahasiswa"
+                            checked={formData.status_peserta === 'Mahasiswa'}
+                            onChange={(e) => setFormData({ ...formData, status_peserta: e.target.value })}
+                            style={{ accentColor: '#2563eb' }}
+                          />
+                          <span>🎓 Mahasiswa</span>
+                        </label>
+
+                        <label
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.45rem',
+                            padding: '0.5rem 0.65rem',
+                            borderRadius: '6px',
+                            border: formData.status_peserta === 'Siswa' ? '2px solid #d97706' : '1px solid #cbd5e1',
+                            backgroundColor: formData.status_peserta === 'Siswa' ? '#fef3c7' : '#ffffff',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: formData.status_peserta === 'Siswa' ? '#92400e' : '#334155',
+                          }}
+                        >
+                          <input
+                            type="radio"
+                            name="status_peserta"
+                            value="Siswa"
+                            checked={formData.status_peserta === 'Siswa'}
+                            onChange={(e) => setFormData({ ...formData, status_peserta: e.target.value })}
+                            style={{ accentColor: '#d97706' }}
+                          />
+                          <span>🎒 Siswa (SMK)</span>
+                        </label>
+                      </div>
+                      <p style={{ margin: '6px 0 0 0', fontSize: '11px', color: '#1e40af', lineHeight: 1.4 }}>
+                        ⚠️ <strong>Penting:</strong> Status hanya dapat dipilih 1 kali oleh Anda. Setelah disimpan, sistem akan mengunci data ini dan hanya dapat diubah oleh administrator.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Section Ubah Password (Opsional) */}

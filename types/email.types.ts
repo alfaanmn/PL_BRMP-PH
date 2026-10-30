@@ -17,6 +17,12 @@ export interface EmailPengajuanData {
   id?: number | string
   publicId: string
   namaPemohon?: string
+  pemohonEmail?: string
+  userId?: string
+  statusPeserta?: string | null
+  statusSebelum?: string
+  statusSesudah?: string
+  alasanPembatalan?: string
   bidangNama?: string
   asalInstansi?: string
   jurusan?: string

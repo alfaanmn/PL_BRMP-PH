@@ -18,6 +18,7 @@ interface CareerStep1FormProps {
     jurusan?: string | null
     no_hp?: string | null
     jenis_kelamin?: string | null
+    status_peserta?: 'Mahasiswa' | 'Siswa' | null
   }
 }
 
@@ -53,6 +54,9 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
     }
 
     if (userProfile) {
+      if (userProfile.status_peserta) {
+        updates.jenjang = userProfile.status_peserta
+      }
       if ((!formData.asal_instansi || formData.asal_instansi.trim() === '') && userProfile.asal_instansi) {
         updates.asal_instansi = userProfile.asal_instansi
       }
@@ -140,8 +144,37 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
     }
   }
 
+  const selectedBidang = bidangList.find(
+    (b) => String(b.id) === String(formData.bidang_id)
+  )
+
+  const targetPeserta = (selectedBidang as any)?.target_peserta || (selectedBidang?.jenjang === 'Siswa' ? 'Siswa' : selectedBidang?.jenjang === 'Mahasiswa' ? 'Mahasiswa' : 'Keduanya')
+  const userStatus = userProfile?.status_peserta || null
+  const isStatusNull = !userStatus
+  const isTargetMismatch = Boolean(
+    userStatus &&
+    ((targetPeserta === 'Mahasiswa' && userStatus !== 'Mahasiswa') ||
+     (targetPeserta === 'Siswa' && userStatus !== 'Siswa'))
+  )
+
   const handleSubmitStep1 = (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (isStatusNull) {
+      setErrors({
+        jenjang: 'Status peserta akun Anda belum ditentukan. Silakan lengkapi profil terlebih dahulu.',
+      })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    if (isTargetMismatch) {
+      setErrors({
+        bidang_id: `Lowongan ini hanya untuk ${targetPeserta.toLowerCase()}. Akun Anda terdaftar sebagai ${userStatus}.`,
+      })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
 
     const { isValid, errors: validationErrors } = validatePengajuanStep1(formData)
     if (!isValid) {
@@ -150,16 +183,15 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
       return
     }
 
-    // Simpan ke wizard context
-    updateStep1(formData)
+    // Simpan ke wizard context dengan jenjang yang dipaksa dari status peserta
+    updateStep1({
+      ...formData,
+      jenjang: userStatus || formData.jenjang,
+    })
 
     // Lanjut ke Step 2
     router.push('/pengguna/career/step2')
   }
-
-  const selectedBidang = bidangList.find(
-    (b) => String(b.id) === String(formData.bidang_id)
-  )
 
   return (
     <form onSubmit={handleSubmitStep1} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -385,6 +417,30 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
             </select>
           </div>
         )}
+
+        {/* Banner Peringatan Target Mismatch */}
+        {isTargetMismatch && selectedBidang && (
+          <div style={{
+            marginTop: '0.875rem',
+            padding: '0.875rem 1rem',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.25rem',
+          }}>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#991b1b' }}>
+              Lowongan Tidak Memenuhi Syarat Jenjang
+            </div>
+            <div style={{ fontSize: '12px', color: '#991b1b', lineHeight: 1.5 }}>
+              Bidang <strong>{selectedBidang.nama}</strong> hanya menerima peserta dengan jenjang/status <strong>{targetPeserta}</strong>. Akun Anda saat ini terdaftar sebagai <strong>{userStatus}</strong>.
+            </div>
+            <div style={{ fontSize: '11px', color: '#b91c1c', marginTop: '0.25rem' }}>
+              Silakan klik tombol <em>Ganti</em> di atas untuk memilih bidang magang lain yang sesuai dengan jenjang akun Anda.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 2. IDENTITAS AKADEMIK */}
@@ -415,100 +471,79 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
           gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
           gap: '0.875rem'
         }}>
-          {/* Jenjang */}
+          {/* Jenjang / Status Peserta (Terkunci dari profil pemohon) */}
           <div>
-            <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>
-              Jenjang pendidikan <span style={{ color: '#ef4444' }}>*</span>
+            <label className="form-label" style={{ marginBottom: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Jenjang / Status Akun <span style={{ color: '#ef4444' }}>*</span></span>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>🔒 Terkunci dari Profil</span>
             </label>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-              gap: '0.5rem',
-            }}>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
-                  border: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
-                  backgroundColor: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? '#f0fdf4' : '#ffffff',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  minHeight: '42px',
-                  boxSizing: 'border-box',
-                  userSelect: 'none',
-                }}
-              >
-                <input
-                  type="radio"
-                  name="jenjang_pendidikan"
-                  value="Mahasiswa"
-                  checked={formData.jenjang === 'Mahasiswa' || !formData.jenjang}
-                  onChange={() => {
-                    setFormData({ ...formData, jenjang: 'Mahasiswa' })
-                    if (errors.jenjang) setErrors({ ...errors, jenjang: '' })
-                  }}
-                  style={{
-                    accentColor: '#16a34a',
-                    width: '16px',
-                    height: '16px',
-                    cursor: 'pointer',
-                    margin: 0,
-                  }}
-                />
-                <span style={{
-                  fontSize: '13px',
-                  fontWeight: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? 600 : 500,
-                  color: (formData.jenjang === 'Mahasiswa' || !formData.jenjang) ? '#166534' : '#334155',
-                }}>
-                  Mahasiswa
-                </span>
-              </label>
 
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
-                  border: formData.jenjang === 'Siswa' ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
-                  backgroundColor: formData.jenjang === 'Siswa' ? '#f0fdf4' : '#ffffff',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  minHeight: '42px',
-                  boxSizing: 'border-box',
-                  userSelect: 'none',
-                }}
-              >
-                <input
-                  type="radio"
-                  name="jenjang_pendidikan"
-                  value="Siswa"
-                  checked={formData.jenjang === 'Siswa'}
-                  onChange={() => {
-                    setFormData({ ...formData, jenjang: 'Siswa' })
-                    if (errors.jenjang) setErrors({ ...errors, jenjang: '' })
-                  }}
+            {isStatusNull ? (
+              <div style={{
+                padding: '0.75rem',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                borderRadius: '8px',
+                fontSize: '0.8125rem',
+                color: '#1e40af',
+                lineHeight: 1.45,
+              }}>
+                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Status Akun Belum Ditentukan</div>
+                <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.75rem', color: '#3b82f6' }}>
+                  Anda wajib memilih status peserta (Mahasiswa / Siswa) di profil sebelum dapat mendaftar.
+                </p>
+                <Link
+                  href="/pengguna/profil"
                   style={{
-                    accentColor: '#16a34a',
-                    width: '16px',
-                    height: '16px',
-                    cursor: 'pointer',
-                    margin: 0,
+                    display: 'inline-block',
+                    padding: '0.35rem 0.75rem',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    textDecoration: 'none',
                   }}
-                />
+                >
+                  Lengkapi Status di Profil →
+                </Link>
+              </div>
+            ) : (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.55rem 0.85rem',
+                backgroundColor: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                borderRadius: '8px',
+                minHeight: '42px',
+                boxSizing: 'border-box'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '9999px',
+                    backgroundColor: userStatus === 'Mahasiswa' ? '#16a34a' : '#2563eb',
+                  }} />
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0f172a' }}>
+                    {userStatus}
+                  </span>
+                </div>
                 <span style={{
-                  fontSize: '13px',
-                  fontWeight: formData.jenjang === 'Siswa' ? 600 : 500,
-                  color: formData.jenjang === 'Siswa' ? '#166534' : '#334155',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  backgroundColor: userStatus === 'Mahasiswa' ? '#dcfce7' : '#dbeafe',
+                  color: userStatus === 'Mahasiswa' ? '#15803d' : '#1d4ed8',
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '9999px',
                 }}>
-                  Siswa
+                  {userStatus === 'Mahasiswa' ? 'Perguruan Tinggi' : 'SMK / Sederajat'}
                 </span>
-              </label>
-            </div>
+              </div>
+            )}
             {errors.jenjang && <div className="form-error">{errors.jenjang}</div>}
           </div>
 
@@ -934,22 +969,23 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
 
           <button
             type="submit"
+            disabled={isStatusNull || isTargetMismatch}
             style={{
               padding: '0.625rem 1.5rem',
               fontSize: '0.875rem',
               fontWeight: 600,
               color: '#ffffff',
-              backgroundColor: '#16a34a',
+              backgroundColor: (isStatusNull || isTargetMismatch) ? '#94a3b8' : '#16a34a',
               border: 'none',
               borderRadius: '8px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.2)',
+              cursor: (isStatusNull || isTargetMismatch) ? 'not-allowed' : 'pointer',
+              boxShadow: (isStatusNull || isTargetMismatch) ? 'none' : '0 2px 4px rgba(22, 163, 74, 0.2)',
               display: 'flex',
               alignItems: 'center',
               gap: '0.375rem'
             }}
           >
-            <span>Lanjut ke dokumen</span>
+            <span>{isStatusNull ? 'Lengkapi Profil Dulu' : isTargetMismatch ? 'Tidak Memenuhi Syarat' : 'Lanjut ke dokumen'}</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"/>
             </svg>

@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [noHp, setNoHp] = useState('')
   const [jenisKelamin, setJenisKelamin] = useState('Laki-laki')
+  const [statusPeserta, setStatusPeserta] = useState<'Mahasiswa' | 'Siswa' | ''>('')
   const [asalInstansi, setAsalInstansi] = useState('')
   const [jurusan, setJurusan] = useState('')
   const [password, setPassword] = useState('')
@@ -40,6 +41,7 @@ export default function RegisterPage() {
       asal_instansi: asalInstansi,
       jurusan,
       jenis_kelamin: jenisKelamin,
+      status_peserta: statusPeserta,
     })
 
     if (!validation.isValid) {
@@ -59,6 +61,7 @@ export default function RegisterPage() {
         asal_instansi: asalInstansi || undefined,
         jurusan: jurusan || undefined,
         jenis_kelamin: jenisKelamin || undefined,
+        status_peserta: statusPeserta as 'Mahasiswa' | 'Siswa',
       })
 
       if (!response.success) {
@@ -579,6 +582,36 @@ export default function RegisterPage() {
                       <option value="Perempuan">Perempuan</option>
                     </select>
                   </div>
+                </div>
+
+                {/* Status Peserta (Dropdown Wajib: Mahasiswa / Siswa) */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#334155', marginBottom: '0.375rem' }}>
+                    Status Peserta <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <select
+                    value={statusPeserta}
+                    onChange={(e) => setStatusPeserta(e.target.value as 'Mahasiswa' | 'Siswa' | '')}
+                    required
+                    disabled={loading}
+                    style={{
+                      width: '100%',
+                      padding: '0.6875rem 0.875rem',
+                      borderRadius: '10px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.875rem',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      backgroundColor: loading ? '#f8fafc' : '#ffffff',
+                      cursor: 'pointer',
+                      color: statusPeserta ? '#0f172a' : '#94a3b8',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                  >
+                    <option value="" disabled>-- Pilih Status Peserta (Wajib) --</option>
+                    <option value="Mahasiswa" style={{ color: '#0f172a' }}>🎓 Mahasiswa (D3 / D4 / S1 / S2)</option>
+                    <option value="Siswa" style={{ color: '#0f172a' }}>🎒 Siswa (SMK / SMA / Sederajat)</option>
+                  </select>
                 </div>
 
                 {/* 2 Kolom: Asal Instansi & Program Studi */}

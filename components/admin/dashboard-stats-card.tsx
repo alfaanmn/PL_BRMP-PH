@@ -1,12 +1,13 @@
 import React from 'react'
 
-export type StatsColorVariant = 'gold' | 'blue' | 'emerald' | 'rose'
+export type StatsColorVariant = 'gold' | 'blue' | 'emerald' | 'rose' | 'amber' | 'indigo' | 'purple'
 
 export interface StatsCardProps {
   title: string
   value: number | string
-  iconType?: 'users' | 'file-text' | 'star'
+  iconType?: 'users' | 'file-text' | 'star' | 'clock' | 'briefcase' | 'check-circle' | 'x-circle'
   colorVariant?: StatsColorVariant
+  subtitle?: string
 }
 
 const STAT_VARIANT_STYLES: Record<StatsColorVariant, { bg: string; color: string; border: string }> = {
@@ -14,6 +15,9 @@ const STAT_VARIANT_STYLES: Record<StatsColorVariant, { bg: string; color: string
   blue: { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE' },
   emerald: { bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
   rose: { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
+  amber: { bg: '#FFFBEB', color: '#B45309', border: '#FDE68A' },
+  indigo: { bg: '#EEF2FF', color: '#4338CA', border: '#C7D2FE' },
+  purple: { bg: '#FAF5FF', color: '#7E22CE', border: '#E9D5FF' },
 }
 
 export function DashboardStatsCard({
@@ -21,11 +25,41 @@ export function DashboardStatsCard({
   value,
   iconType = 'users',
   colorVariant = 'blue',
+  subtitle,
 }: StatsCardProps) {
   const variant = STAT_VARIANT_STYLES[colorVariant] || STAT_VARIANT_STYLES.blue
 
   const renderIcon = () => {
     switch (iconType) {
+      case 'clock':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        )
+      case 'briefcase':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+          </svg>
+        )
+      case 'check-circle':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        )
+      case 'x-circle':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        )
       case 'users':
         return (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -109,6 +143,17 @@ export function DashboardStatsCard({
         >
           {value}
         </div>
+        {subtitle && (
+          <div
+            style={{
+              fontSize: '11px',
+              color: '#9ca3af',
+              marginTop: '0.25rem',
+            }}
+          >
+            {subtitle}
+          </div>
+        )}
       </div>
     </div>
   )

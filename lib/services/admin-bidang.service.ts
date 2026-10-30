@@ -25,6 +25,7 @@ export interface AdminBidangListItem {
   sisa_kuota: number
   peserta_aktif_count: number
   jenjang?: string | null
+  target_peserta?: 'Mahasiswa' | 'Siswa' | 'Keduanya' | string | null
   persyaratan?: string | null
   tugas?: string | null
   banner_url?: string | null
@@ -49,6 +50,7 @@ export interface CreateBidangPayload {
   deskripsi?: string | null
   kuota: number
   jenjang?: string | null
+  target_peserta?: 'Mahasiswa' | 'Siswa' | 'Keduanya' | string | null
   persyaratan?: string | null
   tugas?: string | null
   is_active?: boolean
@@ -59,6 +61,7 @@ export interface UpdateBidangPayload {
   deskripsi?: string | null
   kuota?: number
   jenjang?: string | null
+  target_peserta?: 'Mahasiswa' | 'Siswa' | 'Keduanya' | string | null
   persyaratan?: string | null
   tugas?: string | null
   is_active?: boolean
@@ -83,7 +86,7 @@ export const adminBidangService = {
       const supabase = createClient()
 
       // 1. Ambil seluruh bidang
-      let query = supabase.from('bidangs').select('*').order('id', { ascending: true })
+      let query = supabase.from('bidangs').select('*').order('id', { ascending: false })
 
       if (params?.status === 'active') {
         query = query.eq('is_active', true)
@@ -195,6 +198,7 @@ export const adminBidangService = {
           sisa_kuota: sisa,
           peserta_aktif_count: activePeserta,
           jenjang: b.jenjang || null,
+          target_peserta: b.target_peserta || 'Keduanya',
           persyaratan: b.persyaratan || null,
           tugas: b.tugas || null,
           banner_url: b.banner_url || null,
@@ -226,12 +230,14 @@ export const adminBidangService = {
       }
 
       const supabase = createClient()
+      const targetPeserta = payload.target_peserta?.trim() || 'Keduanya'
       const insertData = {
         nama: payload.nama.trim(),
         deskripsi: payload.deskripsi?.trim() || null,
         kuota: Number(payload.kuota) || 0,
         terisi: 0,
-        jenjang: payload.jenjang?.trim() || null,
+        jenjang: (targetPeserta === 'Siswa' ? 'Siswa' : 'Mahasiswa') as any,
+        target_peserta: targetPeserta,
         persyaratan: payload.persyaratan?.trim() || null,
         tugas: payload.tugas?.trim() || null,
         is_active: payload.is_active !== undefined ? payload.is_active : true,
@@ -273,7 +279,13 @@ export const adminBidangService = {
       if (payload.nama !== undefined) updateData.nama = payload.nama.trim()
       if (payload.deskripsi !== undefined) updateData.deskripsi = payload.deskripsi?.trim() || null
       if (payload.kuota !== undefined) updateData.kuota = Number(payload.kuota) || 0
-      if (payload.jenjang !== undefined) updateData.jenjang = payload.jenjang?.trim() || null
+      if (payload.target_peserta !== undefined) {
+        const tp = payload.target_peserta?.trim() || 'Keduanya'
+        updateData.target_peserta = tp
+        updateData.jenjang = (tp === 'Siswa' ? 'Siswa' : 'Mahasiswa') as any
+      } else if (payload.jenjang !== undefined) {
+        updateData.jenjang = payload.jenjang?.trim() || 'Mahasiswa'
+      }
       if (payload.persyaratan !== undefined) updateData.persyaratan = payload.persyaratan?.trim() || null
       if (payload.tugas !== undefined) updateData.tugas = payload.tugas?.trim() || null
       if (payload.is_active !== undefined) updateData.is_active = payload.is_active

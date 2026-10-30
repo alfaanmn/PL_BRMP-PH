@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { renderEmailHtml } from '@/lib/templates/email-templates'
 import { EmailNotificationEvent, EmailNotificationPayload } from '@/types/email.types'
+import { getSiteUrl } from '@/lib/utils'
 
 /**
  * Route khusus administrator untuk mempratinjau (preview) template email notifikasi
@@ -26,9 +27,23 @@ export async function GET(request: NextRequest) {
           },
           setAll(cookiesToSet) {
             try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
+              cookiesToSet.forEach(({ name, value, options }) => {
+                if (!value || options?.maxAge === 0) {
+                  // Penghapusan cookie (misal signOut) - pertahankan maxAge: 0 dan path asli
+                  cookieStore.set(name, value, {
+                    ...options,
+                    maxAge: 0,
+                    path: options?.path || '/',
+                  })
+                } else {
+                  // Session cookie murni: Hapus maxAge & expires agar terhapus otomatis saat browser ditutup
+                  const { maxAge: _m, expires: _e, ...sessionOptions } = options || {}
+                  cookieStore.set(name, value, {
+                    ...sessionOptions,
+                    path: options?.path || '/',
+                  })
+                }
+              })
             } catch {
               // The `setAll` method was called from a Server Component.
             }
@@ -92,7 +107,16 @@ export async function GET(request: NextRequest) {
       pengajuan: {
         id: 101,
         publicId: 'PGJ-2026-X89B',
+        userId: 'usr-8923-4567-89ab-cdef01234567',
         namaPemohon: 'Budi Santoso',
+        pemohonEmail: 'budi.santoso@contoh.ac.id',
+        statusPeserta: 'Mahasiswa',
+        statusSebelum: eventParam === 'pengajuan_cancelled' ? 'Menunggu Verifikasi' : undefined,
+        statusSesudah: eventParam === 'pengajuan_cancelled' ? 'Dibatalkan' : undefined,
+        alasanPembatalan:
+          eventParam === 'pengajuan_cancelled'
+            ? 'Terjadwal agenda kuliah lapangan wajib dari program studi.'
+            : undefined,
         bidangNama: 'Teknologi Informasi & Komunikasi (TIK)',
         asalInstansi: 'Universitas Indonesia',
         jurusan: 'Ilmu Komputer',
@@ -120,7 +144,7 @@ export async function GET(request: NextRequest) {
         eventParam === 'pengajuan_cancelled'
           ? 'Alasan pembatalan: Terjadwal agenda kuliah lapangan wajib dari program studi.'
           : undefined,
-      appUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      appUrl: getSiteUrl(),
     }
 
     // 5. Render HTML

@@ -68,7 +68,7 @@ export async function getPengajuanEmailContext(
       return defaultFallback
     }
 
-    // 1. Query pengajuans dengan relasi bidangs, pembimbings, profiles
+    // 1. Query pengajuans dengan relasi bidangs, pembimbings, profiles:user_id
     let query = supabase
       .from('pengajuans')
       .select(`
@@ -96,10 +96,11 @@ export async function getPengajuanEmailContext(
           nip,
           jabatan
         ),
-        profiles (
+        profiles:user_id (
           id,
           name,
-          email
+          email,
+          status_peserta
         )
       `)
 
@@ -109,32 +110,77 @@ export async function getPengajuanEmailContext(
       query = query.eq('public_id', String(pengajuanIdOrPublicId))
     }
 
-    const { data: pData, error: pError } = await query.maybeSingle()
+    let pData: any = null
+    const { data: joinData, error: pError } = await query.maybeSingle()
 
-    if (pError || !pData) {
-      console.warn('[getPengajuanEmailContext] Gagal mengambil pengajuan:', pError?.message || 'Data tidak ditemukan')
-      return defaultFallback
+    if (!pError && joinData) {
+      pData = joinData
+    } else {
+      console.warn('[getPengajuanEmailContext] Join query error, mencoba query pengajuans langsung:', pError?.message)
+      // Fallback: Query pengajuans tanpa profiles untuk memastikan data pengajuan tidak hilang
+      let fallbackQ = supabase
+        .from('pengajuans')
+        .select(`
+          id,
+          public_id,
+          user_id,
+          nama_lengkap,
+          asal_instansi,
+          jurusan,
+          jenjang,
+          jumlah_anggota,
+          anggota,
+          nomor_surat,
+          tanggal_mulai,
+          tanggal_selesai,
+          durasi_bulan,
+          status,
+          bidangs (
+            id,
+            nama
+          ),
+          pembimbings (
+            id,
+            nama,
+            nip,
+            jabatan
+          )
+        `)
+
+      if (typeof pengajuanIdOrPublicId === 'number' || /^\d+$/.test(String(pengajuanIdOrPublicId))) {
+        fallbackQ = fallbackQ.eq('id', Number(pengajuanIdOrPublicId))
+      } else {
+        fallbackQ = fallbackQ.eq('public_id', String(pengajuanIdOrPublicId))
+      }
+
+      const { data: fbData, error: fbError } = await fallbackQ.maybeSingle()
+      if (fbError || !fbData) {
+        console.warn('[getPengajuanEmailContext] Gagal mengambil pengajuan:', fbError?.message || 'Data tidak ditemukan')
+        return defaultFallback
+      }
+      pData = fbData
     }
 
-    // 2. Query anggota dari pengajuan_anggotas jika ada
-    let dbAnggotas: any[] = []
-    try {
-      const { data: aData } = await supabase
-        .from('pengajuan_anggotas')
-        .select('id, nama, nim_nis, is_ketua')
-        .eq('pengajuan_id', pData.id)
-        .order('id', { ascending: true })
-
-      if (aData && aData.length > 0) {
-        dbAnggotas = aData
+    // 2. Ekstrak profil pemohon (prioritaskan profiles join, fallback query terpisah jika kosong)
+    let profileData = (pData.profiles as any)
+    if ((!profileData || !profileData.email) && pData.user_id) {
+      try {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('id, name, email, status_peserta')
+          .eq('id', pData.user_id)
+          .single()
+        if (prof) {
+          profileData = prof
+        }
+      } catch (profErr) {
+        console.warn('[getPengajuanEmailContext] Fallback query profiles error:', profErr)
       }
-    } catch (aErr) {
-      console.warn('[getPengajuanEmailContext] Query pengajuan_anggotas error:', aErr)
     }
 
     // 3. Ekstrak peserta memakai helper definitif getPesertaList
-    const pesertaList = getPesertaList(pData, dbAnggotas)
-    const ketuaNama = pData.nama_lengkap || (pData.profiles as any)?.name || 'Pemohon Magang'
+    const pesertaList = getPesertaList(pData, [])
+    const ketuaNama = pData.nama_lengkap || profileData?.name || 'Pemohon Magang'
     const instansi = pData.asal_instansi || '-'
     const jurusan = pData.jurusan || '-'
     const jenjang = pData.jenjang || '-'
@@ -162,13 +208,18 @@ export async function getPengajuanEmailContext(
         }
       : null
 
-    const pemohonEmail = (pData.profiles as any)?.email || ''
+    const pemohonEmail = profileData?.email || ''
+    const statusPeserta = profileData?.status_peserta || null
 
     return {
       pengajuan: {
         id: pData.id,
         publicId: pData.public_id,
+        userId: pData.user_id,
         namaPemohon: ketuaNama,
+        pemohonEmail,
+        statusPeserta,
+        statusSebelum: pData.status || undefined,
         bidangNama,
         asalInstansi: instansi,
         jurusan,

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { getSiteUrl } from '@/lib/utils'
 import {
   AuthResponse,
   LoginCredentials,
@@ -125,7 +126,6 @@ export const authService = {
     }
 
     const supabase = createClient()
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
     const { data, error } = await supabase.auth.signUp({
       email: cleanEmail,
@@ -137,8 +137,9 @@ export const authService = {
           asal_instansi: credentials.asal_instansi?.trim() || null,
           jurusan: credentials.jurusan?.trim() || null,
           jenis_kelamin: credentials.jenis_kelamin?.trim() || null,
+          status_peserta: credentials.status_peserta,
         },
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: getSiteUrl('/auth/callback'),
       },
     })
 
@@ -298,6 +299,9 @@ export const authService = {
     const { error } = await supabase.auth.resend({
       type: credentials.type || 'signup',
       email: credentials.email.trim(),
+      options: {
+        emailRedirectTo: getSiteUrl('/auth/callback'),
+      },
     })
 
     if (error) {
@@ -327,12 +331,11 @@ export const authService = {
    */
   async loginWithGoogle(): Promise<AuthResponse<{ url?: string }>> {
     const supabase = createClient()
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback`,
+        redirectTo: getSiteUrl('/auth/callback'),
       },
     })
 
@@ -361,6 +364,14 @@ export const authService = {
     const supabase = createClient()
     const { error } = await supabase.auth.signOut()
 
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.clear()
+      } catch {
+        // Abaikan jika akses storage diblokir oleh browser
+      }
+    }
+
     if (error) {
       return {
         success: false,
@@ -382,10 +393,9 @@ export const authService = {
    */
   async forgotPassword(email: string): Promise<AuthResponse<null>> {
     const supabase = createClient()
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${origin}/auth/callback?next=/reset-password`,
+      redirectTo: getSiteUrl('/auth/callback?next=/reset-password'),
     })
 
     if (error) {
@@ -441,7 +451,7 @@ export const authService = {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, name, email, role, no_hp, asal_instansi, jurusan, jenis_kelamin, avatar, is_active, created_at, updated_at')
+      .select('id, name, email, role, no_hp, asal_instansi, jurusan, jenis_kelamin, avatar, is_active, created_at, updated_at, status_peserta')
       .eq('id', user.id)
       .single()
 
@@ -459,21 +469,28 @@ export const authService = {
       jenis_kelamin?: string | null
       asal_instansi?: string | null
       jurusan?: string | null
+      status_peserta?: 'Mahasiswa' | 'Siswa' | null
     }
   ): Promise<{ success: boolean; data?: Profile; error?: string }> {
     try {
       const supabase = createClient()
 
+      const updatePayload: Record<string, any> = {
+        name: data.name.trim(),
+        no_hp: data.no_hp ? data.no_hp.trim() : null,
+        jenis_kelamin: data.jenis_kelamin || null,
+        asal_instansi: data.asal_instansi ? data.asal_instansi.trim() : null,
+        jurusan: data.jurusan ? data.jurusan.trim() : null,
+        updated_at: new Date().toISOString(),
+      }
+
+      if (data.status_peserta !== undefined) {
+        updatePayload.status_peserta = data.status_peserta
+      }
+
       const { data: updated, error } = await supabase
         .from('profiles')
-        .update({
-          name: data.name.trim(),
-          no_hp: data.no_hp ? data.no_hp.trim() : null,
-          jenis_kelamin: data.jenis_kelamin || null,
-          asal_instansi: data.asal_instansi ? data.asal_instansi.trim() : null,
-          jurusan: data.jurusan ? data.jurusan.trim() : null,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', userId)
         .select()
         .single()

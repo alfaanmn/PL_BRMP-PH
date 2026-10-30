@@ -452,6 +452,50 @@ export default async function PenggunaDashboardPage() {
               Kelola permohonan magang &amp; PKL Anda, lengkapi berkas persyaratan resmi, dan pantau proses verifikasi secara terintegrasi langsung di portal BRMP Pengelola Hasil.
             </p>
 
+            {/* Banner Pengingat Status Peserta (Jika status masih NULL) */}
+            {!profile?.status_peserta && (
+              <div style={{
+                backgroundColor: '#fef3c7',
+                border: '1px solid #f59e0b',
+                borderRadius: '12px',
+                padding: '1rem 1.25rem',
+                marginBottom: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                color: '#78350f'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                  <span style={{ fontSize: '1.25rem' }}>⚠️</span>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#92400e' }}>
+                      Status Peserta Belum Dilengkapi
+                    </div>
+                    <div style={{ fontSize: '0.8125rem', color: '#b45309' }}>
+                      Harap lengkapi status akun (Mahasiswa / Siswa) di profil sebelum membuat pengajuan magang.
+                    </div>
+                  </div>
+                </div>
+                <Link
+                  href="/pengguna/profil"
+                  style={{
+                    backgroundColor: '#d97706',
+                    color: '#ffffff',
+                    padding: '0.45rem 0.875rem',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    display: 'inline-block'
+                  }}
+                >
+                  Lengkapi Profil →
+                </Link>
+              </div>
+            )}
+
             {/* Kartu Status Pemohon & Pengajuan Terakhir (Translucent Dark Panel) */}
             <div style={{
               backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -974,7 +1018,7 @@ export default async function PenggunaDashboardPage() {
                           zIndex: 1
                         }}
                       />
-                      {/* Badge Mahasiswa & SMK */}
+                      {/* Badge Target Peserta Dinamis */}
                       <div style={{
                         position: 'absolute',
                         top: '0.75rem',
@@ -987,7 +1031,13 @@ export default async function PenggunaDashboardPage() {
                         fontWeight: 600,
                         zIndex: 2
                       }}>
-                        Mahasiswa &amp; SMK
+                        {(() => {
+                          const tp = (b as any).target_peserta
+                          if (tp === 'Mahasiswa') return 'Khusus Mahasiswa'
+                          if (tp === 'Siswa') return 'Khusus SMK / Siswa'
+                          // Fallback aman untuk 'Keduanya', null, atau nilai tak terduga
+                          return 'Mahasiswa & SMK'
+                        })()}
                       </div>
 
                       {/* Status Kuota: Tersedia / Penuh */}

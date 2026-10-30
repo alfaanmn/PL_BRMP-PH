@@ -272,7 +272,7 @@ export const laporanService = {
         query = query.or(`nama_lengkap.ilike.%${term}%,nim_nis.ilike.%${term}%,asal_instansi.ilike.%${term}%,nomor_surat.ilike.%${term}%,public_id.ilike.%${term}%`)
       }
 
-      query = query.order('created_at', { ascending: true }).range(from, to)
+      query = query.order('created_at', { ascending: false }).range(from, to)
 
       const { data, count, error } = await query
 
@@ -413,7 +413,7 @@ export const laporanService = {
         pQuery = pQuery.or(`nama_lengkap.ilike.%${term}%,nim_nis.ilike.%${term}%,asal_instansi.ilike.%${term}%,nomor_surat.ilike.%${term}%,public_id.ilike.%${term}%`)
       }
 
-      pQuery = pQuery.order('created_at', { ascending: true })
+      pQuery = pQuery.order('created_at', { ascending: false })
 
       const { data: rawPengajuans, error: pErr } = await pQuery
 

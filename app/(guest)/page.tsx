@@ -73,17 +73,18 @@ export default async function HomePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  let profileData: { role: AppRole | null; name: string | null } | null = null
+  let profileData: { role: AppRole | null; name: string | null; status_peserta?: string | null } | null = null
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, name')
+      .select('role, name, status_peserta')
       .eq('id', user.id)
       .single()
     if (profile) {
       profileData = {
         role: (profile.role as AppRole) || null,
-        name: profile.name || null
+        name: profile.name || null,
+        status_peserta: profile.status_peserta || null,
       }
     }
   }
@@ -816,20 +817,28 @@ export default async function HomePage() {
                           backgroundColor: '#000000'
                         }}
                       />
-                      {/* Badge Mahasiswa & SMK */}
-                      <div style={{
-                        position: 'absolute',
-                        top: '0.75rem',
-                        left: '0.75rem',
-                        backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                        color: '#ffffff',
-                        padding: '0.2rem 0.5rem',
-                        borderRadius: '6px',
-                        fontSize: '0.6875rem',
-                        fontWeight: 600
-                      }}>
-                        Mahasiswa &amp; SMK
-                      </div>
+                      {/* Badge Target Peserta Dinamis */}
+                      {(() => {
+                        const target = b.target_peserta || (b.jenjang === 'Siswa' ? 'Siswa' : b.jenjang === 'Mahasiswa' ? 'Mahasiswa' : 'Keduanya')
+                        const label = target === 'Mahasiswa' ? 'Khusus Mahasiswa' : target === 'Siswa' ? 'Khusus Siswa (SMK)' : 'Mahasiswa & Siswa'
+                        const badgeBg = target === 'Mahasiswa' ? 'rgba(6, 78, 59, 0.9)' : target === 'Siswa' ? 'rgba(30, 64, 175, 0.9)' : 'rgba(15, 23, 42, 0.85)'
+                        return (
+                          <div style={{
+                            position: 'absolute',
+                            top: '0.75rem',
+                            left: '0.75rem',
+                            backgroundColor: badgeBg,
+                            color: '#ffffff',
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '6px',
+                            fontSize: '0.6875rem',
+                            fontWeight: 600,
+                            letterSpacing: '0.01em',
+                          }}>
+                            {label}
+                          </div>
+                        )
+                      })()}
 
                       {/* Status Kuota: Tersedia / Penuh */}
                       <div style={{

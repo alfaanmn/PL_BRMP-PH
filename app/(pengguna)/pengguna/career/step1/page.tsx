@@ -18,10 +18,10 @@ export default async function CareerStep1Page() {
   if (user) {
     const { data: p } = await supabase
       .from('profiles')
-      .select('id, name, email, asal_instansi, jurusan, no_hp, jenis_kelamin')
+      .select('id, name, email, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta')
       .eq('id', user.id)
       .single()
-    userProfile = p || { id: user.id, email: user.email, name: '' }
+    userProfile = p || { id: user.id, email: user.email, name: '', status_peserta: null }
   }
 
   // Ambil daftar bidang aktif dari database

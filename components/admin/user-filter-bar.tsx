@@ -7,6 +7,7 @@ interface UserFilterBarProps {
   search: string
   statusFilter: 'all' | 'active' | 'inactive'
   roleFilter: 'all' | 'pengguna' | 'administrator'
+  statusPesertaFilter: 'all' | 'Mahasiswa' | 'Siswa' | 'null'
   totalCount: number
   activeCount: number
   inactiveCount: number
@@ -14,6 +15,7 @@ interface UserFilterBarProps {
   onSearchChange: (value: string) => void
   onStatusChange: (status: 'all' | 'active' | 'inactive') => void
   onRoleChange: (role: 'all' | 'pengguna' | 'administrator') => void
+  onStatusPesertaChange: (val: 'all' | 'Mahasiswa' | 'Siswa' | 'null') => void
   onRefresh: () => void
 }
 
@@ -21,6 +23,7 @@ export function UserFilterBar({
   search,
   statusFilter,
   roleFilter,
+  statusPesertaFilter,
   totalCount,
   activeCount,
   inactiveCount,
@@ -28,6 +31,7 @@ export function UserFilterBar({
   onSearchChange,
   onStatusChange,
   onRoleChange,
+  onStatusPesertaChange,
   onRefresh,
 }: UserFilterBarProps) {
   return (
@@ -79,7 +83,7 @@ export function UserFilterBar({
         />
       </div>
 
-      {/* Filter Controls (Status, Role, Refresh) */}
+      {/* Filter Controls (Status, Role, Status Peserta, Refresh) */}
       <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
         {/* Role Filter Dropdown */}
         <select
@@ -100,6 +104,28 @@ export function UserFilterBar({
           <option value="all">Semua Role</option>
           <option value="pengguna">Role: Pengguna (Pemohon)</option>
           <option value="administrator">Role: Administrator</option>
+        </select>
+
+        {/* Status Peserta Filter Dropdown */}
+        <select
+          value={statusPesertaFilter}
+          onChange={(e) => onStatusPesertaChange(e.target.value as 'all' | 'Mahasiswa' | 'Siswa' | 'null')}
+          style={{
+            padding: '0.35rem 0.65rem',
+            fontSize: '12px',
+            fontWeight: 500,
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1',
+            backgroundColor: '#f8fafc',
+            color: '#334155',
+            outline: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <option value="all">Semua Status Peserta</option>
+          <option value="Mahasiswa">🎓 Mahasiswa</option>
+          <option value="Siswa">🎒 Siswa (SMK)</option>
+          <option value="null">⚠️ Belum Diatur (NULL)</option>
         </select>
 
         {/* Status Pill Filters */}

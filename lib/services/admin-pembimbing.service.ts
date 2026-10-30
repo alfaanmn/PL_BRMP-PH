@@ -64,7 +64,7 @@ export const adminPembimbingService = {
       const supabase = createClient()
 
       // 1. Query master pembimbings
-      let query = supabase.from('pembimbings').select('*').order('id', { ascending: true })
+      let query = supabase.from('pembimbings').select('*').order('id', { ascending: false })
 
       if (params?.status === 'active') {
         query = query.eq('is_active', true)

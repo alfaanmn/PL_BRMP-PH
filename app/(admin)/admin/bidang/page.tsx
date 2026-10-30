@@ -596,20 +596,28 @@ export default function AdminBidangPage() {
                           Nonaktif
                         </span>
                       )}
-                      {bidang.jenjang && (
-                        <span
-                          style={{
-                            fontSize: '11px',
-                            backgroundColor: '#f8fafc',
-                            color: '#475569',
-                            border: '1px solid #e2e8f0',
-                            padding: '0.1rem 0.4rem',
-                            borderRadius: '6px',
-                          }}
-                        >
-                          {bidang.jenjang}
-                        </span>
-                      )}
+                      {(() => {
+                        const target = bidang.target_peserta || (bidang.jenjang === 'Siswa' ? 'Siswa' : bidang.jenjang === 'Mahasiswa' ? 'Mahasiswa' : 'Keduanya')
+                        const label = target === 'Keduanya' ? 'Mahasiswa & Siswa' : target
+                        const bg = target === 'Mahasiswa' ? '#ecfdf5' : target === 'Siswa' ? '#eff6ff' : '#f8fafc'
+                        const color = target === 'Mahasiswa' ? '#065f46' : target === 'Siswa' ? '#1e40af' : '#475569'
+                        const border = target === 'Mahasiswa' ? '#a7f3d0' : target === 'Siswa' ? '#bfdbfe' : '#e2e8f0'
+                        return (
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              backgroundColor: bg,
+                              color: color,
+                              border: `1px solid ${border}`,
+                              padding: '0.15rem 0.5rem',
+                              borderRadius: '6px',
+                            }}
+                          >
+                            {label}
+                          </span>
+                        )
+                      })()}
                     </div>
 
                     {bidang.deskripsi && (

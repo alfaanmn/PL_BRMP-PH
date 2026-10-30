@@ -51,6 +51,7 @@ export async function updateSession(request: NextRequest) {
       if (isAdminRoute || isPenggunaRoute) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
+        url.searchParams.set('next', pathname)
         url.searchParams.set('redirect', pathname)
         return NextResponse.redirect(url, {
           headers: supabaseResponse.headers,
@@ -80,9 +81,23 @@ export async function updateSession(request: NextRequest) {
         supabaseResponse = NextResponse.next({
           request,
         })
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        )
+        cookiesToSet.forEach(({ name, value, options }) => {
+          if (!value || options?.maxAge === 0) {
+            // Penghapusan cookie (misal signOut) - pertahankan maxAge: 0 dan path asli
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              maxAge: 0,
+              path: options?.path || '/',
+            })
+          } else {
+            // Session cookie murni: Hapus maxAge & expires agar terhapus otomatis saat browser ditutup
+            const { maxAge: _m, expires: _e, ...sessionOptions } = options || {}
+            supabaseResponse.cookies.set(name, value, {
+              ...sessionOptions,
+              path: options?.path || '/',
+            })
+          }
+        })
       },
     },
   })
@@ -96,6 +111,7 @@ export async function updateSession(request: NextRequest) {
     if (isAdminRoute || isPenggunaRoute) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
+      url.searchParams.set('next', pathname)
       url.searchParams.set('redirect', pathname)
       return NextResponse.redirect(url)
     }

@@ -1,4 +1,5 @@
 export type AppRole = 'pengguna' | 'administrator'
+export type StatusPeserta = 'Mahasiswa' | 'Siswa'
 
 export interface Profile {
   id: string
@@ -9,6 +10,7 @@ export interface Profile {
   asal_instansi?: string | null
   jurusan?: string | null
   jenis_kelamin?: string | null
+  status_peserta?: StatusPeserta | null
   avatar: string | null
   is_active: boolean
   created_at?: string
@@ -35,6 +37,7 @@ export interface RegisterCredentials {
   asal_instansi?: string
   jurusan?: string
   jenis_kelamin?: string
+  status_peserta: StatusPeserta
 }
 
 export interface ForgotPasswordCredentials {

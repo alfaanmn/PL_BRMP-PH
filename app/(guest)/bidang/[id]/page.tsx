@@ -294,19 +294,20 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
   const { id } = await params
   const supabase = await createClient()
 
-  // Ambil data user & role untuk header nav
+  // Ambil data user & role untuk header nav serta status_peserta untuk cek kelayakan
   const { data: { user } } = await supabase.auth.getUser()
-  let profileData: { role: AppRole | null; name: string | null } | null = null
+  let profileData: { role: AppRole | null; name: string | null; status_peserta?: string | null } | null = null
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, name')
+      .select('role, name, status_peserta')
       .eq('id', user.id)
       .single()
     if (profile) {
       profileData = {
         role: (profile.role as AppRole) || null,
-        name: profile.name || null
+        name: profile.name || null,
+        status_peserta: profile.status_peserta || null,
       }
     }
   }
@@ -372,6 +373,18 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
   const isKuotaOpened = (bidang.is_active !== false) && sisaKuota > 0
   const pembimbings = bidang.pembimbings || []
   const meta = getBidangMeta(bidang)
+
+  const targetPeserta = (bidang as any).target_peserta || (bidang.jenjang === 'Siswa' ? 'Siswa' : bidang.jenjang === 'Mahasiswa' ? 'Mahasiswa' : 'Keduanya')
+  const userStatus = profileData?.status_peserta || null
+
+  const isStatusNull = Boolean(user && userRole === 'pengguna' && !userStatus)
+  const isTargetMismatch = Boolean(
+    user &&
+    userRole === 'pengguna' &&
+    userStatus &&
+    ((targetPeserta === 'Mahasiswa' && userStatus !== 'Mahasiswa') ||
+     (targetPeserta === 'Siswa' && userStatus !== 'Siswa'))
+  )
 
   return (
     <div style={{
@@ -511,8 +524,23 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
               </div>
             </div>
 
-            {/* 2. STATUS KUOTA (SATU BADGE TUNGGAL DI BAWAH HEADER) */}
-            <div style={{ marginBottom: '1.75rem' }}>
+            {/* 2. STATUS KUOTA & TARGET PESERTA */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap', marginBottom: '1.75rem' }}>
+              {/* Badge Target Peserta */}
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                backgroundColor: targetPeserta === 'Mahasiswa' ? '#ecfdf5' : targetPeserta === 'Siswa' ? '#eff6ff' : '#f8fafc',
+                border: `1px solid ${targetPeserta === 'Mahasiswa' ? '#a7f3d0' : targetPeserta === 'Siswa' ? '#bfdbfe' : '#cbd5e1'}`,
+                color: targetPeserta === 'Mahasiswa' ? '#065f46' : targetPeserta === 'Siswa' ? '#1e40af' : '#334155',
+                padding: '0.4rem 0.875rem',
+                borderRadius: '9999px',
+                fontSize: '0.8125rem',
+                fontWeight: 700
+              }}>
+                <span>👥 Target: {targetPeserta === 'Keduanya' ? 'Mahasiswa & Siswa' : targetPeserta}</span>
+              </div>
               {bidang.is_active === false ? (
                 <div style={{
                   display: 'inline-flex',
@@ -899,32 +927,108 @@ export default async function BidangDetailPage({ params }: BidangDetailPageProps
                   </div>
                 </div>
 
-                {/* Primary CTA Button */}
-                <Link
-                  href={targetApplyUrl}
-                  style={{
-                    width: '100%',
-                    padding: '0.875rem 1rem',
-                    backgroundColor: isKuotaOpened ? '#15803d' : '#94a3b8',
-                    color: '#ffffff',
+                {/* Notice jika status belum lengkap atau target mismatch */}
+                {isStatusNull && (
+                  <div style={{
+                    backgroundColor: '#eff6ff',
+                    border: '1px solid #bfdbfe',
                     borderRadius: '10px',
-                    textDecoration: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    boxShadow: isKuotaOpened ? '0 4px 10px rgba(21, 128, 61, 0.3)' : 'none',
-                    pointerEvents: isKuotaOpened ? 'auto' : 'none',
-                    boxSizing: 'border-box',
-                    transition: 'all 0.2s',
-                    marginBottom: '0.75rem'
-                  }}
-                >
-                  <span>{bidang.is_active === false ? 'Pendaftaran Ditutup' : isKuotaOpened ? 'Daftar magang sekarang' : 'Kuota Magang Penuh'}</span>
-                  {isKuotaOpened && <span>→</span>}
-                </Link>
+                    padding: '0.75rem 0.875rem',
+                    marginBottom: '0.75rem',
+                    fontSize: '0.75rem',
+                    color: '#1e40af',
+                    lineHeight: 1.45,
+                  }}>
+                    <strong>Lengkapi status akun Anda:</strong> Anda belum memilih status peserta (Mahasiswa atau Siswa). Silakan lengkapi profil terlebih dahulu sebelum mendaftar.
+                  </div>
+                )}
+
+                {isTargetMismatch && (
+                  <div style={{
+                    backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '10px',
+                    padding: '0.75rem 0.875rem',
+                    marginBottom: '0.75rem',
+                    fontSize: '0.75rem',
+                    color: '#991b1b',
+                    lineHeight: 1.45,
+                  }}>
+                    <strong>Tidak memenuhi kualifikasi:</strong> Lowongan ini hanya untuk {targetPeserta.toLowerCase()}. Akun Anda saat ini terdaftar sebagai {userStatus}.
+                  </div>
+                )}
+
+                {/* Primary CTA Button */}
+                {isStatusNull ? (
+                  <Link
+                    href="/pengguna/profil"
+                    style={{
+                      width: '100%',
+                      padding: '0.875rem 1rem',
+                      backgroundColor: '#2563eb',
+                      color: '#ffffff',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      boxSizing: 'border-box',
+                      marginBottom: '0.75rem'
+                    }}
+                  >
+                    <span>Lengkapi Status Profil Dulu →</span>
+                  </Link>
+                ) : isTargetMismatch ? (
+                  <div
+                    style={{
+                      width: '100%',
+                      padding: '0.875rem 1rem',
+                      backgroundColor: '#e2e8f0',
+                      color: '#64748b',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      cursor: 'not-allowed',
+                      boxSizing: 'border-box',
+                      marginBottom: '0.75rem'
+                    }}
+                  >
+                    <span>Hanya untuk {targetPeserta}</span>
+                  </div>
+                ) : (
+                  <Link
+                    href={targetApplyUrl}
+                    style={{
+                      width: '100%',
+                      padding: '0.875rem 1rem',
+                      backgroundColor: isKuotaOpened ? '#15803d' : '#94a3b8',
+                      color: '#ffffff',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      boxShadow: isKuotaOpened ? '0 4px 10px rgba(21, 128, 61, 0.3)' : 'none',
+                      pointerEvents: isKuotaOpened ? 'auto' : 'none',
+                      boxSizing: 'border-box',
+                      transition: 'all 0.2s',
+                      marginBottom: '0.75rem'
+                    }}
+                  >
+                    <span>{bidang.is_active === false ? 'Pendaftaran Ditutup' : isKuotaOpened ? 'Daftar magang sekarang' : 'Kuota Magang Penuh'}</span>
+                    {isKuotaOpened && <span>→</span>}
+                  </Link>
+                )}
 
                 {/* Secondary Back Button */}
                 <Link

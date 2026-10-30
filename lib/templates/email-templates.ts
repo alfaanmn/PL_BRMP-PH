@@ -1,4 +1,5 @@
 import { EmailNotificationPayload } from '@/types/email.types'
+import { getSiteUrl } from '@/lib/utils'
 
 /**
  * Helper untuk mengamankan string input dari karakter berbahaya (Anti-XSS pada Email Client)
@@ -38,19 +39,7 @@ export function resolveBaseUrl(appUrl?: string): string {
   if (appUrl && appUrl.trim() !== '') {
     return appUrl.trim().replace(/\/+$/, '')
   }
-  if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.trim() !== '') {
-    return process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/+$/, '')
-  }
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL && process.env.VERCEL_PROJECT_PRODUCTION_URL.trim() !== '') {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.trim()}`
-  }
-  if (process.env.VERCEL_URL && process.env.VERCEL_URL.trim() !== '') {
-    return `https://${process.env.VERCEL_URL.trim()}`
-  }
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:3000'
-  }
-  return ''
+  return getSiteUrl()
 }
 
 /**
@@ -70,15 +59,15 @@ export function getEmailSubject(payload: EmailNotificationPayload): string {
     switch (payload.event) {
       case 'admin_pengajuan_new':
       case 'pengajuan_submitted':
-        return `[ADMIN SIMPUL] Pengajuan Magang Baru: ${nama} ${instansi} (#${publicId})`
+        return `[SIMPUL] Pengajuan Baru - ${nama} (#${publicId})`
       case 'admin_skm_completed':
-        return `[ADMIN SIMPUL] SKM Telah Lengkap: ${nama} ${instansi} (#${publicId})`
+        return `[SIMPUL] SKM Selesai - ${nama} ${instansi} (#${publicId})`
       case 'pengajuan_cancelled':
-        return `[ADMIN SIMPUL] Pengajuan Dibatalkan oleh Pemohon: ${nama} (#${publicId})`
+        return `[SIMPUL] Pengajuan Dibatalkan - ${nama} (#${publicId})`
       case 'pengajuan_completed':
-        return `[ADMIN SIMPUL] Periode Magang Selesai: ${nama} ${instansi} (#${publicId})`
+        return `[SIMPUL] Periode Magang Selesai - ${nama} ${instansi} (#${publicId})`
       default:
-        return `[ADMIN SIMPUL] Update Pengajuan Magang (#${publicId})`
+        return `[SIMPUL] Update Pengajuan - ${nama} (#${publicId})`
     }
   }
 
@@ -132,17 +121,24 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
     payload.event === 'admin_skm_completed'
 
   if (isTargetAdmin) {
-    const pemohon = pengajuan.namaPemohon || recipient.name
+    const pemohon = pengajuan.namaPemohon || recipient.name || 'Pemohon'
+    const emailPemohon = pengajuan.pemohonEmail || '-'
+    const statusPeserta = pengajuan.statusPeserta || '-'
     const instansi = pengajuan.asalInstansi || '-'
     const jurusan = pengajuan.jurusan || '-'
+    const jenjang = pengajuan.jenjang || '-'
     const bidang = pengajuan.bidangNama || '-'
+    const publicId = pengajuan.publicId || '-'
+    const userId = pengajuan.userId || '-'
+    const isCancelled = payload.event === 'pengajuan_cancelled'
+    const alasanText = pengajuan.alasanPembatalan?.trim() || payload.catatan?.trim() || 'Tidak dicantumkan'
 
     let adminBody = `Halo Admin SIMPUL,\n\n`
 
     switch (payload.event) {
       case 'admin_pengajuan_new':
       case 'pengajuan_submitted':
-        adminBody += `${pemohon} dari ${instansi} (${jurusan}) telah mengajukan permohonan magang baru untuk bidang "${bidang}".\n\n`
+        adminBody += `Pemohon ${pemohon} dari ${instansi} (${jurusan}) telah mengajukan permohonan magang baru untuk bidang "${bidang}".\n\n`
         break
       case 'admin_skm_completed':
         adminBody += `Seluruh peserta dari permohonan magang ${pemohon} (${instansi}) pada bidang "${bidang}" telah melengkapi kuesioner Survei Kepuasan Masyarakat (SKM).\n\n`
@@ -151,35 +147,43 @@ export function renderEmailPlainText(payload: EmailNotificationPayload): string 
         adminBody += `Periode kegiatan magang untuk ${pemohon} dari ${instansi} pada bidang "${bidang}" telah selesai.\n\n`
         break
       case 'pengajuan_cancelled':
-        adminBody += `${pemohon} dari ${instansi} telah membatalkan pengajuan magang di bidang "${bidang}". (Status: Langsung Dibatalkan, Kuota tidak berubah).\n\n`
+        adminBody += `Pemohon ${pemohon} dari ${instansi} telah membatalkan pengajuan magang di bidang "${bidang}".\n\n`
         break
       default:
-        adminBody += `Terdapat pembaruan pada pengajuan magang ${pemohon} (${instansi}) di bidang "${bidang}".\n\n`
+        adminBody += `Terdapat pembaruan pada permohonan magang ${pemohon} (${instansi}) di bidang "${bidang}".\n\n`
         break
     }
 
-    adminBody += `RINCIAN PENGAJUAN:\n`
+    adminBody += `1. IDENTITAS PEMOHON:\n`
     adminBody += `- Nama Pemohon: ${pemohon}\n`
+    adminBody += `- Email Pemohon: ${emailPemohon}\n`
+    adminBody += `- Status Pemohon: ${statusPeserta}\n`
     adminBody += `- Asal Instansi: ${instansi}\n`
-    adminBody += `- Jurusan / Jenjang: ${jurusan} (${pengajuan.jenjang || '-'})\n`
-    adminBody += `- Jenis Kepesertaan: ${pengajuan.jenisPeserta || 'Individu'} (${pengajuan.jumlahPeserta || 1} orang)\n`
+    adminBody += `- Jurusan / Jenjang: ${jurusan} (${jenjang})\n`
+    if (userId && userId !== '-') {
+      adminBody += `- UUID Akun: ${userId}\n`
+    }
+    adminBody += `\n2. RINCIAN BERKAS PENGAJUAN:\n`
+    adminBody += `- Nomor Berkas: #${publicId}\n`
+    adminBody += `- Bidang Magang: ${bidang}\n`
+    adminBody += `- Tipe Kepesertaan: ${pengajuan.jenisPeserta || 'Individu'} (${pengajuan.jumlahPeserta || 1} orang)\n`
     if (pengajuan.daftarAnggotaRingkas && pengajuan.daftarAnggotaRingkas.length > 0) {
       adminBody += `  Anggota: ${pengajuan.daftarAnggotaRingkas.join(', ')}${
         pengajuan.sisaAnggotaCount ? ` +${pengajuan.sisaAnggotaCount} lainnya` : ''
       }\n`
     }
-    adminBody += `- Bidang Dituju: ${bidang}\n`
     adminBody += `- Rencana Periode: ${formatDateId(pengajuan.tanggalMulai)} s/d ${formatDateId(pengajuan.tanggalSelesai)}\n`
-    adminBody += `- Waktu Kejadian: ${pengajuan.waktuKejadianWib || '-'}\n`
-    if (alasanPenolakan || payload.catatan) {
-      adminBody += `- Keterangan: ${alasanPenolakan || payload.catatan}\n`
+    if (isCancelled) {
+      adminBody += `- Status Sebelumnya: Menunggu Verifikasi\n`
+      adminBody += `- Status Terkini: Dibatalkan oleh Pemohon\n`
+      adminBody += `- Alasan Pembatalan: ${alasanText}\n`
     }
-    adminBody += `- ID Pengajuan: #${pengajuan.publicId}\n\n`
+    adminBody += `- Waktu Kejadian: ${pengajuan.waktuKejadianWib || '-'}\n\n`
 
-    const adminLink = pengajuan.publicId
-      ? `${baseUrl}/admin/riwayat-pengajuan/${pengajuan.publicId}`
+    const adminLink = publicId && publicId !== '-'
+      ? `${baseUrl}/admin/riwayat-pengajuan/${publicId}`
       : `${baseUrl}/admin/riwayat-pengajuan`
-    adminBody += `Buka di Dashboard Admin: ${adminLink}\n\n`
+    adminBody += `Buka Berkas di Panel Admin:\n${adminLink}\n\n`
     adminBody += `--\nSIMPUL BRMP PH (Portal Administrator)\n`
     return adminBody
   }
@@ -390,15 +394,21 @@ function renderBaseLayout(opts: {
 function renderAdminEmailHtml(payload: EmailNotificationPayload): string {
   const { recipient, pengajuan, appUrl } = payload
   const baseUrl = resolveBaseUrl(appUrl)
-  const logoUrl = `${baseUrl}/images/logo.png`
+  const logoUrl = `${baseUrl}/logo_simpul.png`
 
   const pemohon = pengajuan.namaPemohon || recipient.name || 'Pemohon'
+  const emailPemohon = pengajuan.pemohonEmail || '-'
+  const statusPeserta = pengajuan.statusPeserta || '-'
   const instansi = pengajuan.asalInstansi || '-'
   const jurusan = pengajuan.jurusan || '-'
   const jenjang = pengajuan.jenjang || '-'
   const bidang = pengajuan.bidangNama || '-'
   const publicId = pengajuan.publicId || '-'
+  const userId = pengajuan.userId || '-'
   const waktuWib = pengajuan.waktuKejadianWib || '-'
+
+  const isCancelled = payload.event === 'pengajuan_cancelled'
+  const alasanText = pengajuan.alasanPembatalan?.trim() || payload.catatan?.trim() || 'Tidak dicantumkan'
 
   let title = 'Pemberitahuan Sistem Magang'
   let badgeText = 'ADMIN NOTIFIKASI'
@@ -410,7 +420,7 @@ function renderAdminEmailHtml(payload: EmailNotificationPayload): string {
   const ctaUrl = publicId && publicId !== '-'
     ? `${baseUrl}/admin/riwayat-pengajuan/${publicId}`
     : `${baseUrl}/admin/riwayat-pengajuan`
-  const ctaText = 'Buka di Dashboard Admin'
+  const ctaText = 'Buka Berkas di Panel Admin'
 
   switch (payload.event) {
     case 'admin_pengajuan_new':
@@ -452,12 +462,12 @@ function renderAdminEmailHtml(payload: EmailNotificationPayload): string {
     case 'pengajuan_cancelled':
       title = 'Pengajuan Dibatalkan oleh Pemohon'
       badgeText = 'DIBATALKAN'
-      badgeBg = '#f1f5f9'
-      badgeColor = '#475569'
+      badgeBg = '#fee2e2'
+      badgeColor = '#b91c1c'
       leadHtml = `<strong>${escapeHtml(pemohon)}</strong> dari <strong>${escapeHtml(
         instansi
-      )}</strong> membatalkan pengajuan magang di bidang <strong>${escapeHtml(bidang)}</strong>.`
-      statusHighlight = `<div style="margin-top:10px;padding:8px 12px;background-color:#f8fafc;border-left:3px solid #64748b;font-size:13px;color:#475569;">Pembatalan mandiri oleh pemohon pada status awal verifikasi. Kuota bidang tidak mengalami perubahan.</div>`
+      )}</strong> telah membatalkan pengajuan magang di bidang <strong>${escapeHtml(bidang)}</strong>.`
+      statusHighlight = `<div style="margin-top:10px;padding:8px 12px;background-color:#fef2f2;border-left:3px solid #ef4444;font-size:13px;color:#991b1b;">Pembatalan mandiri oleh pemohon pada tahap awal verifikasi. Kuota bidang tidak mengalami perubahan.</div>`
       break
 
     default:
@@ -473,52 +483,88 @@ function renderAdminEmailHtml(payload: EmailNotificationPayload): string {
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin:18px 0;border-collapse:collapse;">
       <tr>
         <td style="padding:16px 18px;">
-          <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">
-            Rincian Berkas Permohonan
+          <!-- 1. Identitas Pemohon -->
+          <div style="font-size:11px;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">
+            1. Identitas Pemohon
           </div>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size:13px;color:#334155;">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size:13px;color:#334155;margin-bottom:14px;">
             <tr>
-              <td style="padding:5px 0;width:140px;color:#64748b;">Nama Pemohon</td>
-              <td style="padding:5px 0;font-weight:600;color:#0f172a;">${escapeHtml(pemohon)}</td>
+              <td style="padding:4px 0;width:140px;color:#64748b;">Nama Pemohon</td>
+              <td style="padding:4px 0;font-weight:700;color:#0f172a;">${escapeHtml(pemohon)}</td>
             </tr>
             <tr>
-              <td style="padding:5px 0;color:#64748b;">Asal Instansi</td>
-              <td style="padding:5px 0;color:#0f172a;">${escapeHtml(instansi)}</td>
+              <td style="padding:4px 0;color:#64748b;">Email Pemohon</td>
+              <td style="padding:4px 0;color:#0f172a;"><a href="mailto:${escapeHtml(emailPemohon)}" style="color:#0284c7;text-decoration:none;">${escapeHtml(emailPemohon)}</a></td>
             </tr>
             <tr>
-              <td style="padding:5px 0;color:#64748b;">Jurusan / Jenjang</td>
-              <td style="padding:5px 0;color:#0f172a;">${escapeHtml(jurusan)} (${escapeHtml(jenjang)})</td>
+              <td style="padding:4px 0;color:#64748b;">Status Pemohon</td>
+              <td style="padding:4px 0;color:#0f172a;font-weight:600;">${escapeHtml(statusPeserta)}</td>
             </tr>
             <tr>
-              <td style="padding:5px 0;color:#64748b;vertical-align:top;">Tipe Kepesertaan</td>
-              <td style="padding:5px 0;color:#0f172a;">${renderAnggotaSummary(payload)}</td>
+              <td style="padding:4px 0;color:#64748b;">Asal Instansi</td>
+              <td style="padding:4px 0;color:#0f172a;">${escapeHtml(instansi)}</td>
             </tr>
             <tr>
-              <td style="padding:5px 0;color:#64748b;">Bidang Magang</td>
-              <td style="padding:5px 0;font-weight:600;color:#0369a1;">${escapeHtml(bidang)}</td>
-            </tr>
-            <tr>
-              <td style="padding:5px 0;color:#64748b;">Rencana Periode</td>
-              <td style="padding:5px 0;color:#0f172a;">${formatDateId(pengajuan.tanggalMulai)} s/d ${formatDateId(
-    pengajuan.tanggalSelesai
-  )}</td>
-            </tr>
-            <tr>
-              <td style="padding:5px 0;color:#64748b;">Waktu Kejadian</td>
-              <td style="padding:5px 0;color:#0f172a;">${escapeHtml(waktuWib)}</td>
+              <td style="padding:4px 0;color:#64748b;">Jurusan / Jenjang</td>
+              <td style="padding:4px 0;color:#0f172a;">${escapeHtml(jurusan)} (${escapeHtml(jenjang)})</td>
             </tr>
             ${
-              payload.alasanPenolakan || payload.catatan
+              userId && userId !== '-'
                 ? `
             <tr>
-              <td style="padding:5px 0;color:#64748b;vertical-align:top;">Alasan / Keterangan</td>
-              <td style="padding:5px 0;color:#b91c1c;">${escapeHtml(
-                payload.alasanPenolakan || payload.catatan
-              )}</td>
+              <td style="padding:4px 0;color:#94a3b8;font-size:11px;">UUID Akun</td>
+              <td style="padding:4px 0;color:#94a3b8;font-size:11px;font-family:monospace;">${escapeHtml(userId)}</td>
             </tr>
             `
                 : ''
             }
+          </table>
+
+          <!-- 2. Rincian Pengajuan -->
+          <div style="font-size:11px;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;border-top:1px dashed #cbd5e1;padding-top:12px;">
+            2. Rincian Berkas Pengajuan
+          </div>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size:13px;color:#334155;">
+            <tr>
+              <td style="padding:4px 0;width:140px;color:#64748b;">Nomor Berkas</td>
+              <td style="padding:4px 0;font-weight:700;color:#0284c7;">#${escapeHtml(publicId)}</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0;color:#64748b;">Bidang Magang</td>
+              <td style="padding:4px 0;font-weight:600;color:#0f172a;">${escapeHtml(bidang)}</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0;color:#64748b;vertical-align:top;">Tipe Kepesertaan</td>
+              <td style="padding:4px 0;color:#0f172a;">${renderAnggotaSummary(payload)}</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0;color:#64748b;">Rencana Periode</td>
+              <td style="padding:4px 0;color:#0f172a;">${formatDateId(pengajuan.tanggalMulai)} s/d ${formatDateId(
+    pengajuan.tanggalSelesai
+  )}</td>
+            </tr>
+            ${
+              isCancelled
+                ? `
+            <tr>
+              <td style="padding:4px 0;color:#64748b;">Status Sebelumnya</td>
+              <td style="padding:4px 0;color:#0f172a;">Menunggu Verifikasi</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0;color:#64748b;">Status Terkini</td>
+              <td style="padding:4px 0;font-weight:700;color:#b91c1c;">Dibatalkan oleh Pemohon</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0;color:#64748b;vertical-align:top;">Alasan Pembatalan</td>
+              <td style="padding:4px 0;color:#b91c1c;">${escapeHtml(alasanText)}</td>
+            </tr>
+            `
+                : ''
+            }
+            <tr>
+              <td style="padding:4px 0;color:#64748b;">Waktu Kejadian</td>
+              <td style="padding:4px 0;color:#0f172a;">${escapeHtml(waktuWib)}</td>
+            </tr>
           </table>
           ${statusHighlight}
         </td>
@@ -548,7 +594,7 @@ function renderAdminEmailHtml(payload: EmailNotificationPayload): string {
 function renderUserEmailHtml(payload: EmailNotificationPayload): string {
   const { recipient, pengajuan, pembimbing, alasanPenolakan, appUrl } = payload
   const baseUrl = resolveBaseUrl(appUrl)
-  const logoUrl = `${baseUrl}/images/logo.png`
+  const logoUrl = `${baseUrl}/logo_simpul.png`
 
   const bidang = pengajuan.bidangNama || '-'
   const publicId = pengajuan.publicId || '-'

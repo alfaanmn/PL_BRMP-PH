@@ -19,6 +19,7 @@ export interface BidangItem {
   sisa_kuota?: number | null
   banner_url?: string | null
   jenjang?: string | null
+  target_peserta?: 'Mahasiswa' | 'Siswa' | 'Keduanya' | string | null
   persyaratan?: string | null
   tugas?: string | null
   is_active?: boolean | null

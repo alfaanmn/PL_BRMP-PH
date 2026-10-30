@@ -1,4 +1,5 @@
 export type JenjangPendidikan = 'Mahasiswa' | 'Siswa'
+export type TargetPeserta = 'Mahasiswa' | 'Siswa' | 'Keduanya'
 
 export interface AnggotaMagang {
   nama: string

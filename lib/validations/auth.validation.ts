@@ -70,6 +70,7 @@ export function validateRegister(data: {
   asal_instansi?: string
   jurusan?: string
   jenis_kelamin?: string
+  status_peserta?: string
 }): { isValid: boolean; errors: Record<string, string> } {
   const errors: Record<string, string> = {}
 
@@ -90,7 +91,14 @@ export function validateRegister(data: {
     errors.jenis_kelamin = 'Jenis kelamin wajib dipilih'
   }
 
-  // 5. Asal Instansi (Wajib)
+  // 5. Status Peserta (Wajib: Mahasiswa atau Siswa)
+  if (!data.status_peserta || !data.status_peserta.trim()) {
+    errors.status_peserta = 'Status peserta wajib dipilih (Mahasiswa atau Siswa)'
+  } else if (!['Mahasiswa', 'Siswa'].includes(data.status_peserta.trim())) {
+    errors.status_peserta = 'Status peserta harus berupa Mahasiswa atau Siswa'
+  }
+
+  // 6. Asal Instansi (Wajib)
   if (!data.asal_instansi || !data.asal_instansi.trim()) {
     errors.asal_instansi = 'Asal instansi / sekolah / kampus wajib diisi'
   } else if (data.asal_instansi.trim().length < 2) {

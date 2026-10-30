@@ -42,6 +42,7 @@ export default function AdminUserPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
   const [roleFilter, setRoleFilter] = useState<'all' | 'pengguna' | 'administrator'>('all')
+  const [statusPesertaFilter, setStatusPesertaFilter] = useState<'all' | 'Mahasiswa' | 'Siswa' | 'null'>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const limit = 10
@@ -52,6 +53,12 @@ export default function AdminUserPage() {
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
   const [feedbackToast, setFeedbackToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
+  // Kelola Status Peserta Modal State
+  const [manageUser, setManageUser] = useState<AdminUserListItem | null>(null)
+  const [targetStatusPeserta, setTargetStatusPeserta] = useState<'Mahasiswa' | 'Siswa'>('Mahasiswa')
+  const [activePengajuanWarning, setActivePengajuanWarning] = useState<{ count: number; list: any[] } | null>(null)
+  const [isUpdatingAccount, setIsUpdatingAccount] = useState(false)
+
   const showToast = (type: 'success' | 'error', message: string) => {
     setFeedbackToast({ type, message })
     setTimeout(() => {
@@ -59,7 +66,7 @@ export default function AdminUserPage() {
     }, 4000)
   }
 
-  // Ambil ID admin yang sedang login untuk proteksi self-deactivation
+  // Ambil ID admin yang sedang login untuk proteksi self-deactivation & self-demotion
   useEffect(() => {
     async function loadCurrentAdmin() {
       try {
@@ -93,6 +100,7 @@ export default function AdminUserPage() {
         search,
         status: statusFilter,
         role: roleFilter,
+        status_peserta: statusPesertaFilter,
         page: currentPage,
         limit,
       })
@@ -108,7 +116,46 @@ export default function AdminUserPage() {
     } finally {
       setLoading(false)
     }
-  }, [search, statusFilter, roleFilter, currentPage])
+  }, [search, statusFilter, roleFilter, statusPesertaFilter, currentPage])
+
+  const handleOpenManageUser = async (user: AdminUserListItem) => {
+    setManageUser(user)
+    setTargetStatusPeserta(user.status_peserta || 'Mahasiswa')
+    setActivePengajuanWarning(null)
+
+    // Periksa apakah user memiliki pengajuan magang yang sedang aktif
+    const checkRes = await adminUserService.checkUserActivePengajuan(user.id)
+    if (checkRes.hasActive) {
+      setActivePengajuanWarning({ count: checkRes.activeCount, list: checkRes.activeList })
+    }
+  }
+
+  const handleSaveAccount = async () => {
+    if (!manageUser) return
+
+    setIsUpdatingAccount(true)
+    try {
+      const res = await adminUserService.updateUserAccount(manageUser.id, {
+        status_peserta: targetStatusPeserta,
+      })
+
+      if (!res.success) {
+        showToast('error', res.error || 'Gagal memperbarui status peserta pengguna.')
+      } else {
+        showToast(
+          'success',
+          `Status peserta akun "${manageUser.name}" berhasil diperbarui.`
+        )
+        setManageUser(null)
+        loadUsers()
+        loadStats()
+      }
+    } catch {
+      showToast('error', 'Terjadi kesalahan sistem saat memperbarui status peserta pengguna.')
+    } finally {
+      setIsUpdatingAccount(false)
+    }
+  }
 
   useEffect(() => {
     loadStats()
@@ -387,6 +434,7 @@ export default function AdminUserPage() {
         search={search}
         statusFilter={statusFilter}
         roleFilter={roleFilter}
+        statusPesertaFilter={statusPesertaFilter}
         totalCount={totalCount}
         activeCount={stats.activeUser}
         inactiveCount={stats.inactiveUser}
@@ -401,6 +449,10 @@ export default function AdminUserPage() {
         }}
         onRoleChange={(rl) => {
           setRoleFilter(rl)
+          setCurrentPage(1)
+        }}
+        onStatusPesertaChange={(sp) => {
+          setStatusPesertaFilter(sp)
           setCurrentPage(1)
         }}
         onRefresh={() => {
@@ -516,6 +568,62 @@ export default function AdminUserPage() {
                         >
                           PENGGUNA
                         </span>
+                      )}
+
+                      {/* Status Peserta Badge (Khusus Akun Pengguna / Peserta) */}
+                      {user.role === 'pengguna' && (
+                        user.status_peserta === 'Mahasiswa' ? (
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              backgroundColor: '#eff6ff',
+                              color: '#1d4ed8',
+                              border: '1px solid #bfdbfe',
+                              padding: '0.1rem 0.45rem',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '2px',
+                            }}
+                          >
+                            🎓 Mahasiswa
+                          </span>
+                        ) : user.status_peserta === 'Siswa' ? (
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              backgroundColor: '#fffbeb',
+                              color: '#b45309',
+                              border: '1px solid #fde68a',
+                              padding: '0.1rem 0.45rem',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '2px',
+                            }}
+                          >
+                            🎒 Siswa
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              backgroundColor: '#fef2f2',
+                              color: '#dc2626',
+                              border: '1px solid #fecaca',
+                              padding: '0.1rem 0.45rem',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '2px',
+                            }}
+                          >
+                            ⚠️ Status Belum Diatur
+                          </span>
+                        )
                       )}
 
                       {/* Status Badge */}
@@ -637,8 +745,28 @@ export default function AdminUserPage() {
                     </div>
                   </div>
 
-                  {/* Right Column: Actions (Detail & Active Toggle) */}
+                  {/* Right Column: Actions (Kelola Akun, Detail & Active Toggle) */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenManageUser(user)}
+                      style={{
+                        padding: '0.4rem 0.75rem',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        backgroundColor: '#eff6ff',
+                        color: '#1d4ed8',
+                        border: '1px solid #bfdbfe',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                      }}
+                    >
+                      <span>Kelola Status</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => {
@@ -772,7 +900,261 @@ export default function AdminUserPage() {
           setIsDetailModalOpen(false)
           setSelectedUserIdForDetail(null)
         }}
+        onManageAccount={handleOpenManageUser}
       />
+
+      {/* Modal Kelola Status Peserta Khusus Admin */}
+      {manageUser && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(3px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => {
+            if (!isUpdatingAccount) setManageUser(null)
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '14px',
+              maxWidth: '520px',
+              width: '100%',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #e2e8f0',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e2e8f0',
+                backgroundColor: '#f8fafc',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>
+                  Kelola Status Peserta
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '12px', color: '#64748b' }}>
+                  Atur status peserta (Mahasiswa / Siswa) pengguna sistem via RPC resmi
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setManageUser(null)}
+                disabled={isUpdatingAccount}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748b',
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
+              {/* User Identity Info */}
+              <div
+                style={{
+                  padding: '0.75rem 1rem',
+                  backgroundColor: '#f1f5f9',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.35rem',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Nama Pengguna:</span>
+                  <strong style={{ color: '#0f172a' }}>{manageUser.name}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Email:</span>
+                  <span style={{ color: '#475569', fontWeight: 500 }}>{manageUser.email}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Status Akun:</span>
+                  <span style={{ fontWeight: 600, color: manageUser.is_active ? '#15803d' : '#dc2626' }}>
+                    {manageUser.is_active ? '● Aktif' : '● Nonaktif'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Status Peserta Saat Ini:</span>
+                  <strong>
+                    {manageUser.status_peserta ? manageUser.status_peserta : 'Belum Ditentukan (NULL)'}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Warning jika punya pengajuan aktif */}
+              {activePengajuanWarning && activePengajuanWarning.count > 0 && (
+                <div
+                  style={{
+                    padding: '0.875rem 1rem',
+                    backgroundColor: '#fffbeb',
+                    border: '1px solid #fde68a',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.25rem',
+                  }}
+                >
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#92400e' }}>
+                    [Perhatian] Pengajuan Magang Aktif
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#92400e', lineHeight: 1.45 }}>
+                    <p style={{ margin: '0.25rem 0' }}>
+                      Pengguna ini memiliki <strong>{activePengajuanWarning.count} pengajuan magang yang masih aktif/berjalan</strong> ({activePengajuanWarning.list.map(a => `${a.bidang_nama}: ${a.status}`).join(', ')}).
+                    </p>
+                    <p style={{ margin: 0, fontSize: '11px', color: '#b45309' }}>
+                      Mengubah status peserta akun TIDAK AKAN mengubah data riwayat pengajuan magang yang sudah ada sebelumnya. Perubahan hanya berlaku untuk validasi pengajuan berikutnya.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Kelola Status Peserta (Mahasiswa / Siswa) */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>
+                  Pilih Status Peserta: <span style={{ color: '#dc2626' }}>*</span>
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.625rem' }}>
+                  <label
+                    style={{
+                      padding: '0.65rem 0.75rem',
+                      borderRadius: '8px',
+                      border: targetStatusPeserta === 'Mahasiswa' ? '2px solid #2563eb' : '1px solid #cbd5e1',
+                      backgroundColor: targetStatusPeserta === 'Mahasiswa' ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="admin_target_status"
+                      value="Mahasiswa"
+                      checked={targetStatusPeserta === 'Mahasiswa'}
+                      onChange={() => setTargetStatusPeserta('Mahasiswa')}
+                      style={{ accentColor: '#2563eb' }}
+                    />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af' }}>
+                        Mahasiswa
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#64748b' }}>
+                        Perguruan Tinggi
+                      </div>
+                    </div>
+                  </label>
+
+                  <label
+                    style={{
+                      padding: '0.65rem 0.75rem',
+                      borderRadius: '8px',
+                      border: targetStatusPeserta === 'Siswa' ? '2px solid #d97706' : '1px solid #cbd5e1',
+                      backgroundColor: targetStatusPeserta === 'Siswa' ? '#fffbeb' : '#ffffff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="admin_target_status"
+                      value="Siswa"
+                      checked={targetStatusPeserta === 'Siswa'}
+                      onChange={() => setTargetStatusPeserta('Siswa')}
+                      style={{ accentColor: '#d97706' }}
+                    />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#92400e' }}>
+                        Siswa
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#64748b' }}>
+                        SMK / SMA
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div
+              style={{
+                padding: '0.875rem 1.5rem',
+                borderTop: '1px solid #e2e8f0',
+                backgroundColor: '#fafafa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: '0.625rem',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setManageUser(null)}
+                disabled={isUpdatingAccount}
+                style={{
+                  padding: '0.45rem 1rem',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  backgroundColor: '#ffffff',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  cursor: isUpdatingAccount ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Batal
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveAccount}
+                disabled={isUpdatingAccount}
+                style={{
+                  padding: '0.45rem 1.125rem',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  backgroundColor: '#15803d',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: isUpdatingAccount ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                {isUpdatingAccount ? 'Menyimpan...' : 'Simpan Status Peserta'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

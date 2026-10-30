@@ -63,6 +63,24 @@ export function parseRpcError(error: unknown, context: 'user' | 'admin' = 'user'
     }
   }
 
+  // TARGET_PESERTA_MISMATCH (Lowongan hanya untuk Mahasiswa / Siswa)
+  if (rawMessage.includes('TARGET_PESERTA_MISMATCH')) {
+    const cleanDetail = rawMessage.replace(/.*TARGET_PESERTA_MISMATCH:?\s*/i, '').split('\n')[0].trim()
+    return {
+      code: 'TARGET_PESERTA_MISMATCH',
+      message: cleanDetail || 'Kategori akun Anda tidak sesuai dengan target peserta lowongan ini.',
+    }
+  }
+
+  // STATUS_PESERTA_NULL (Profil belum memiliki status Mahasiswa / Siswa)
+  if (rawMessage.includes('STATUS_PESERTA_NULL')) {
+    const cleanDetail = rawMessage.replace(/.*STATUS_PESERTA_NULL:?\s*/i, '').split('\n')[0].trim()
+    return {
+      code: 'STATUS_PESERTA_NULL',
+      message: cleanDetail || 'Anda belum memilih status peserta (Mahasiswa atau Siswa). Silakan lengkapi profil Anda terlebih dahulu.',
+    }
+  }
+
   // 3. NIM_AKTIF_BENTROK atau NIM_BENTROK
   if (rawMessage.includes('NIM_AKTIF_BENTROK') || rawMessage.includes('NIM_BENTROK')) {
     const cleanDetail = rawMessage

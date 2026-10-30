@@ -24,9 +24,23 @@ export async function GET(request: Request) {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
+            cookiesToSet.forEach(({ name, value, options }) => {
+              if (!value || options?.maxAge === 0) {
+                // Penghapusan cookie (misal signOut) - pertahankan maxAge: 0 dan path asli
+                cookieStore.set(name, value, {
+                  ...options,
+                  maxAge: 0,
+                  path: options?.path || '/',
+                })
+              } else {
+                // Session cookie murni: Hapus maxAge & expires agar terhapus otomatis saat browser ditutup
+                const { maxAge: _m, expires: _e, ...sessionOptions } = options || {}
+                cookieStore.set(name, value, {
+                  ...sessionOptions,
+                  path: options?.path || '/',
+                })
+              }
+            })
           } catch {
             // Handled in server context
           }
@@ -37,9 +51,12 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
+      // Validasi parameter `next` agar hanya path internal diawali "/" dan bukan "//" (cegah open redirect)
+      const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null
+
       // Jika ada target rute khusus (seperti reset-password)
-      if (next) {
-        return NextResponse.redirect(`${origin}${next}`)
+      if (safeNext) {
+        return NextResponse.redirect(`${origin}${safeNext}`)
       }
 
       // Ambil profile role untuk penentuan redirect

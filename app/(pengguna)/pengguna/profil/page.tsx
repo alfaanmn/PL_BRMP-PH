@@ -20,7 +20,7 @@ export default async function UserProfilePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, name, email, role, no_hp, asal_instansi, jurusan, jenis_kelamin, avatar, is_active, created_at, updated_at')
+    .select('id, name, email, role, no_hp, asal_instansi, jurusan, jenis_kelamin, avatar, is_active, status_peserta, created_at, updated_at')
     .eq('id', user.id)
     .single()
 

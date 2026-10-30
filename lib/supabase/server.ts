@@ -18,9 +18,23 @@ export async function createClient() {
       },
       setAll(cookiesToSet) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => {
+            if (!value || options?.maxAge === 0) {
+              // Penghapusan cookie (misal signOut) - pertahankan maxAge: 0 dan path asli
+              cookieStore.set(name, value, {
+                ...options,
+                maxAge: 0,
+                path: options?.path || '/',
+              })
+            } else {
+              // Session cookie murni: Hapus maxAge & expires agar terhapus otomatis saat browser ditutup
+              const { maxAge: _m, expires: _e, ...sessionOptions } = options || {}
+              cookieStore.set(name, value, {
+                ...sessionOptions,
+                path: options?.path || '/',
+              })
+            }
+          })
         } catch {
           // Dipanggil dari Server Component, ignore jika tidak bisa set cookie
         }

@@ -3,6 +3,7 @@ if (typeof window !== 'undefined') {
 }
 import nodemailer from 'nodemailer'
 import type { Transporter, SendMailOptions } from 'nodemailer'
+import { getSiteUrl } from '@/lib/utils'
 
 /**
  * Interface opsi pengiriman email server-side
@@ -80,14 +81,10 @@ export function getMailerConfig(): MailerConfigStatus {
 
   // 1. Validasi URL Aplikasi
   let baseUrl: string | null = null
-  if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.trim() !== '') {
-    baseUrl = process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, '')
-  } else if (process.env.VERCEL_PROJECT_PRODUCTION_URL && process.env.VERCEL_PROJECT_PRODUCTION_URL.trim() !== '') {
-    baseUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.trim()}`
-  } else if (process.env.NODE_ENV === 'development') {
-    baseUrl = 'http://localhost:3000'
-  } else {
-    errors.push('NEXT_PUBLIC_APP_URL atau VERCEL_PROJECT_PRODUCTION_URL tidak dikonfigurasi di lingkungan produksi.')
+  try {
+    baseUrl = getSiteUrl()
+  } catch {
+    errors.push('NEXT_PUBLIC_SITE_URL tidak dikonfigurasi di lingkungan produksi.')
   }
 
   // 2. Validasi GMAIL_USER
@@ -161,15 +158,7 @@ export function getMailerConfig(): MailerConfigStatus {
  * Mengambil Base URL aplikasi saat ini
  */
 export function getAppBaseUrl(): string {
-  const config = getMailerConfig()
-  if (config.baseUrl) return config.baseUrl
-
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:3000'
-  }
-
-  console.error('[Mailer] URL aplikasi belum dikonfigurasi di environment produksi (NEXT_PUBLIC_APP_URL kosong).')
-  return ''
+  return getSiteUrl()
 }
 
 /**

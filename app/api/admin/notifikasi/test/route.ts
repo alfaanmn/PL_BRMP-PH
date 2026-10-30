@@ -138,6 +138,16 @@ export async function GET(request: NextRequest) {
           ADMIN_EMAIL: {
             configured: configStatus.adminEmailConfigured,
           },
+          NEXT_PUBLIC_SITE_URL: {
+            configured: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
+            value: process.env.NEXT_PUBLIC_SITE_URL || null,
+            isLocalhostInProd: Boolean(
+              process.env.NODE_ENV === 'production' &&
+                process.env.NEXT_PUBLIC_SITE_URL &&
+                (process.env.NEXT_PUBLIC_SITE_URL.includes('localhost') ||
+                  process.env.NEXT_PUBLIC_SITE_URL.includes('127.0.0.1'))
+            ),
+          },
           NEXT_PUBLIC_APP_URL: {
             configured: Boolean(process.env.NEXT_PUBLIC_APP_URL),
           },
