@@ -89,7 +89,7 @@ export const laporanService = {
 
       if (params.status && params.status !== 'semua' && params.status !== 'All') {
         if (params.status === 'Sedang Magang') {
-          query = query.in('status', ['Sedang Magang', 'Disetujui'])
+          query = query.in('status', ['Sedang Magang', 'Disetujui', 'Terjadwal'])
         } else {
           query = query.eq('status', params.status)
         }

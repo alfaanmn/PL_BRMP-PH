@@ -12,6 +12,24 @@ interface NotifyRequestBody {
 }
 
 /**
+ * Cache in-memory pelacak pemrosesan notifikasi untuk mencegah duplicate paralel/double-click.
+ * Catatan: Bersifat pelengkap per container warm serverless (tidak menggantikan audit trail database).
+ */
+const recentNotifyRequests = new Map<string, number>()
+const NOTIFY_GUARD_TTL_MS = 10 * 1000 // 10 detik
+
+function isRecentNotifyDuplicate(event: string, publicId: string): boolean {
+  const key = `${event}:${publicId}`
+  const now = Date.now()
+  const last = recentNotifyRequests.get(key)
+  if (last && now - last < NOTIFY_GUARD_TTL_MS) {
+    return true
+  }
+  recentNotifyRequests.set(key, now)
+  return false
+}
+
+/**
  * Route Handler Server-Side untuk Pemicu Notifikasi Pengajuan (Web & Email)
  * Berjalan aman di sisi SERVER dengan Service Role (createAdminClient)
  * Dilengkapi proteksi otorisasi, verifikasi status database, dan guard idempotensi.
@@ -59,6 +77,14 @@ export async function POST(request: Request) {
         { success: false, error: `Event tidak didukung. Pilihan: ${allowedEvents.join(', ')}` },
         { status: 400 }
       )
+    }
+
+    // In-memory guard pelengkap: deteksi duplicate paralel dalam 10 detik
+    if (isRecentNotifyDuplicate(event, publicId)) {
+      return NextResponse.json({
+        success: true,
+        message: 'Permintaan notifikasi sudah diproses atau sedang berjalan (in-memory guard)',
+      })
     }
 
     // Validasi alasan pembatalan jika ada

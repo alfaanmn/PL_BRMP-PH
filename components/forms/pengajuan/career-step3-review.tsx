@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePengajuanWizard } from '@/hooks/use-pengajuan'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
@@ -27,6 +27,7 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
   const { state, setPernyataanBenar, resetWizard, idempotencyKey } = usePengajuanWizard()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmittingRef = useRef(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
@@ -57,7 +58,8 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
 
   const handleFinalSubmit = async (isPartialConfirmed: boolean = false) => {
     if (!state.pernyataan_benar) return
-    if (isSubmitting) return
+    if (isSubmitting || isSubmittingRef.current) return
+    isSubmittingRef.current = true
 
     setIsSubmitting(true)
     setSubmitError(null)
@@ -115,12 +117,12 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
             diajukan,
           })
           setShowQuotaModal(true)
-          setIsSubmitting(false)
+          setIsSubmitting(false); isSubmittingRef.current = false;
           return
         }
 
         setSubmitError(res.error?.message || 'Gagal mengirim pengajuan magang. Silakan coba kembali.')
-        setIsSubmitting(false)
+        setIsSubmitting(false); isSubmittingRef.current = false;
         return
       }
 
@@ -131,7 +133,7 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.'
       setSubmitError(msg)
-      setIsSubmitting(false)
+      setIsSubmitting(false); isSubmittingRef.current = false;
     }
   }
 

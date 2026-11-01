@@ -138,6 +138,11 @@ function VerifyOtpForm() {
       setSuccessMessage('Verifikasi email berhasil! Mengarahkan ke Dashboard...')
       setLoading(false)
 
+      // Tandai sesi tab ini aktif via sessionStorage tab verifikasi
+      try {
+        sessionStorage.setItem('simpul_tab_active', '1')
+      } catch {}
+
       const role = response.data?.role
       const redirectParam = searchParams.get('redirect')
 

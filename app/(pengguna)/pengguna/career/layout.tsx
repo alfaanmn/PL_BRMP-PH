@@ -51,7 +51,7 @@ export default async function CareerWizardLayout({
       )
     `)
     .eq('user_id', user.id)
-    .in('status', ['Menunggu Verifikasi', 'Sedang Magang'])
+    .in('status', ['Menunggu Verifikasi', 'Disetujui', 'Terjadwal', 'Sedang Magang'])
     .order('created_at', { ascending: false })
     .limit(1)
 

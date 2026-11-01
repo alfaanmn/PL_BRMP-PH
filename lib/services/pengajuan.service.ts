@@ -405,18 +405,18 @@ export const pengajuanService = {
       // Pemicu Notifikasi (Web & Email) via Route Handler Server-Side yang Aman
       // =========================================================================
       const targetPublicId = data.public_id || publicId || String(data.id)
-      try {
-        await fetch('/api/pengajuan/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            publicId: targetPublicId,
-            event: 'pengajuan_submitted',
-          }),
-        })
-      } catch (notifyErr) {
+      // Browser non-blocking dispatch dengan keepalive: true agar UI instan dan request tuntas di server
+      fetch('/api/pengajuan/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          publicId: targetPublicId,
+          event: 'pengajuan_submitted',
+        }),
+      }).catch((notifyErr) => {
         console.warn('[PengajuanService] Gagal memicu server notify pengajuan baru:', notifyErr)
-      }
+      })
 
       return {
         success: true,
@@ -599,19 +599,27 @@ export const pengajuanService = {
       // =========================================================================
       // Pemicu Notifikasi (Web Admin & Email User/Admin) via Route Server Aman
       // =========================================================================
+      // Bersihkan draft & idempotency key lama di wizard agar submission berikutnya selalu fresh
       try {
-        await fetch('/api/pengajuan/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            publicId,
-            event: 'pengajuan_cancelled',
-            alasan: alasan?.trim() || undefined,
-          }),
-        })
-      } catch (notifyErr) {
+        if (typeof window !== 'undefined') {
+          const { clearAllWizardSessionDrafts } = require('@/hooks/use-pengajuan')
+          clearAllWizardSessionDrafts()
+        }
+      } catch {}
+
+      // Browser non-blocking dispatch dengan keepalive: true agar UI langsung responsif
+      fetch('/api/pengajuan/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          publicId,
+          event: 'pengajuan_cancelled',
+          alasan: alasan?.trim() || undefined,
+        }),
+      }).catch((notifyErr) => {
         console.warn('[PengajuanService batalkanPengajuan] Gagal memicu server notify pembatalan:', notifyErr)
-      }
+      })
 
       return {
         success: true,

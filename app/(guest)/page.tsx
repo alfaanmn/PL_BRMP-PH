@@ -880,6 +880,9 @@ export default async function HomePage() {
                       <div style={{ fontSize: '0.75rem', color: isAvailable ? '#15803d' : '#dc2626', fontWeight: 700 }}>
                         {sisaSlot} Slot tersedia
                       </div>
+                      <div style={{ fontSize: '0.6875rem', color: '#94a3b8', marginTop: '0.125rem' }}>
+                        *Berdasarkan peserta yang disetujui
+                      </div>
                     </div>
                   </div>
 

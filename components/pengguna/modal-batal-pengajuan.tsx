@@ -21,13 +21,15 @@ export function ModalBatalPengajuan({
 }: ModalBatalPengajuanProps) {
   const [alasan, setAlasan] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmittingRef = React.useRef(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   if (!isOpen) return null
 
   const handleConfirmCancel = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (isSubmitting) return
+    if (isSubmitting || isSubmittingRef.current) return
+    isSubmittingRef.current = true
 
     try {
       setIsSubmitting(true)
@@ -48,6 +50,7 @@ export function ModalBatalPengajuan({
       setErrorMsg(msg)
     } finally {
       setIsSubmitting(false)
+      isSubmittingRef.current = false
     }
   }
 

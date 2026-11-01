@@ -29,7 +29,7 @@ export function parseRpcError(error: unknown, context: 'user' | 'admin' = 'user'
     if (context === 'admin') {
       return {
         code: 'KUOTA_PENUH',
-        message: 'Kuota bidang sudah terisi oleh pengajuan lain, muat ulang sisa kuota.',
+        message: 'Kuota bidang ini sudah penuh oleh peserta yang telah disetujui.',
       }
     }
     return {
@@ -147,11 +147,17 @@ export function parseRpcError(error: unknown, context: 'user' | 'admin' = 'user'
     }
   }
 
-  // 9. DATA_CORRUPT
-  if (rawMessage.includes('DATA_CORRUPT')) {
+  // 9. DATA_INCONSISTENCY / DATA_CORRUPT
+  if (rawMessage.includes('DATA_INCONSISTENCY') || rawMessage.includes('DATA_CORRUPT')) {
+    if (context === 'admin') {
+      return {
+        code: 'DATA_INCONSISTENCY',
+        message: 'Terjadi inkonsistensi data kuota atau status pengajuan pada sistem. Silakan muat ulang halaman atau periksa riwayat status.',
+      }
+    }
     return {
-      code: 'DATA_CORRUPT',
-      message: 'Terjadi inkonsistensi data pada pengajuan ini. Hubungi administrator.',
+      code: 'DATA_INCONSISTENCY',
+      message: 'Terjadi inkonsistensi data pada pengajuan ini. Silakan hubungi administrator.',
     }
   }
 

@@ -348,7 +348,7 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
                 <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
                   {(() => {
                     const sisa = selectedBidang.sisa_kuota ?? Math.max(0, (selectedBidang.kuota || 0) - (selectedBidang.terisi || 0))
-                    return sisa > 0 ? `${sisa} kuota tersedia (Kapasitas: ${selectedBidang.kuota})` : 'Kuota penuh (0 slot tersedia)'
+                    return sisa > 0 ? `${sisa} kuota tersedia (Kapasitas: ${selectedBidang.kuota}) • Penerimaan akhir mempertimbangkan kuota saat verifikasi admin` : 'Kuota penuh (0 slot tersedia)'
                   })()}
                 </p>
               </div>

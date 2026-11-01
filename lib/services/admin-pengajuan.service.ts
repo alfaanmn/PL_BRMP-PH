@@ -533,9 +533,10 @@ export const adminPengajuanService = {
         .eq('id', payload.pengajuanId)
 
       if (updateError) {
+        const parsed = parseRpcError(updateError, 'admin')
         return {
           success: false,
-          error: updateError.message || 'Gagal memperbarui status pengajuan.',
+          error: parsed.message || 'Gagal memperbarui status pengajuan.',
         }
       }
 

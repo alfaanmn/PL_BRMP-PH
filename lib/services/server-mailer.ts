@@ -186,6 +186,9 @@ export function getSharedTransporter(): Transporter | null {
 
     transporterInstance = nodemailer.createTransport({
       service: 'gmail',
+      pool: true,
+      maxConnections: 2,
+      maxMessages: 50,
       auth: {
         user,
         pass: rawPass,
@@ -247,6 +250,7 @@ export async function sendServerMail(options: ServerMailOptions): Promise<{
   const recipients = Array.isArray(options.to) ? options.to : [options.to]
   const maskedRecipients = recipients.map(maskEmail).join(', ')
 
+  const startTime = Date.now()
   try {
     const config = getMailerConfig()
     if (!config.isValid || !config.senderAddress) {
@@ -271,15 +275,17 @@ export async function sendServerMail(options: ServerMailOptions): Promise<{
     }
 
     const info = await transporter.sendMail(mailOptions)
-    console.log(`[Mailer ${eventName}] Email berhasil dikirim ke [${maskedRecipients}]. ID: ${info.messageId}`)
+    const durationMs = Date.now() - startTime
+    console.log(`[Mailer ${eventName}] Email berhasil dikirim ke [${maskedRecipients}] (${durationMs}ms). ID: ${info.messageId}`)
     return { success: true, messageId: info.messageId }
   } catch (err: unknown) {
+    const durationMs = Date.now() - startTime
     const errorObj = err as { code?: string; message?: string }
     const errorCode = errorObj?.code || 'UNKNOWN'
     const errorMessage = errorObj?.message || 'Unknown error'
 
     console.error(
-      `[Mailer ERROR] Event: ${eventName} | Penerima: [${maskedRecipients}] | Kode: ${errorCode} | Pesan: ${errorMessage}`
+      `[Mailer ERROR] Event: ${eventName} | Penerima: [${maskedRecipients}] | Durasi: ${durationMs}ms | Kode: ${errorCode} | Pesan: ${errorMessage}`
     )
     return { success: false, error: `[${errorCode}] ${errorMessage}` }
   }

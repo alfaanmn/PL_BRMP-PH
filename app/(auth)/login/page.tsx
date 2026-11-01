@@ -55,6 +55,11 @@ function LoginForm() {
         return
       }
 
+      // Tandai sesi tab ini aktif via sessionStorage tab login (tanpa meninggalkan bridge cookie)
+      try {
+        sessionStorage.setItem('simpul_tab_active', '1')
+      } catch {}
+
       const role = response.data?.role
       const rawParam = searchParams.get('next') || searchParams.get('redirect')
       // Validasi ketat: hanya path internal diawali "/" dan bukan "//" (cegah open redirect)

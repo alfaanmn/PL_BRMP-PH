@@ -51,6 +51,14 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
+      // Set cookie penanda singkat (maksimal 10 detik, dihapus sekali baca oleh TabSessionGuard)
+      cookieStore.set('simpul_tab_bridge', '1', {
+        path: '/',
+        maxAge: 10,
+        sameSite: 'lax',
+        httpOnly: false,
+      })
+
       // Validasi parameter `next` agar hanya path internal diawali "/" dan bukan "//" (cegah open redirect)
       const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null
 
