@@ -720,6 +720,28 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                     )}
 
                     
+                    {item.status === 'Sedang Magang' && (
+                      <Link
+                        href={`/pengguna/pengajuan/${item.public_id}`}
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          color: '#ffffff',
+                          backgroundColor: '#16a34a',
+                          border: '1px solid #15803d',
+                          borderRadius: '6px',
+                          padding: '0.3rem 0.75rem',
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          boxShadow: '0 1px 2px rgba(22, 163, 74, 0.25)',
+                        }}
+                      >
+                        <span>📖</span>
+                        <span>Isi Logbook</span>
+                      </Link>
+                    )}
                     <button
                       type="button"
                       onClick={() => setSelectedPengajuan(item)}

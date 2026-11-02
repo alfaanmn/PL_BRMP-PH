@@ -1,3 +1,4 @@
+import Link from 'next/link'
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -1050,13 +1051,35 @@ export function PengajuanDetailModal({
           padding: '1rem 1.5rem',
           borderTop: '1px solid #e2e8f0',
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           alignItems: 'center',
           backgroundColor: '#f8fafc',
           borderBottomLeftRadius: '16px',
           borderBottomRightRadius: '16px'
         }}>
           
+          {pengajuan.public_id ? (
+            <Link
+              href={`/pengguna/pengajuan/${pengajuan.public_id}`}
+              style={{
+                padding: '0.5rem 1.125rem',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                color: '#ffffff',
+                backgroundColor: '#16a34a',
+                border: 'none',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)',
+              }}
+            >
+              <span>📖</span>
+              <span>Buka Logbook &amp; Rincian Penuh</span>
+            </Link>
+          ) : <div />}
           <button
             type="button"
             onClick={onClose}
