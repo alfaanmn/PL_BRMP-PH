@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { usePengajuanWizard } from '@/hooks/use-pengajuan'
-import { validatePengajuanStep1, calculateDurationMonths } from '@/lib/validations/pengajuan.schema'
+import { validatePengajuanStep1, calculateDurationMonths, calculateMinEndDate } from '@/lib/validations/pengajuan.schema'
 import { BidangItem } from '@/lib/services/bidang.service'
 import { AnggotaMagang, PengajuanStep1State } from '@/types/pengajuan.types'
 
@@ -704,24 +704,6 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
           {errors.topik_magang && <div className="form-error">{errors.topik_magang}</div>}
         </div>
 
-        <div style={{ marginBottom: '0.875rem' }}>
-          <div>
-            <label className="form-label">
-              Tanggal surat pengantar <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <input
-              type="date"
-              value={formData.tanggal_surat}
-              onChange={(e) => {
-                setFormData({ ...formData, tanggal_surat: e.target.value })
-                if (errors.tanggal_surat) setErrors({ ...errors, tanggal_surat: '' })
-              }}
-              className="form-input-control"
-            />
-            {errors.tanggal_surat && <div className="form-error">{errors.tanggal_surat}</div>}
-          </div>
-        </div>
-
         {/* Tanggal Pelaksanaan & Estimasi Durasi */}
         <div className="responsive-grid-3" style={{
           display: 'grid',
@@ -748,6 +730,7 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
             <input
               type="date"
               value={formData.tanggal_selesai}
+              min={formData.tanggal_mulai ? calculateMinEndDate(formData.tanggal_mulai) : undefined}
               onChange={(e) => handleEndDateChange(e.target.value)}
               className="form-input-control"
             />

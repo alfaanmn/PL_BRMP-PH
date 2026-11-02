@@ -340,7 +340,7 @@ export const pengajuanService = {
         {
           p_bidang_id: Number(payload.bidang_id),
           p_nomor_surat: payload.nomor_surat || null,
-          p_tanggal_surat: payload.tanggal_surat,
+          p_tanggal_surat: payload.tanggal_surat || null,
           p_jenjang: verifiedJenjang,
           p_asal_instansi: payload.asal_instansi,
           p_jurusan: payload.jurusan,

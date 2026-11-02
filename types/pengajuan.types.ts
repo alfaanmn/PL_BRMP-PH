@@ -16,7 +16,7 @@ export interface PengajuanStep1State {
   nim_nis: string
   topik_magang: string
   nomor_surat?: string | null
-  tanggal_surat: string
+  tanggal_surat?: string | null
   tanggal_mulai: string
   tanggal_selesai: string
   durasi_bulan: number
@@ -49,7 +49,7 @@ export interface PengajuanInsertPayload {
   bidang_id: number
   pembimbing_id?: number | null
   nomor_surat?: string | null
-  tanggal_surat: string
+  tanggal_surat?: string | null
   jenjang: string
   asal_instansi: string
   jurusan: string

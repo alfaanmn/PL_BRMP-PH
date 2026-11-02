@@ -46,9 +46,6 @@ export function validatePengajuanStep1(data: Partial<PengajuanStep1State>): {
     errors.topik_magang = 'Topik magang minimal 5 karakter'
   }
 
-  if (!data.tanggal_surat) {
-    errors.tanggal_surat = 'Tanggal surat pengantar wajib diisi'
-  }
 
   if (!data.tanggal_mulai) {
     errors.tanggal_mulai = 'Tanggal mulai magang wajib diisi'
@@ -63,6 +60,11 @@ export function validatePengajuanStep1(data: Partial<PengajuanStep1State>): {
     const end = new Date(data.tanggal_selesai)
     if (end < start) {
       errors.tanggal_selesai = 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai'
+    } else {
+      const minEnd = calculateMinEndDate(data.tanggal_mulai)
+      if (minEnd && data.tanggal_selesai < minEnd) {
+        errors.tanggal_selesai = 'Durasi magang minimal adalah 1 bulan'
+      }
     }
   }
 
@@ -131,4 +133,16 @@ export function calculateDurationMonths(startDateStr: string, endDateStr: string
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   const months = Math.max(1, Math.round(diffDays / 30))
   return months
+}
+
+/**
+ * Menghitung tanggal selesai minimal (tepat 1 bulan berikutnya) dari tanggal mulai
+ */
+export function calculateMinEndDate(startDateStr: string): string {
+  if (!startDateStr) return ''
+  const [y, m, d] = startDateStr.split('-').map(Number)
+  if (!y || !m || !d) return ''
+  const date = new Date(Date.UTC(y, m - 1, d))
+  date.setUTCMonth(date.getUTCMonth() + 1)
+  return date.toISOString().slice(0, 10)
 }

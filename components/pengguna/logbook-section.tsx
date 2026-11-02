@@ -49,9 +49,62 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
   // Pratinjau signed url
   const [openingDocId, setOpeningDocId] = useState<string | null>(null)
 
-  // Hanya tampilkan jika status 'Sedang Magang'
+  // Tampilkan kartu informatif jika status belum 'Sedang Magang' agar pemohon mengetahui lokasi modul logbook
   if (pengajuanStatus !== 'Sedang Magang') {
-    return null
+    return (
+      <div style={{
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '12px',
+        padding: '1.25rem',
+        marginTop: '1.25rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.625rem' }}>
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            backgroundColor: '#eff6ff',
+            color: '#2563eb',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '18px',
+          }}>
+            📖
+          </div>
+          <div>
+            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+              Logbook Kegiatan Magang Mingguan
+            </h3>
+            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+              Pencatatan dan unggah laporan kegiatan mingguan peserta magang
+            </span>
+          </div>
+        </div>
+
+        <div style={{
+          backgroundColor: '#f8fafc',
+          border: '1px dashed #cbd5e1',
+          borderRadius: '10px',
+          padding: '0.875rem 1rem',
+          fontSize: '0.8125rem',
+          color: '#475569',
+          lineHeight: 1.6,
+          display: 'flex',
+          gap: '0.625rem',
+          alignItems: 'flex-start',
+        }}>
+          <span style={{ fontSize: '1.125rem', lineHeight: 1 }}>ℹ️</span>
+          <div>
+            <strong style={{ color: '#0f172a' }}>Kapan modul ini aktif?</strong>
+            <p style={{ margin: '0.25rem 0 0', color: '#64748b' }}>
+              Modul pengunggahan berkas dan catatan mingguan akan otomatis aktif di halaman ini setelah permohonan magang Anda disetujui oleh tim admin dan telah memasuki periode aktif magang (status: <strong style={{ color: '#16a34a' }}>Sedang Magang</strong>).
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const fetchLogbooks = async () => {
@@ -520,3 +573,4 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
     </div>
   )
 }
+

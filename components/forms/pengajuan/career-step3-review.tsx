@@ -146,115 +146,169 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
     return (
       <div style={{
         backgroundColor: '#ffffff',
-        border: '1px solid #bbf7d0',
-        borderRadius: '20px',
-        padding: '3rem 2rem',
+        border: '1.5px solid #a7f3d0',
+        borderRadius: '24px',
+        padding: '3.25rem 2rem',
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '1.25rem',
-        boxShadow: '0 10px 25px -5px rgba(21, 128, 61, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)'
+        gap: '1.5rem',
+        boxShadow: '0 20px 45px -12px rgba(16, 185, 129, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.06)',
+        maxWidth: '640px',
+        margin: '1.5rem auto'
       }}>
+        {/* Glow Success Icon */}
         <div style={{
-          width: '72px',
-          height: '72px',
+          width: '84px',
+          height: '84px',
           borderRadius: '50%',
-          backgroundColor: '#ecfdf5',
-          color: '#15803d',
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 900,
-          fontSize: '2.25rem',
-          border: '2px solid #86efac',
-          boxShadow: '0 0 0 8px rgba(236, 253, 245, 0.8)'
+          boxShadow: '0 0 0 10px rgba(16, 185, 129, 0.15), 0 10px 25px rgba(16, 185, 129, 0.3)',
+          color: '#ffffff',
+          marginBottom: '0.25rem'
         }}>
-          ✓
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
         </div>
 
-        <div>
-          <h3 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.5rem 0' }}>
+        {/* Title & Badge */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+          <h3 style={{ fontSize: '1.625rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.025em' }}>
             Pengajuan Magang Berhasil Dikirim!
           </h3>
-          <p style={{ fontSize: '0.9375rem', color: '#475569', maxWidth: '480px', margin: '0 auto', lineHeight: 1.6 }}>
-            Permohonan magang Anda telah tercatat dengan status{' '}
-            <span style={{
-              display: 'inline-block',
-              backgroundColor: '#fef3c7',
-              color: '#92400e',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '6px',
-              fontWeight: 700,
-              fontSize: '0.8125rem',
-              border: '1px solid #fde68a'
-            }}>
-              Menunggu Verifikasi
-            </span>.
-            Tim Admin BRMP akan segera memverifikasi berkas Anda.
+
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            backgroundColor: '#fffbeb',
+            border: '1px solid #fde68a',
+            padding: '0.4rem 1rem',
+            borderRadius: '9999px',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            color: '#92400e',
+            boxShadow: '0 1px 2px rgba(245, 158, 11, 0.08)'
+          }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b', display: 'inline-block' }}></span>
+            <span>Status: <strong style={{ color: '#b45309' }}>Menunggu Verifikasi</strong></span>
+          </div>
+
+          <p style={{ fontSize: '0.9375rem', color: '#475569', maxWidth: '500px', margin: '0.25rem auto 0', lineHeight: 1.6 }}>
+            Permohonan magang Anda telah tercatat di sistem BRMP Kementerian Pertanian. Tim Administrator akan segera memverifikasi berkas persyaratan Anda.
           </p>
         </div>
 
+        {/* Tahap Selanjutnya / Info Logbook Hint */}
+        <div style={{
+          width: '100%',
+          maxWidth: '520px',
+          backgroundColor: '#f8fafc',
+          border: '1px dashed #cbd5e1',
+          borderRadius: '12px',
+          padding: '0.875rem 1.125rem',
+          textAlign: 'left',
+          fontSize: '0.8125rem',
+          color: '#334155',
+          lineHeight: 1.6,
+          display: 'flex',
+          gap: '0.75rem',
+          alignItems: 'flex-start'
+        }}>
+          <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>💡</span>
+          <div>
+            <strong style={{ color: '#0f172a', display: 'block', marginBottom: '2px' }}>Informasi Tahap Selanjutnya:</strong>
+            Anda dapat memantau status persetujuan di menu <strong>Riwayat</strong>. Modul <strong>Logbook Kegiatan Mingguan</strong> akan otomatis aktif di halaman detail pengajuan setelah permohonan berstatus <strong>Sedang Magang</strong>.
+          </div>
+        </div>
+
+        {/* Countdown Pill */}
         <div style={{
           fontSize: '0.8125rem',
           color: '#64748b',
-          backgroundColor: '#f8fafc',
-          padding: '0.5rem 1rem',
-          borderRadius: '8px',
-          border: '1px solid #e2e8f0',
-          display: 'flex',
+          backgroundColor: '#ecfdf5',
+          padding: '0.4rem 1rem',
+          borderRadius: '9999px',
+          border: '1px solid #a7f3d0',
+          display: 'inline-flex',
           alignItems: 'center',
-          gap: '0.5rem'
+          gap: '0.5rem',
+          fontWeight: 500
         }}>
-          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }}></span>
-          Otomatis dialihkan ke halaman riwayat dalam <strong>{countdown}</strong> detik...
+          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}></span>
+          Otomatis dialihkan ke riwayat dalam <strong style={{ color: '#065f46' }}>{countdown}</strong> detik...
         </div>
 
         {/* Action Buttons */}
         <div style={{
           display: 'flex',
           gap: '0.875rem',
-          marginTop: '0.75rem',
           flexWrap: 'wrap',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          width: '100%',
+          maxWidth: '520px'
         }}>
           <button
             type="button"
             onClick={() => router.push('/pengguna/riwayat')}
             style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: '#15803d',
+              flex: '1 1 220px',
+              padding: '0.8125rem 1.25rem',
+              background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
               color: '#ffffff',
-              borderRadius: '10px',
+              borderRadius: '12px',
               fontWeight: 700,
               fontSize: '0.875rem',
               border: 'none',
               cursor: 'pointer',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '0.5rem',
-              boxShadow: '0 4px 10px rgba(21, 128, 61, 0.25)',
-              transition: 'all 0.15s ease'
+              boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)',
+              transition: 'all 0.2s ease'
             }}
           >
-            📋 Lihat Riwayat &amp; Status Pengajuan
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Lihat Riwayat &amp; Status</span>
           </button>
+
           <button
             type="button"
             onClick={() => router.push('/pengguna/dashboard')}
             style={{
-              padding: '0.75rem 1.25rem',
+              flex: '1 1 180px',
+              padding: '0.8125rem 1.25rem',
               backgroundColor: '#ffffff',
               color: '#334155',
-              borderRadius: '10px',
+              borderRadius: '12px',
               fontWeight: 700,
               fontSize: '0.875rem',
-              border: '1px solid #cbd5e1',
+              border: '1.5px solid #cbd5e1',
               cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.2s ease'
             }}
           >
-            🏠 Kembali ke Beranda
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Kembali ke Beranda</span>
           </button>
         </div>
       </div>
@@ -516,10 +570,12 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
               <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.nomor_surat}</strong>
             </div>
           ) : null}
+          {state.step1.tanggal_surat ? (
             <div style={{ padding: '0.625rem 0.75rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
               <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', marginBottom: '2px' }}>Tanggal surat</span>
-              <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.tanggal_surat || '-'}</strong>
+              <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.tanggal_surat}</strong>
             </div>
+          ) : null}
             <div style={{ padding: '0.625rem 0.75rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
               <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', marginBottom: '2px' }}>Periode pelaksanaan</span>
               <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.tanggal_mulai || '-'} s/d {state.step1.tanggal_selesai || '-'}</strong>
