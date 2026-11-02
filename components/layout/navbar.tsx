@@ -338,6 +338,25 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     </Link>
 
                     <Link
+                      href="/pengguna/logbook"
+                      style={{
+                        padding: '0.45rem 0.75rem',
+                        color: '#1A6FC4',
+                        textDecoration: 'none',
+                        fontSize: '0.8125rem',
+                        fontWeight: 700,
+                        borderRadius: '8px',
+                        border: '1px solid #bfdbfe',
+                        backgroundColor: pathname === '/pengguna/logbook' ? '#eff6ff' : '#ffffff',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.375rem'
+                      }}
+                    >
+                      <span>Logbook</span>
+                    </Link>
+
+                    <Link
                       href="/pengguna/sertifikat"
                       style={{
                         padding: '0.45rem 0.75rem',
@@ -816,6 +835,27 @@ export function Navbar({ user, profile, activeKey }: NavbarProps) {
                     >
                       <span>📄</span>
                       <span>Riwayat Pengajuan</span>
+                    </Link>
+
+                    <Link
+                      href="/pengguna/logbook"
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        minHeight: '44px',
+                        padding: '0 0.875rem',
+                        borderRadius: '8px',
+                        backgroundColor: pathname === '/pengguna/logbook' ? '#f0fdf4' : 'transparent',
+                        color: pathname === '/pengguna/logbook' ? '#15803d' : '#334155',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      <span>📖</span>
+                      <span>Logbook Kegiatan</span>
                     </Link>
 
                     <Link
