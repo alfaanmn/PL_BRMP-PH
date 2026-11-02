@@ -1,3 +1,4 @@
+import { StorageUsageWidget } from '@/components/admin/storage-usage-widget'
 'use client'
 
 import React, { useEffect, useState } from 'react'
@@ -248,6 +249,9 @@ export default function AdminDashboardPage() {
 
       {/* 4. Antrean Pengajuan Magang (List Item Per Baris) */}
       <DashboardPengajuanTable items={recentPengajuans} loading={loading} />
+
+      {/* 5. Indikator Kapasitas Storage Supabase */}
+      <StorageUsageWidget />
     </div>
   )
 }

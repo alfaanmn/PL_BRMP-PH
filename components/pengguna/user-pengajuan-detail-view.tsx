@@ -1,3 +1,4 @@
+import { LogbookSection } from '@/components/pengguna/logbook-section'
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -1047,6 +1048,8 @@ export function UserPengajuanDetailView({
           </div>
         </div>
       )}
+
+      <LogbookSection pengajuanId={pengajuan.id} pengajuanStatus={currentStatus} />
 
       {/* Document Preview Modal */}
       {previewDoc && (

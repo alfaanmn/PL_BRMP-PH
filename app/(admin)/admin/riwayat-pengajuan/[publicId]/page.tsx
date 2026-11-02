@@ -1,3 +1,4 @@
+import { LogbookViewer } from '@/components/admin/logbook-viewer'
 'use client'
 
 import React, { useEffect, useState, useCallback, use } from 'react'
@@ -949,6 +950,8 @@ export default function AdminPengajuanDetailPage({ params }: PageProps) {
           <PengajuanTimelineLog logs={logs} loading={loading} />
         </div>
       </div>
+
+      {detail && <LogbookViewer pengajuanId={detail.id} />}
 
       {/* 3. Modal Form Verifikasi Lama (Selesai Magang) */}
       <PengajuanVerifikasiModal
