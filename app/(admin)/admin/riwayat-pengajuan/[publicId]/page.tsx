@@ -1,5 +1,5 @@
-import { LogbookViewer } from '@/components/admin/logbook-viewer'
 'use client'
+import { LogbookViewer } from '@/components/admin/logbook-viewer'
 
 import React, { useEffect, useState, useCallback, use } from 'react'
 import Link from 'next/link'

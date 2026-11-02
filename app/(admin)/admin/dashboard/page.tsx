@@ -1,5 +1,5 @@
-import { StorageUsageWidget } from '@/components/admin/storage-usage-widget'
 'use client'
+import { StorageUsageWidget } from '@/components/admin/storage-usage-widget'
 
 import React, { useEffect, useState } from 'react'
 import {

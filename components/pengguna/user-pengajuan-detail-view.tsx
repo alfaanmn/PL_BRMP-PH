@@ -1,5 +1,5 @@
-import { LogbookSection } from '@/components/pengguna/logbook-section'
 'use client'
+import { LogbookSection } from '@/components/pengguna/logbook-section'
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
