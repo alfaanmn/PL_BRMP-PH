@@ -35,7 +35,7 @@ export function BlockedApplicationCard({
       title: 'Pengajuan Magang Sedang Diproses',
       desc:
         reason ||
-        'Anda memiliki permohonan magang yang saat ini sedang dalam proses verifikasi oleh sekretariat BRMP. Sesuai ketentuan, Anda baru dapat mengajukan kembali apabila permohonan ini ditolak atau dibatalkan.',
+        'Anda memiliki permohonan magang yang saat ini sedang dalam proses verifikasi oleh sekretariat BRMP. Sesuai ketentuan, Anda baru dapat mengajukan kembali apabila permohonan ini telah selesai diproses oleh administrator.',
     }
     : {
       border: '#bbf7d0',

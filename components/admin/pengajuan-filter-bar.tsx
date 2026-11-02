@@ -53,7 +53,6 @@ export function PengajuanFilterBar({
     { key: 'Sedang Magang', label: 'Sedang magang' },
     { key: 'Selesai', label: 'Selesai' },
     { key: 'Ditolak', label: 'Ditolak' },
-    { key: 'Dibatalkan', label: 'Dibatalkan' },
   ]
 
   const hasActiveFilter =

@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { PengajuanDetailModal } from './pengajuan-detail-modal'
-import { ModalBatalPengajuan } from '@/components/pengguna/modal-batal-pengajuan'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
 import { FileTextIcon } from '@/components/ui/admin-icons'
 
@@ -14,7 +13,6 @@ interface UserRiwayatListProps {
 export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
   const [pengajuans, setPengajuans] = useState<any[]>(initialPengajuans || [])
   const [selectedPengajuan, setSelectedPengajuan] = useState<any | null>(null)
-  const [cancellingItem, setCancellingItem] = useState<any | null>(null)
   const [activeTab, setActiveTab] = useState<string>('semua')
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
@@ -22,19 +20,6 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
   useEffect(() => {
     setPengajuans(initialPengajuans || [])
   }, [initialPengajuans])
-
-  const handlePengajuanCancelled = (targetIdOrPublicId: string | number) => {
-    setPengajuans((prev) =>
-      prev.map((p) =>
-        p.public_id === targetIdOrPublicId || String(p.id) === String(targetIdOrPublicId)
-          ? { ...p, status: 'Dibatalkan' }
-          : p
-      )
-    )
-    if (selectedPengajuan && (selectedPengajuan.public_id === targetIdOrPublicId || String(selectedPengajuan.id) === String(targetIdOrPublicId))) {
-      setSelectedPengajuan((prev: any) => prev ? { ...prev, status: 'Dibatalkan' } : null)
-    }
-  }
 
   const handlePreviewSertifikat = async (pengajuanId: number, title: string) => {
     try {
@@ -734,31 +719,7 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
                       </>
                     )}
 
-                    {item.status === 'Menunggu Verifikasi' && (
-                      <button
-                        type="button"
-                        onClick={() => setCancellingItem(item)}
-                        style={{
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          color: '#dc2626',
-                          backgroundColor: '#fef2f2',
-                          border: '1px solid #fecaca',
-                          borderRadius: '6px',
-                          padding: '0.3rem 0.65rem',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.25rem',
-                          transition: 'all 0.15s ease'
-                        }}
-                        title="Batalkan permohonan magang ini"
-                      >
-                        <span>✕</span>
-                        <span>Batalkan</span>
-                      </button>
-                    )}
-
+                    
                     <button
                       type="button"
                       onClick={() => setSelectedPengajuan(item)}
@@ -793,21 +754,6 @@ export function UserRiwayatList({ initialPengajuans }: UserRiwayatListProps) {
           isOpen={!!selectedPengajuan}
           onClose={() => setSelectedPengajuan(null)}
           pengajuan={selectedPengajuan}
-          onPengajuanCancelled={handlePengajuanCancelled}
-        />
-      )}
-
-      {/* Modal Konfirmasi Pembatalan Pengajuan dari Kartu List */}
-      {cancellingItem && (
-        <ModalBatalPengajuan
-          isOpen={!!cancellingItem}
-          onClose={() => setCancellingItem(null)}
-          publicId={cancellingItem.public_id || String(cancellingItem.id)}
-          bidangNama={cancellingItem.bidangs?.nama}
-          onSuccess={() => {
-            handlePengajuanCancelled(cancellingItem.public_id || String(cancellingItem.id))
-            setCancellingItem(null)
-          }}
         />
       )}
 

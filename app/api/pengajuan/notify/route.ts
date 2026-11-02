@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const allowedEvents = ['pengajuan_submitted', 'pengajuan_cancelled']
+    const allowedEvents = ['pengajuan_submitted']
     if (!event || !allowedEvents.includes(event)) {
       return NextResponse.json(
         { success: false, error: `Event tidak didukung. Pilihan: ${allowedEvents.join(', ')}` },

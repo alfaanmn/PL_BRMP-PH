@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
-import { ModalBatalPengajuan } from '@/components/pengguna/modal-batal-pengajuan'
 import { EyeIcon, ExternalLinkIcon, FileTextIcon, DownloadIcon, LoaderIcon } from '@/components/ui/admin-icons'
 
 interface PengajuanDetailModalProps {
@@ -19,7 +18,6 @@ export function PengajuanDetailModal({
   pengajuan,
   onPengajuanCancelled,
 }: PengajuanDetailModalProps) {
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
   const [openingDocKey, setOpeningDocKey] = useState<string | null>(null)
 
@@ -1052,34 +1050,13 @@ export function PengajuanDetailModal({
           padding: '1rem 1.5rem',
           borderTop: '1px solid #e2e8f0',
           display: 'flex',
-          justifyContent: pengajuan.status === 'Menunggu Verifikasi' ? 'space-between' : 'flex-end',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           backgroundColor: '#f8fafc',
           borderBottomLeftRadius: '16px',
           borderBottomRightRadius: '16px'
         }}>
-          {pengajuan.status === 'Menunggu Verifikasi' && (
-            <button
-              type="button"
-              onClick={() => setIsCancelModalOpen(true)}
-              style={{
-                padding: '0.45rem 0.875rem',
-                fontSize: '0.8125rem',
-                fontWeight: 600,
-                color: '#dc2626',
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-              }}
-            >
-              ✕ Batalkan Pengajuan
-            </button>
-          )}
-
+          
           <button
             type="button"
             onClick={onClose}
@@ -1108,19 +1085,6 @@ export function PengajuanDetailModal({
         onClose={() => setPreviewDoc(null)}
       />
 
-      {/* Dialog Konfirmasi Pembatalan Pengajuan */}
-      <ModalBatalPengajuan
-        isOpen={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
-        publicId={pengajuan.public_id || String(pengajuan.id)}
-        bidangNama={pengajuan.bidangs?.nama}
-        onSuccess={() => {
-          if (onPengajuanCancelled) {
-            onPengajuanCancelled(pengajuan.public_id || String(pengajuan.id))
-          }
-          onClose()
-        }}
-      />
-    </div>
+          </div>
   )
 }

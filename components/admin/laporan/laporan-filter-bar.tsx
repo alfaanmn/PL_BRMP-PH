@@ -125,7 +125,6 @@ export function LaporanFilterBar({
             <option value="Sedang Magang">Sedang Magang</option>
             <option value="Selesai">Selesai</option>
             <option value="Ditolak">Ditolak</option>
-            <option value="Dibatalkan">Dibatalkan</option>
           </select>
         </div>
 

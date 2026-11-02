@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { pengajuanService } from '@/lib/services/pengajuan.service'
 import { DocumentPreviewModal } from '@/components/shared/document-preview-modal'
-import { ModalBatalPengajuan } from '@/components/pengguna/modal-batal-pengajuan'
 import {
   FileTextIcon,
   EyeIcon,
@@ -36,7 +35,6 @@ export function UserPengajuanDetailView({
   const router = useRouter()
   const [currentStatus, setCurrentStatus] = useState<string>(pengajuan.status)
   const [currentLogs, setCurrentLogs] = useState<PengajuanStatusLog[]>(logs)
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
   const [previewDoc, setPreviewDoc] = useState<{ url: string | null; title: string } | null>(null)
   const [openingDocKey, setOpeningDocKey] = useState<string | null>(null)
 
@@ -332,29 +330,7 @@ export function UserPengajuanDetailView({
               {badge.label}
             </div>
 
-            {currentStatus === 'Menunggu Verifikasi' && (
-              <button
-                type="button"
-                onClick={() => setIsCancelModalOpen(true)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  padding: '0.4rem 0.85rem',
-                  borderRadius: '8px',
-                  backgroundColor: '#fef2f2',
-                  color: '#dc2626',
-                  border: '1px solid #fecaca',
-                  fontSize: '0.8125rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                ✕ Batalkan Pengajuan
-              </button>
-            )}
-          </div>
+                      </div>
         </div>
 
         {/* Status notice alert */}
@@ -1082,28 +1058,7 @@ export function UserPengajuanDetailView({
         />
       )}
 
-      {/* Modal Dialog Konfirmasi Pembatalan Pengajuan */}
-      <ModalBatalPengajuan
-        isOpen={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
-        publicId={pengajuan.public_id}
-        bidangNama={pengajuan.bidangs?.nama}
-        onSuccess={() => {
-          setCurrentStatus('Dibatalkan')
-          setCurrentLogs((prev) => [
-            ...prev,
-            {
-              id: Date.now(),
-              pengajuan_id: pengajuan.id,
-              status: 'Dibatalkan',
-              catatan: 'Dibatalkan oleh pemohon magang.',
-              created_at: new Date().toISOString(),
-            },
-          ])
-          router.refresh()
-        }}
-      />
-    </div>
+          </div>
   )
 }
 
