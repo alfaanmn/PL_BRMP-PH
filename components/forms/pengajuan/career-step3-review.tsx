@@ -510,10 +510,12 @@ export function CareerStep3Review({ bidangList, userProfile }: CareerStep3Review
             gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
             gap: '0.625rem'
           }}>
+            {state.step1.nomor_surat ? (
             <div style={{ padding: '0.625rem 0.75rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
               <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', marginBottom: '2px' }}>Nomor surat</span>
-              <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.nomor_surat || '-'}</strong>
+              <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.nomor_surat}</strong>
             </div>
+          ) : null}
             <div style={{ padding: '0.625rem 0.75rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
               <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', marginBottom: '2px' }}>Tanggal surat</span>
               <strong style={{ color: '#0f172a', fontSize: '0.8125rem' }}>{state.step1.tanggal_surat || '-'}</strong>

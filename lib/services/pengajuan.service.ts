@@ -339,7 +339,7 @@ export const pengajuanService = {
         'submit_pengajuan_atomic',
         {
           p_bidang_id: Number(payload.bidang_id),
-          p_nomor_surat: payload.nomor_surat,
+          p_nomor_surat: payload.nomor_surat || null,
           p_tanggal_surat: payload.tanggal_surat,
           p_jenjang: verifiedJenjang,
           p_asal_instansi: payload.asal_instansi,

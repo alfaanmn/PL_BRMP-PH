@@ -46,10 +46,6 @@ export function validatePengajuanStep1(data: Partial<PengajuanStep1State>): {
     errors.topik_magang = 'Topik magang minimal 5 karakter'
   }
 
-  if (!data.nomor_surat || !data.nomor_surat.trim()) {
-    errors.nomor_surat = 'Nomor surat pengantar wajib diisi'
-  }
-
   if (!data.tanggal_surat) {
     errors.tanggal_surat = 'Tanggal surat pengantar wajib diisi'
   }

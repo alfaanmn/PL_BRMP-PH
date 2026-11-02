@@ -704,29 +704,7 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
           {errors.topik_magang && <div className="form-error">{errors.topik_magang}</div>}
         </div>
 
-        <div className="responsive-grid-2" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-          gap: '0.875rem',
-          marginBottom: '0.875rem'
-        }}>
-          <div>
-            <label className="form-label">
-              Nomor surat pengantar <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Contoh: 124/UN1.FAPET/AK/2025"
-              value={formData.nomor_surat}
-              onChange={(e) => {
-                setFormData({ ...formData, nomor_surat: e.target.value })
-                if (errors.nomor_surat) setErrors({ ...errors, nomor_surat: '' })
-              }}
-              className="form-input-control"
-            />
-            {errors.nomor_surat && <div className="form-error">{errors.nomor_surat}</div>}
-          </div>
-
+        <div style={{ marginBottom: '0.875rem' }}>
           <div>
             <label className="form-label">
               Tanggal surat pengantar <span style={{ color: '#ef4444' }}>*</span>
