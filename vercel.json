@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/check-magang-selesai",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/logbook-reminder",
+      "schedule": "0 2 * * 4,5"
     }
   ]
 }
