@@ -171,28 +171,13 @@ export async function POST(request: Request) {
       )
     }
 
-    if (event === 'pengajuan_cancelled' && pengajuan.status !== 'Dibatalkan') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Event pengajuan_cancelled ditolak: status aktual pengajuan adalah "${pengajuan.status}", bukan "Dibatalkan"`,
-        },
-        { status: 400 }
-      )
-    }
-
     // 8. Guard Pencegahan Pengiriman Ganda (Idempotency Check)
     const expectedAdminLink = `/admin/riwayat-pengajuan/${pengajuan.public_id}`
-    let duplicateQuery = adminClient
+    const duplicateQuery = adminClient
       .from('notifikasi')
       .select('id')
       .eq('link', expectedAdminLink)
-
-    if (event === 'pengajuan_submitted') {
-      duplicateQuery = duplicateQuery.eq('judul', 'Pengajuan Magang Baru')
-    } else if (event === 'pengajuan_cancelled') {
-      duplicateQuery = duplicateQuery.eq('judul', 'Pengajuan Magang Dibatalkan Pemohon')
-    }
+      .eq('judul', 'Pengajuan Magang Baru')
 
     const { data: existingNotifs } = await duplicateQuery.limit(1)
     if (existingNotifs && existingNotifs.length > 0) {
@@ -318,65 +303,6 @@ export async function POST(request: Request) {
             name: 'Admin SIMPUL',
           },
           pengajuan: pData,
-        })
-      )
-    } else if (event === 'pengajuan_cancelled') {
-      // 10E. Web Notification untuk Administrator
-      try {
-        const { data: adminProfiles } = await adminClient
-          .from('profiles')
-          .select('id')
-          .eq('role', 'administrator')
-          .eq('is_active', true)
-
-        if (adminProfiles && adminProfiles.length > 0) {
-          const notifInserts = adminProfiles.map((adm) => ({
-            user_id: adm.id,
-            judul: 'Pengajuan Magang Dibatalkan Pemohon',
-            pesan: `Permohonan magang #${publicId} (${namaBidang}) atas nama ${namaPemohon} (${asalInstansi}) telah dibatalkan oleh pemohon.`,
-            link: expectedAdminLink,
-            is_read: false,
-          }))
-          await adminClient.from('notifikasi').insert(notifInserts)
-        }
-      } catch (err) {
-        console.warn('[Notify API] Gagal membuat web notifikasi pembatalan admin:', err)
-      }
-
-      // 10F. Email Konfirmasi Pembatalan ke Pemohon & Admin
-      const cancelPayload = {
-        ...pData,
-        statusSebelum: 'Menunggu Verifikasi',
-        statusSesudah: 'Dibatalkan',
-        alasanPembatalan: cleanAlasan,
-      }
-
-      if (pemohonEmail) {
-        emailTasks.push(
-          emailService.sendNotification({
-            event: 'pengajuan_cancelled',
-            recipientRole: 'user',
-            recipient: {
-              email: pemohonEmail,
-              name: namaPemohon,
-            },
-            pengajuan: cancelPayload,
-          })
-        )
-      }
-
-      const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
-      const adminEmail = getAdminEmailAddress()
-
-      emailTasks.push(
-        emailService.sendNotification({
-          event: 'pengajuan_cancelled',
-          recipientRole: 'admin',
-          recipient: {
-            email: adminEmail,
-            name: 'Admin SIMPUL',
-          },
-          pengajuan: cancelPayload,
         })
       )
     }
