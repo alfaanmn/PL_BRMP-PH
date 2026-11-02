@@ -13,11 +13,20 @@
 -- 1. Pastikan kolom nomor_surat bersifat NULLABLE (deprecated)
 ALTER TABLE public.pengajuans ALTER COLUMN nomor_surat DROP NOT NULL;
 
--- 2. Cabut hak eksekusi RPC batalkan_pengajuan dari pemohon / publik
--- (Berdasarkan audit kode, fungsi ini TIDAK digunakan oleh panel admin)
-REVOKE EXECUTE ON FUNCTION public.batalkan_pengajuan(TEXT, TEXT) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.batalkan_pengajuan(TEXT, TEXT) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.batalkan_pengajuan(TEXT, TEXT) FROM PUBLIC;
+-- 2. Cabut hak eksekusi RPC batalkan_pengajuan dari pemohon / publik (dinamis untuk semua signature)
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (
+    SELECT p.oid::regprocedure AS func_signature
+    FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'public' AND p.proname = 'batalkan_pengajuan'
+  ) LOOP
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION ' || r.func_signature || ' FROM authenticated, anon, PUBLIC;';
+  END LOOP;
+END $$;
 
 -- 3. Trigger proteksi status pengajuan: Tolak perubahan status oleh non-admin
 CREATE OR REPLACE FUNCTION public.protect_pengajuan_status()
