@@ -1,0 +1,72 @@
+flowchart LR
+    %% Definisi Style
+    classDef actor fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef usecase fill:#ffffff,stroke:#37474f,stroke-width:1.5px,color:#263238;
+    classDef secondary fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100;
+
+    %% Aktor
+    pengguna["👤 Pengguna<br/>(Pemohon Magang)"]:::actor
+    admin["👤 Administrator"]:::actor
+    sys_notif["⚙️ Sistem Notifikasi / Email"]:::secondary
+
+    %% Boundary Sistem
+    subgraph System ["SIM-Magang (Sistem Informasi Manajemen Magang)"]
+        %% Use Case Umum
+        UC01(["Melakukan Otentikasi<br/>(Login/Logout)"]):::usecase
+        UC02(["Mendaftarkan Akun"]):::usecase
+        UC03(["Mengelola Profil Pengguna"]):::usecase
+
+        %% Use Case Pengguna
+        UC04(["Melihat Informasi<br/>Bidang & Kuota"]):::usecase
+        UC05(["Mengajukan Permohonan Magang"]):::usecase
+        UC06(["Mengunggah Dokumen<br/>Persyaratan"]):::usecase
+        UC07(["Memantau Status &<br/>Riwayat Pengajuan"]):::usecase
+        UC08(["Membatalkan Pengajuan Magang"]):::usecase
+        UC09(["Mengunduh Surat<br/>Keterangan / Balasan"]):::usecase
+        UC10(["Mengisi Survei Kepuasan<br/>Masyarakat (SKM)"]):::usecase
+
+        %% Use Case Administrator
+        UC11(["Mengelola Data Bidang Magang"]):::usecase
+        UC12(["Mengelola Data Pembimbing"]):::usecase
+        UC13(["Memverifikasi Berkas Pengajuan"]):::usecase
+        UC14(["Meminta Revisi Dokumen"]):::usecase
+        UC15(["Memperbarui Status Pengajuan"]):::usecase
+        UC16(["Mengelola Kuesioner & Hasil SKM"]):::usecase
+        UC17(["Memantau Dashboard Statistik"]):::usecase
+        UC18(["Mencetak Laporan Rekapitulasi"]):::usecase
+
+        %% Use Case Secondary
+        UC19(["Mengirim Notifikasi Status"]):::usecase
+    end
+
+    %% Relasi Aktor - Pengguna
+    pengguna --- UC01
+    pengguna --- UC02
+    pengguna --- UC03
+    pengguna --- UC04
+    pengguna --- UC05
+    pengguna --- UC07
+
+    %% Relasi Aktor - Administrator
+    admin --- UC01
+    admin --- UC11
+    admin --- UC12
+    admin --- UC13
+    admin --- UC15
+    admin --- UC16
+    admin --- UC17
+    admin --- UC18
+
+    %% Relasi Secondary Actor
+    UC19 --- sys_notif
+
+    %% Relasi <<include>>
+    UC05 -.->|"<<include>>"| UC06
+    UC15 -.->|"<<include>>"| UC19
+
+    %% Relasi <<extend>>
+    UC08 -.->|"<<extend>>"| UC07
+    UC09 -.->|"<<extend>>"| UC07
+    UC10 -.->|"<<extend>>"| UC07
+    UC14 -.->|"<<extend>>"| UC13
+

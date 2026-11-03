@@ -152,7 +152,10 @@ Report WAJIB berisi:
 14. Langkah manual yang perlu dilakukan user
 
 Agent DILARANG mengatakan "sudah selesai" jika testing belum
-dilakukan atau hasil testing tidak diketahui.
+dilakukan atau hasil testing tidak diketahui. Khusus build, lint,
+typecheck, dan test runner, testing dilakukan oleh user (Bagian 55A).
+Agent menulis NOT VERIFIED dan memberikan command-nya, ini BUKAN
+pelanggaran aturan di atas.
 
 Jika ada bagian yang belum diverifikasi, tulis:
 
@@ -1448,7 +1451,7 @@ jelaskan dependency dan dampaknya terlebih dahulu.
 BAGIAN 52 — TESTING
 ===================
 
-Setiap fitur WAJIB diuji minimal pada:
+Setiap fitur WAJIB memiliki skenario uji minimal pada:
 
 1. Happy path
 2. Invalid input
@@ -1470,6 +1473,8 @@ test pengguna.
 test administrator.
 
 test unauthenticated user jika route relevan.
+
+Pengujian yang membutuhkan build, lint, dev server, atau test runner dilakukan user secara manual (Bagian 55A). Agent menyediakan skenario test dan command-nya.
 
 =================================================================
 BAGIAN 53 — TESTING DATABASE
@@ -1517,6 +1522,39 @@ Buka:
 http://localhost:3000/login
 
 lalu lakukan langkah testing yang dijelaskan.
+
+=================================================================
+BAGIAN 55A — BUILD, LINT, TYPECHECK & DEV SERVER DIJALANKAN USER
+=================================================================
+
+Agent DILARANG menjalankan command berikut secara otomatis:
+
+* npm run build / pnpm build / yarn build
+* npx next build
+* npm run dev / next dev / npm run start
+* npm run lint
+* npx tsc --noEmit
+* npm test / npx jest / npx vitest / npx playwright
+* command build/test/lint lain yang berjalan lama
+
+Alasan: command tersebut lambat dan menghabiskan resource laptop.
+User akan menjalankannya sendiri melalui terminal.
+
+Setelah selesai coding, agent WAJIB:
+
+1. TIDAK menjalankan command di atas.
+2. Menuliskan daftar command yang perlu dijalankan user.
+3. Menandai statusnya NOT VERIFIED (menunggu user menjalankan build)
+   di Implementation Report.
+4. Jika user menempelkan output error, analisis dari output tersebut
+   sesuai Bagian 71 (Local-First Debugging).
+
+Pengecualian: command di atas hanya boleh dijalankan jika user
+secara eksplisit memintanya, contoh: "jalankan build sekarang".
+
+Agent tetap boleh membaca file dan melakukan review manual terhadap
+import, tipe, dan sintaks untuk menemukan error sebelum user
+menjalankan build.
 
 =================================================================
 BAGIAN 55 — COMMAND YANG BERDAMPAK
@@ -1687,6 +1725,9 @@ UI harus mengikuti data model aktual.
 =================================================================
 BAGIAN 62 — REPORT FORMAT
 =========================
+=================================================================
+BAGIAN 62 — REPORT FORMAT
+=========================
 
 Setelah task selesai, report menggunakan format:
 
@@ -1734,6 +1775,13 @@ TESTING:
 TEST RESULT:
 ...
 
+COMMANDS FOR USER:
+(daftar command build/lint/typecheck/test yang perlu dijalankan user,
+contoh: npm run build)
+
+BUILD STATUS:
+NOT RUN — MENUNGGU USER
+
 KNOWN ISSUES:
 ...
 
@@ -1746,6 +1794,8 @@ MANUAL VERIFICATION:
 REGRESSION RISK:
 ...
 
+WEB USED:
+NO
 =================================================================
 BAGIAN 63 — BLOCKED STATE
 =========================
@@ -1918,6 +1968,12 @@ Jangan mengarang hasil testing.
 ATURAN 15
 
 Setelah coding wajib memberikan Implementation Report.
+
+ATURAN 16
+
+Jangan menjalankan build, lint, typecheck, dev server, atau test
+runner tanpa diminta user secara eksplisit. Tuliskan command-nya
+untuk dijalankan user (lihat Bagian 55A).
 
 =================================================================
 BAGIAN 67 — WORKFLOW WAJIB AGENT

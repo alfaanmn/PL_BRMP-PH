@@ -408,3 +408,4 @@ export function AdminLogbookClient({ initialParticipants }: AdminLogbookClientPr
     </div>
   )
 }
+

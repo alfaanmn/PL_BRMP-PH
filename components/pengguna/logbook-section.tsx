@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import imageCompression from 'browser-image-compression'
 import { FileTextIcon, LoaderIcon, EyeIcon } from '@/components/ui/admin-icons'
 
 interface LogbookItem {
@@ -152,16 +151,14 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
 
     setUploadError(null)
     const lowerName = file.name.toLowerCase()
-    const validExts = ['.pdf', '.jpg', '.jpeg', '.png']
-    const hasValidExt = validExts.some((ext) => lowerName.endsWith(ext))
 
-    if (!hasValidExt) {
-      setUploadError('Format berkas tidak didukung. Harap pilih berkas PDF, JPG, JPEG, atau PNG.')
+    if (!lowerName.endsWith('.pdf')) {
+      setUploadError('Format berkas tidak didukung. Harap pilih berkas PDF (.pdf).')
       setSelectedFile(null)
       return
     }
 
-    if (file.type === 'application/pdf' && file.size > 2 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024) {
       setUploadError(
         `Berkas PDF terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)} MB). Maksimal 2 MB. Silakan kompresi berkas PDF Anda terlebih dahulu.`
       )
@@ -190,27 +187,9 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
       setUploading(true)
       setUploadError(null)
 
-      let fileToUpload: File = selectedFile
-
-      // Kompresi jika tipe gambar
-      if (selectedFile.type.startsWith('image/')) {
-        setUploadProgressText('Mengompresi gambar...')
-        try {
-          const options = {
-            maxSizeMB: 0.5,
-            maxWidthOrHeight: 1600,
-            useWebWorker: true,
-          }
-          fileToUpload = await imageCompression(selectedFile, options)
-        } catch (compErr) {
-          console.warn('[Logbook] Kompresi gambar gagal, menggunakan berkas asli:', compErr)
-          fileToUpload = selectedFile
-        }
-      }
-
       setUploadProgressText('Mengunggah berkas logbook...')
       const fd = new FormData()
-      fd.append('file', fileToUpload)
+      fd.append('file', selectedFile)
       fd.append('pengajuan_id', String(pengajuanId))
       fd.append('minggu_ke', String(activeUploadWeek.minggu_ke))
       if (catatan.trim()) {
@@ -297,7 +276,7 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
               Logbook Kegiatan Magang Mingguan
             </h3>
             <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
-              Unggah 1 berkas laporan/dokumentasi kegiatan setiap minggunya (PDF/JPG/PNG maks 2 MB).
+              Unggah 1 berkas laporan kegiatan setiap minggunya (wajib PDF, maks 2 MB).
             </p>
           </div>
         </div>
@@ -468,12 +447,12 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
             <form onSubmit={handleSubmitUpload}>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                  Pilih Berkas (PDF, JPG, JPEG, PNG maks 2 MB) <span style={{ color: '#ef4444' }}>*</span>
+                  Pilih Berkas PDF (Maksimal 2 MB) <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf,image/jpeg,image/png"
+                  accept="application/pdf,.pdf"
                   onChange={handleFileChange}
                   disabled={uploading}
                   style={{
@@ -484,7 +463,7 @@ export function LogbookSection({ pengajuanId, pengajuanStatus }: LogbookSectionP
                   }}
                 />
                 <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
-                  Gambar akan dikompresi otomatis di peramban sebelum dikirim.
+                  Format berkas wajib PDF (.pdf) dengan ukuran maksimal 2 MB.
                 </p>
               </div>
 

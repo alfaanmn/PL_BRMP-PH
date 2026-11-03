@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 /**
  * POST /api/pengguna/logbook/upload
  * Mengunggah atau mengganti (replace) berkas logbook mingguan magang.
- * - Format: PDF, JPG, JPEG, PNG
+ * - Format: Wajib PDF (.pdf, application/pdf)
  * - Maksimal 2 MB
  * - Status pengajuan wajib: 'Sedang Magang'
  * - Minggu tidak boleh di masa depan

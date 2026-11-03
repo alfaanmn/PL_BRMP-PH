@@ -16,8 +16,8 @@
  * 7. File ekstensi salah (misal: .exe, .sh, .txt) ditolak
  * 8. MIME type salah ditolak
  * 9. Magic bytes validasi: PDF asli (%PDF-) diterima
- * 10. Magic bytes validasi: PNG asli (89 50 4E 47) diterima
- * 11. Magic bytes validasi: JPEG asli (FF D8 FF) diterima
+ * 10. Berkas gambar PNG kini ditolak (khusus PDF)
+ * 11. Berkas gambar JPEG kini ditolak (khusus PDF)
  * 12. Magic bytes validasi: File spoofed/palsu (isi teks di-rename .pdf) ditolak (Magic Bytes mismatch)
  * 13. Catatan logbook > 500 karakter ditolak
  * 
@@ -44,19 +44,13 @@ const path = require('path');
 
 // 1. Logbook Magic Bytes & Validations (Replicated from lib/validations/logbook.schema.ts)
 const LOGBOOK_MAX_FILE_SIZE = 2 * 1024 * 1024;
-const LOGBOOK_ALLOWED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png'];
-const LOGBOOK_ALLOWED_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+const LOGBOOK_ALLOWED_EXTENSIONS = ['.pdf'];
+const LOGBOOK_ALLOWED_MIME_TYPES = ['application/pdf'];
 
 function validateMagicBytes(buffer) {
   if (!buffer || buffer.length < 5) return { valid: false };
   if (buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46 && buffer[4] === 0x2d) {
     return { valid: true, mime: 'application/pdf', ext: 'pdf' };
-  }
-  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
-    return { valid: true, mime: 'image/png', ext: 'png' };
-  }
-  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
-    return { valid: true, mime: 'image/jpeg', ext: 'jpeg' };
   }
   return { valid: false };
 }
@@ -264,15 +258,15 @@ async function runTestSuite() {
   const resPdf = validateLogbookFile('laporan.pdf', 1024, 'application/pdf', validPdfHeader);
   assert(resPdf.valid === true && resPdf.detectedMime === 'application/pdf', 'Skenario 9: Magic bytes PDF (%PDF-) diterima');
 
-  // Skenario 10: PNG asli diterima
+  // Skenario 10: PNG ditolak karena khusus PDF
   const validPngHeader = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
   const resPng = validateLogbookFile('foto.png', 1024, 'image/png', validPngHeader);
-  assert(resPng.valid === true && resPng.detectedMime === 'image/png', 'Skenario 10: Magic bytes PNG diterima');
+  assert(resPng.valid === false && resPng.error.includes('tidak didukung'), 'Skenario 10: Berkas gambar PNG ditolak (wajib PDF)');
 
-  // Skenario 11: JPEG asli diterima
+  // Skenario 11: JPEG ditolak karena khusus PDF
   const validJpegHeader = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10]);
   const resJpeg = validateLogbookFile('foto.jpg', 1024, 'image/jpeg', validJpegHeader);
-  assert(resJpeg.valid === true && resJpeg.detectedMime === 'image/jpeg', 'Skenario 11: Magic bytes JPEG diterima');
+  assert(resJpeg.valid === false && resJpeg.error.includes('tidak didukung'), 'Skenario 11: Berkas gambar JPEG ditolak (wajib PDF)');
 
   // Skenario 12: File palsu/spoofed (teks bertopeng .pdf) ditolak
   const fakePdfHeader = new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f]); // 'hello'
