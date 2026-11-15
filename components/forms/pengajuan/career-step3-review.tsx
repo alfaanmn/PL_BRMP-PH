@@ -19,6 +19,8 @@ interface CareerStep3ReviewProps {
     asal_instansi?: string | null
     jurusan?: string | null
     no_hp?: string | null
+    jenis_kelamin?: string | null
+    status_peserta?: string | null
   }
 }
 

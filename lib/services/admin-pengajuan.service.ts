@@ -703,26 +703,18 @@ export const adminPengajuanService = {
               }
 
               // 2. Email Notifikasi ke Admin Pengelola (Asinkron & Terpisah)
-              const getAdminEmail = async () => {
-                if (typeof window === 'undefined') {
-                  const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
-                  return getAdminEmailAddress()
-                }
-                return 'simpulbrmpph@gmail.com'
-              }
+              const adminEmail = 'simpulbrmpph@gmail.com'
 
-              getAdminEmail().then((admEmail) =>
-                emailService.sendNotification({
-                  event: 'pengajuan_completed',
-                  recipientRole: 'admin',
-                  recipient: {
-                    email: admEmail,
-                    name: 'Admin SIMPUL',
-                  },
-                  pengajuan: basePengajuanData,
-                  catatan: `Status pengajuan atas nama ${userProfile.name || 'Peserta'} telah diubah ke 'Selesai'.`,
-                })
-              ).catch((e: unknown) => console.warn('Gagal kirim email admin magang selesai:', e))
+              emailService.sendNotification({
+                event: 'pengajuan_completed',
+                recipientRole: 'admin',
+                recipient: {
+                  email: adminEmail,
+                  name: 'Admin SIMPUL',
+                },
+                pengajuan: basePengajuanData,
+                catatan: `Status pengajuan atas nama ${userProfile.name || 'Peserta'} telah diubah ke 'Selesai'.`,
+              }).catch((e: unknown) => console.warn('Gagal kirim email admin magang selesai:', e))
 
               // 3. Web notifikasi admin
               notifikasiService.notifyAdmins({
