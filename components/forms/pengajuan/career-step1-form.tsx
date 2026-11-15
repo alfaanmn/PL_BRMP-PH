@@ -183,10 +183,15 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
       return
     }
 
-    // Simpan ke wizard context dengan jenjang yang dipaksa dari status peserta
+    // Simpan ke wizard context dengan data identitas yang dipaksa dari profil akun
     updateStep1({
       ...formData,
       jenjang: userStatus || formData.jenjang,
+      nama_lengkap: userProfile?.name || formData.nama_lengkap,
+      asal_instansi: userProfile?.asal_instansi || formData.asal_instansi,
+      jurusan: userProfile?.jurusan || formData.jurusan,
+      no_hp: userProfile?.no_hp || formData.no_hp,
+      jenis_kelamin: userProfile?.jenis_kelamin || formData.jenis_kelamin,
     })
 
     // Lanjut ke Step 2
@@ -565,81 +570,99 @@ export function CareerStep1Form({ bidangList, userProfile }: CareerStep1FormProp
             {errors.nim_nis && <div className="form-error">{errors.nim_nis}</div>}
           </div>
 
-          {/* Nama Lengkap */}
+          {/* Nama Lengkap (Terkunci dari Profil) */}
           <div>
-            <label className="form-label">
-              Nama lengkap <span style={{ color: '#ef4444' }}>*</span>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Nama lengkap <span style={{ color: '#ef4444' }}>*</span></span>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>🔒 Terkunci dari Profil</span>
             </label>
             <input
               type="text"
-              placeholder="Nama sesuai identitas"
-              value={formData.nama_lengkap || ''}
-              onChange={(e) => setFormData({ ...formData, nama_lengkap: e.target.value })}
+              readOnly
+              value={userProfile?.name || formData.nama_lengkap || ''}
               className="form-input-control"
+              style={{ backgroundColor: '#f8fafc', color: '#334155', cursor: 'default' }}
             />
           </div>
 
-          {/* Program Studi */}
+          {/* Program Studi (Terkunci dari Profil) */}
           <div>
-            <label className="form-label">
-              Program studi <span style={{ color: '#ef4444' }}>*</span>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Program studi <span style={{ color: '#ef4444' }}>*</span></span>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>🔒 Terkunci dari Profil</span>
             </label>
             <input
               type="text"
-              placeholder="Jurusan atau program studi"
-              value={formData.jurusan}
-              onChange={(e) => {
-                setFormData({ ...formData, jurusan: e.target.value })
-                if (errors.jurusan) setErrors({ ...errors, jurusan: '' })
-              }}
+              readOnly
+              value={userProfile?.jurusan || formData.jurusan || ''}
               className="form-input-control"
+              style={{ backgroundColor: '#f8fafc', color: '#334155', cursor: 'default' }}
             />
-            {errors.jurusan && <div className="form-error">{errors.jurusan}</div>}
           </div>
 
-          {/* Asal Instansi */}
+          {/* Asal Instansi (Terkunci dari Profil) */}
           <div>
-            <label className="form-label">
-              Asal instansi / perguruan tinggi <span style={{ color: '#ef4444' }}>*</span>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Asal instansi / perguruan tinggi <span style={{ color: '#ef4444' }}>*</span></span>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>🔒 Terkunci dari Profil</span>
             </label>
             <input
               type="text"
-              placeholder="Nama universitas / institut / sekolah"
-              value={formData.asal_instansi}
-              onChange={(e) => {
-                setFormData({ ...formData, asal_instansi: e.target.value })
-                if (errors.asal_instansi) setErrors({ ...errors, asal_instansi: '' })
-              }}
+              readOnly
+              value={userProfile?.asal_instansi || formData.asal_instansi || ''}
               className="form-input-control"
+              style={{ backgroundColor: '#f8fafc', color: '#334155', cursor: 'default' }}
             />
-            {errors.asal_instansi && <div className="form-error">{errors.asal_instansi}</div>}
           </div>
 
-          {/* No WhatsApp */}
+          {/* No WhatsApp (Terkunci dari Profil) */}
           <div>
-            <label className="form-label">No WhatsApp</label>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>No WhatsApp <span style={{ color: '#ef4444' }}>*</span></span>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>🔒 Terkunci dari Profil</span>
+            </label>
             <input
               type="text"
-              placeholder="08xxxxxxxxxx"
-              value={formData.no_hp || ''}
-              onChange={(e) => setFormData({ ...formData, no_hp: e.target.value })}
+              readOnly
+              value={userProfile?.no_hp || formData.no_hp || ''}
               className="form-input-control"
+              style={{ backgroundColor: '#f8fafc', color: '#334155', cursor: 'default' }}
             />
           </div>
 
-          {/* Jenis Kelamin */}
+          {/* Jenis Kelamin (Terkunci dari Profil) */}
           <div>
-            <label className="form-label">Jenis kelamin</label>
-            <select
-              value={formData.jenis_kelamin || ''}
-              onChange={(e) => setFormData({ ...formData, jenis_kelamin: e.target.value })}
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Jenis kelamin</span>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>🔒 Terkunci dari Profil</span>
+            </label>
+            <input
+              type="text"
+              readOnly
+              value={userProfile?.jenis_kelamin || formData.jenis_kelamin || '-'}
               className="form-input-control"
-            >
-              <option value="">Pilih jenis kelamin</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
+              style={{ backgroundColor: '#f8fafc', color: '#334155', cursor: 'default' }}
+            />
           </div>
+        </div>
+
+        {/* Info Note: Identitas Terkunci */}
+        <div style={{
+          marginTop: '0.875rem',
+          padding: '0.625rem 0.875rem',
+          backgroundColor: '#f8fafc',
+          border: '1px solid #e2e8f0',
+          borderRadius: '8px',
+          fontSize: '0.75rem',
+          color: '#64748b',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}>
+          <span>ℹ️</span>
+          <span>
+            Data identitas pemohon di atas terkunci otomatis dari profil akun Anda. Apabila terdapat kesalahan penulisan, silakan perbarui data melalui menu <Link href="/pengguna/profil" style={{ color: '#16a34a', fontWeight: 600, textDecoration: 'underline' }}>Profil Pengguna</Link>.
+          </span>
         </div>
       </div>
 

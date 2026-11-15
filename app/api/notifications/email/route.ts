@@ -35,13 +35,13 @@ const STATUS_WHITELIST_PER_EVENT: Record<string, string[]> = {
 
 /**
  * Cache in-memory pelacak pengiriman email untuk mencegah replay attack / duplicate double-click.
- * Menyimpan key `${event}:${pengajuanId}` dengan masa berlaku (TTL) 60 detik.
+ * Menyimpan key `${event}:${recipientRole}:${pengajuanId}` dengan masa berlaku (TTL) 60 detik.
  */
 const recentEmailDispatches = new Map<string, number>()
 const DISPATCH_CACHE_TTL_MS = 60 * 1000
 
-function isRecentDuplicate(event: string, pengajuanId: number | string): boolean {
-  const key = `${event}:${pengajuanId}`
+function isRecentDuplicate(event: string, pengajuanId: number | string, recipientRole: string = 'user'): boolean {
+  const key = `${event}:${recipientRole}:${pengajuanId}`
   const now = Date.now()
   const lastTime = recentEmailDispatches.get(key)
   if (lastTime && now - lastTime < DISPATCH_CACHE_TTL_MS) {
@@ -230,7 +230,8 @@ export async function POST(request: Request) {
     }
 
     // 9. Guard Pencegahan Pengiriman Ganda (Idempotency Guard)
-    if (isRecentDuplicate(payload.event, dbPengajuan.id)) {
+    const effectiveRole = payload.recipientRole || (isTargetAdmin ? 'admin' : 'user')
+    if (isRecentDuplicate(payload.event, dbPengajuan.id, effectiveRole)) {
       return NextResponse.json({
         success: true,
         message: 'Email notifikasi sudah dikirim sebelumnya (idempotent duplicate prevention)',

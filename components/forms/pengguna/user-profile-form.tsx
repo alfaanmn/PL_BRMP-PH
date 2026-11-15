@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { authService } from '@/lib/services/auth.service'
 import { validatePassword } from '@/lib/validations/auth.validation'
 import { PasswordRequirements } from '@/components/auth/password-requirements'
@@ -11,6 +12,9 @@ interface UserProfileFormProps {
 }
 
 export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
+  const searchParams = useSearchParams()
+  const isIncomplete = searchParams.get('notice') === 'incomplete'
+
   const [profile, setProfile] = useState<Profile>(initialProfile)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
@@ -208,6 +212,31 @@ export function UserProfileForm({ initialProfile }: UserProfileFormProps) {
           >
             ✕
           </button>
+        </div>
+      )}
+
+      {/* Banner Peringatan jika dialihkan karena profil belum lengkap */}
+      {isIncomplete && (
+        <div style={{
+          backgroundColor: '#fef2f2',
+          border: '1.5px solid #f87171',
+          borderRadius: '12px',
+          padding: '1rem 1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          color: '#991b1b',
+          boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.08)'
+        }}>
+          <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>⚠️</span>
+          <div style={{ flex: 1 }}>
+            <strong style={{ display: 'block', fontSize: '0.875rem', marginBottom: '2px' }}>
+              Lengkapi profil Anda terlebih dahulu
+            </strong>
+            <span style={{ fontSize: '0.8125rem', color: '#b91c1c', lineHeight: 1.45 }}>
+              Nama lengkap, asal instansi, jurusan, nomor WhatsApp, dan status peserta wajib dilengkapi sebelum Anda dapat memulai pengajuan magang. Klik tombol <strong>Edit profil</strong> di bawah untuk melengkapi data.
+            </span>
+          </div>
         </div>
       )}
 

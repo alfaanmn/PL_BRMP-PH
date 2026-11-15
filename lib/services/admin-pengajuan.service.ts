@@ -674,30 +674,35 @@ export const adminPengajuanService = {
               .select('id')
 
             if (!claimErr && claimed && claimed.length > 0) {
-              const emailTasks: Promise<any>[] = []
+              // 1. Prioritaskan Pengiriman Email Ajakan SKM ke Peserta Pemohon
+              const userEmailRes = await emailService.sendNotification({
+                event: 'pengajuan_completed',
+                recipientRole: 'user',
+                recipient: {
+                  email: userProfile.email,
+                  name: userProfile.name || 'Peserta Magang',
+                },
+                pengajuan: basePengajuanData,
+                pembimbing: pembimbingInfo
+                  ? {
+                    nama: pembimbingInfo.nama,
+                    nip: pembimbingInfo.nip,
+                    jabatan: pembimbingInfo.jabatan,
+                  }
+                  : null,
+                catatan: payload.catatan || 'Periode magang telah diselesaikan',
+              })
 
-              // Email ke Peserta Pemohon
-              emailTasks.push(
-                emailService.sendNotification({
-                  event: 'pengajuan_completed',
-                  recipientRole: 'user',
-                  recipient: {
-                    email: userProfile.email,
-                    name: userProfile.name || 'Peserta Magang',
-                  },
-                  pengajuan: basePengajuanData,
-                  pembimbing: pembimbingInfo
-                    ? {
-                      nama: pembimbingInfo.nama,
-                      nip: pembimbingInfo.nip,
-                      jabatan: pembimbingInfo.jabatan,
-                    }
-                    : null,
-                  catatan: payload.catatan || 'Periode magang telah diselesaikan',
-                })
-              )
+              // Rollback skm_reminder_sent_at jika pengiriman email utama ke peserta gagal
+              if (!userEmailRes.success) {
+                console.error('[AdminPengajuanService] Gagal kirim email pengajuan_completed ke peserta, rollback skm_reminder_sent_at:', userEmailRes.error)
+                await supabase
+                  .from('pengajuans')
+                  .update({ skm_reminder_sent_at: null })
+                  .eq('id', payload.pengajuanId)
+              }
 
-              // Email ke Admin Pengelola
+              // 2. Email Notifikasi ke Admin Pengelola (Asinkron & Terpisah)
               const getAdminEmail = async () => {
                 if (typeof window === 'undefined') {
                   const { getAdminEmailAddress } = await import('@/lib/services/server-mailer')
@@ -706,38 +711,25 @@ export const adminPengajuanService = {
                 return 'simpulbrmpph@gmail.com'
               }
 
-              emailTasks.push(
-                getAdminEmail().then((admEmail) =>
-                  emailService.sendNotification({
-                    event: 'pengajuan_completed',
-                    recipientRole: 'admin',
-                    recipient: {
-                      email: admEmail,
-                      name: 'Admin SIMPUL',
-                    },
-                    pengajuan: basePengajuanData,
-                    catatan: `Status pengajuan atas nama ${userProfile.name || 'Peserta'} telah diubah ke 'Selesai'.`,
-                  })
-                )
-              )
+              getAdminEmail().then((admEmail) =>
+                emailService.sendNotification({
+                  event: 'pengajuan_completed',
+                  recipientRole: 'admin',
+                  recipient: {
+                    email: admEmail,
+                    name: 'Admin SIMPUL',
+                  },
+                  pengajuan: basePengajuanData,
+                  catatan: `Status pengajuan atas nama ${userProfile.name || 'Peserta'} telah diubah ke 'Selesai'.`,
+                })
+              ).catch((e: unknown) => console.warn('Gagal kirim email admin magang selesai:', e))
 
-              // Web notifikasi admin
+              // 3. Web notifikasi admin
               notifikasiService.notifyAdmins({
                 judul: 'Kegiatan Magang Selesai',
                 pesan: `Kegiatan magang #${pData.public_id || pData.id} (${bidangInfo?.nama || '-'}) atas nama ${userProfile.name || 'Peserta'} telah selesai.`,
                 link: `/admin/riwayat-pengajuan/${pData.public_id || pData.id}`,
               }).catch((e: unknown) => console.warn('Gagal notif admin magang selesai:', e))
-
-              const results = await Promise.allSettled(emailTasks)
-              const emailRes = results[0]?.status === 'fulfilled' ? (results[0].value as any) : { success: false }
-
-              if (!emailRes.success) {
-                console.error('[AdminPengajuanService] Gagal kirim email pengajuan_completed, rollback skm_reminder_sent_at:', emailRes.error)
-                await supabase
-                  .from('pengajuans')
-                  .update({ skm_reminder_sent_at: null })
-                  .eq('id', payload.pengajuanId)
-              }
             }
           } else {
             // Jalur Disetujui / Ditolak

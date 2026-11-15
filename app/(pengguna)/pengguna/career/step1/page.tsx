@@ -1,4 +1,5 @@
 import React from 'react'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { bidangService } from '@/lib/services/bidang.service'
 import { ApplicationStepTracker } from '@/components/forms/pengajuan/step-tracker'
@@ -14,14 +15,29 @@ export default async function CareerStep1Page() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  if (!user) {
+    redirect('/login?redirect=/pengguna/career/step1')
+  }
+
   let userProfile: any = null
-  if (user) {
-    const { data: p } = await supabase
-      .from('profiles')
-      .select('id, name, email, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta')
-      .eq('id', user.id)
-      .single()
-    userProfile = p || { id: user.id, email: user.email, name: '', status_peserta: null }
+  const { data: p } = await supabase
+    .from('profiles')
+    .select('id, name, email, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta')
+    .eq('id', user.id)
+    .single()
+  userProfile = p || { id: user.id, email: user.email, name: '', status_peserta: null }
+
+  // Validasi profil lengkap: nama, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta
+  const isProfileIncomplete =
+    !userProfile?.name?.trim() ||
+    !userProfile?.asal_instansi?.trim() ||
+    !userProfile?.jurusan?.trim() ||
+    !userProfile?.no_hp?.trim() ||
+    !userProfile?.jenis_kelamin?.trim() ||
+    !userProfile?.status_peserta
+
+  if (isProfileIncomplete) {
+    redirect('/pengguna/profil?notice=incomplete')
   }
 
   // Ambil daftar bidang aktif dari database

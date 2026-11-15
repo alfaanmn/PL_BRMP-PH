@@ -259,19 +259,28 @@ export const pengajuanService = {
         }
       }
 
-      // 2. Ambil profil pemohon untuk verifikasi status_peserta
+      // 2. Ambil profil pemohon untuk verifikasi data identitas dan status_peserta
       const { data: userProfile, error: profileError } = await supabase
         .from('profiles')
-        .select('status_peserta')
+        .select('id, name, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta')
         .eq('id', user.id)
         .single()
 
-      if (profileError || !userProfile || !userProfile.status_peserta) {
+      if (
+        profileError ||
+        !userProfile ||
+        !userProfile.name?.trim() ||
+        !userProfile.asal_instansi?.trim() ||
+        !userProfile.jurusan?.trim() ||
+        !userProfile.no_hp?.trim() ||
+        !userProfile.jenis_kelamin?.trim() ||
+        !userProfile.status_peserta
+      ) {
         return {
           success: false,
           error: {
-            code: 'STATUS_PESERTA_NULL',
-            message: 'Anda belum memilih status peserta (Mahasiswa atau Siswa). Silakan lengkapi profil terlebih dahulu.',
+            code: 'PROFILE_INCOMPLETE',
+            message: 'Profil akun Anda belum lengkap (nama, asal instansi, jurusan, nomor WhatsApp, jenis kelamin, atau status peserta). Silakan lengkapi profil terlebih dahulu.',
           },
         }
       }
@@ -342,8 +351,8 @@ export const pengajuanService = {
           p_nomor_surat: payload.nomor_surat || null,
           p_tanggal_surat: payload.tanggal_surat || null,
           p_jenjang: verifiedJenjang,
-          p_asal_instansi: payload.asal_instansi,
-          p_jurusan: payload.jurusan,
+          p_asal_instansi: userProfile.asal_instansi,
+          p_jurusan: userProfile.jurusan,
           p_tanggal_mulai: payload.tanggal_mulai,
           p_tanggal_selesai: payload.tanggal_selesai,
           p_durasi_bulan: Number(payload.durasi_bulan),
@@ -351,10 +360,10 @@ export const pengajuanService = {
           p_surat_pengantar_url: payload.surat_pengantar_url,
           p_proposal_url: payload.proposal_url || null,
           p_dokumen_tambahan_url: payload.dokumen_tambahan_url || null,
-          p_nama_pemohon: payload.nama_lengkap,
+          p_nama_pemohon: userProfile.name,
           p_nim_pemohon: payload.nim_nis,
-          p_no_hp_pemohon: normalizeWhatsApp(payload.no_hp) || null,
-          p_jenis_kelamin_pemohon: payload.jenis_kelamin || null,
+          p_no_hp_pemohon: normalizeWhatsApp(userProfile.no_hp) || null,
+          p_jenis_kelamin_pemohon: userProfile.jenis_kelamin || null,
           p_alamat_pemohon: payload.alamat || null,
           p_anggota_tambahan: anggotaJson,
           p_jumlah_anggota_dipilih: jumlahAnggotaDipilih,

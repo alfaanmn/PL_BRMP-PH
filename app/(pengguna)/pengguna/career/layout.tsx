@@ -27,7 +27,7 @@ export default async function CareerWizardLayout({
   // Ambil data profil
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, name, email, role, asal_instansi, jurusan, no_hp, jenis_kelamin')
+    .select('id, name, email, role, asal_instansi, jurusan, no_hp, jenis_kelamin, status_peserta')
     .eq('id', user.id)
     .single()
 
@@ -35,6 +35,19 @@ export default async function CareerWizardLayout({
     if (profile?.role === 'administrator') {
       redirect('/admin/dashboard')
     }
+  }
+
+  // Guard Server-Side: Pastikan profil pemohon sudah lengkap sebelum masuk alur pengajuan
+  const isProfileIncomplete =
+    !profile?.name?.trim() ||
+    !profile?.asal_instansi?.trim() ||
+    !profile?.jurusan?.trim() ||
+    !profile?.no_hp?.trim() ||
+    !profile?.jenis_kelamin?.trim() ||
+    !profile?.status_peserta
+
+  if (isProfileIncomplete) {
+    redirect('/pengguna/profil?notice=incomplete')
   }
 
   // Guard Server-Side: Cek apakah user memiliki pengajuan yang sedang aktif (Menunggu Verifikasi / Sedang Magang)
