@@ -84,7 +84,46 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // 4. Return berkas Excel (.xlsx) atau CSV (.csv)
+    // 4. Cek apakah dataset kosong (Cegah pembuatan berkas kosong)
+    const isDatasetEmpty =
+      category === 'all'
+        ? exportPkg.pengajuanData.length === 0
+        : category === 'pengajuan'
+        ? exportPkg.pengajuanData.length === 0
+        : category === 'peserta'
+        ? exportPkg.pesertaData.length === 0
+        : category === 'bidang'
+        ? exportPkg.bidangData.length === 0
+        : category === 'pembimbing'
+        ? exportPkg.pembimbingData.length === 0
+        : category === 'status'
+        ? exportPkg.statusData.length === 0
+        : category === 'skm'
+        ? exportPkg.skmData.length === 0
+        : exportPkg.pengajuanData.length === 0
+
+    if (isDatasetEmpty) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'DATA_EMPTY',
+            message: 'Tidak ada data pada periode dan filter yang dipilih. Berkas kosong tidak dapat diekspor.',
+          },
+        },
+        { status: 400 }
+      )
+    }
+
+    // 5. Kembalikan paket data JSON jika diminta untuk rendering PDF / Word di client
+    if (format === 'json') {
+      return NextResponse.json({
+        success: true,
+        data: exportPkg,
+      })
+    }
+
+    // 6. Return berkas Excel (.xlsx) atau CSV (.csv)
     if (format === 'csv') {
       const csvData = exportExcelUtil.generateCSV(exportPkg, category)
       return new NextResponse(csvData, {

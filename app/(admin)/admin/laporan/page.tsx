@@ -14,7 +14,6 @@ import {
   AlertCircleIcon,
   ChartBarIcon,
 } from '@/components/ui/admin-icons'
-import { ExportButtonGroup } from '@/components/admin/laporan/export-button-group'
 
 export default function AdminLaporanPage() {
   // 1. Filter states
@@ -30,6 +29,7 @@ export default function AdminLaporanPage() {
   // 2. Dropdown options
   const [bidangList, setBidangList] = useState<Array<{ id: number | string; nama: string }>>([])
   const [pembimbingList, setPembimbingList] = useState<Array<{ id: number | string; nama: string }>>([])
+  const [availableYears, setAvailableYears] = useState<number[]>([])
 
   // 3. Data states
   const [summary, setSummary] = useState<LaporanSummaryStats>({
@@ -65,12 +65,14 @@ export default function AdminLaporanPage() {
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [bRes, pRes] = await Promise.all([
+        const [bRes, pRes, yRes] = await Promise.all([
           laporanService.getBidangList(),
           laporanService.getPembimbingList(),
+          laporanService.getAvailableYears(),
         ])
         if (bRes.data) setBidangList(bRes.data)
         if (pRes.data) setPembimbingList(pRes.data)
+        if (yRes.data && yRes.data.length > 0) setAvailableYears(yRes.data)
       } catch (err) {
         console.warn('Gagal memuat opsi filter:', err)
       }
@@ -209,23 +211,13 @@ export default function AdminLaporanPage() {
       )}
 
       {/* 1. Page Header with Title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.375rem 0', letterSpacing: '-0.02em' }}>
-            Pusat laporan & ringkasan analitik
-          </h1>
-          <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
-            Ringkasan data pengajuan, peserta magang, bidang, pembimbing, status, dan survei kepuasan masyarakat
-          </p>
-        </div>
-
-        <div>
-          <ExportButtonGroup
-            filterParams={activeFilterParams}
-            onExportSuccess={(msg) => showToast('success', msg)}
-            onExportError={(msg) => showToast('error', msg)}
-          />
-        </div>
+      <div>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.375rem 0', letterSpacing: '-0.02em' }}>
+          Pusat laporan & ringkasan analitik
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
+          Ringkasan data pengajuan, peserta magang, bidang, pembimbing, status, dan survei kepuasan masyarakat
+        </p>
       </div>
 
       {/* Error Alert */}
@@ -310,6 +302,7 @@ export default function AdminLaporanPage() {
         startDate={startDateFilter}
         endDate={endDateFilter}
         searchKeyword={searchKeyword}
+        availableYears={availableYears}
         bidangList={bidangList}
         pembimbingList={pembimbingList}
         onStatusChange={(val) => {

@@ -1,4 +1,4 @@
-export type ExportFormat = 'xlsx' | 'csv'
+export type ExportFormat = 'xlsx' | 'csv' | 'pdf' | 'docx' | 'json'
 
 export type ExportDatasetCategory =
   | 'all'

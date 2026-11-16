@@ -9,14 +9,23 @@ import {
   type BidangSummaryItem,
   type MonthlyTrendItem,
 } from '@/lib/services/admin-dashboard.service'
+import { laporanService } from '@/lib/services/laporan.service'
 import { DashboardStatsCard } from '@/components/admin/dashboard-stats-card'
 import { DashboardCharts } from '@/components/admin/dashboard-charts'
 import { DashboardPengajuanTable } from '@/components/admin/dashboard-pengajuan-table'
-import { DownloadIcon } from '@/components/ui/admin-icons'
-import { ExportMenu } from '@/components/admin/export-menu'
-import { exportTableToPDF, exportTableToWord } from '@/lib/utils/export-doc'
+import { ExportButtonGroup } from '@/components/admin/laporan/export-button-group'
+import {
+  getWibParts,
+  getWibCurrentMonthRange,
+  getWibPreviousMonthRange,
+  getWibYearRange,
+  getWibMonthRange,
+  NAMA_BULAN_INDO,
+} from '@/lib/helpers/date-wib.helper'
+import { CheckCircleIcon, AlertCircleIcon } from '@/components/ui/admin-icons'
 
 export default function AdminDashboardPage() {
+  const currentWib = getWibParts()
   const [stats, setStats] = useState<DashboardStats>({
     totalPengajuan: 0,
     menungguVerifikasi: 0,
@@ -31,19 +40,34 @@ export default function AdminDashboardPage() {
   const [recentPengajuans, setRecentPengajuans] = useState<RecentPengajuanItem[]>([])
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [rekapYear, setRekapYear] = useState('2026')
 
+  // Filter Tanggal Periode Dinamis & Presisi WIB
+  const [availableYears, setAvailableYears] = useState<number[]>([currentWib.year])
+  const [selectedYear, setSelectedYear] = useState<string>(String(currentWib.year))
+  const [startDate, setStartDate] = useState<string>(getWibYearRange(currentWib.year).startDate)
+  const [endDate, setEndDate] = useState<string>(getWibYearRange(currentWib.year).endDate)
+  const [activePreset, setActivePreset] = useState<string>('tahun-ini')
+
+  // Toast feedback
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const showToast = (type: 'success' | 'error', message: string) => {
+    setToast({ type, message })
+    setTimeout(() => setToast(null), 4500)
+  }
+
+  // Load dynamic years & dashboard stats
   useEffect(() => {
     async function loadDashboardData() {
       try {
         setLoading(true)
         setErrorMsg(null)
 
-        const [statsRes, trendRes, bidangRes, recentRes] = await Promise.all([
+        const [statsRes, trendRes, bidangRes, recentRes, yearsRes] = await Promise.all([
           adminDashboardService.getDashboardStats(),
           adminDashboardService.getMonthlyTrends(),
           adminDashboardService.getBidangSummary(),
           adminDashboardService.getRecentPengajuans(6),
+          laporanService.getAvailableYears(),
         ])
 
         if (statsRes.error) setErrorMsg(statsRes.error)
@@ -51,6 +75,13 @@ export default function AdminDashboardPage() {
         setMonthlyTrends(trendRes.data)
         setBidangSummary(bidangRes.data)
         setRecentPengajuans(recentRes.data)
+
+        if (yearsRes.data && yearsRes.data.length > 0) {
+          setAvailableYears(yearsRes.data)
+          if (!yearsRes.data.includes(Number(selectedYear))) {
+            setSelectedYear(String(yearsRes.data[0]))
+          }
+        }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Gagal memuat data dashboard.'
         setErrorMsg(msg)
@@ -62,9 +93,61 @@ export default function AdminDashboardPage() {
     loadDashboardData()
   }, [])
 
+  // Handler preset filter periode
+  const handleApplyPreset = (preset: 'semua' | 'tahun-ini' | 'bulan-ini' | 'bulan-lalu' | 'custom', yearVal?: string) => {
+    setActivePreset(preset)
+    const targetYear = Number(yearVal || selectedYear) || currentWib.year
+
+    if (preset === 'semua') {
+      setStartDate('')
+      setEndDate('')
+    } else if (preset === 'tahun-ini') {
+      const range = getWibYearRange(targetYear)
+      setStartDate(range.startDate)
+      setEndDate(range.endDate)
+    } else if (preset === 'bulan-ini') {
+      const range = getWibCurrentMonthRange()
+      setStartDate(range.startDate)
+      setEndDate(range.endDate)
+    } else if (preset === 'bulan-lalu') {
+      const range = getWibPreviousMonthRange()
+      setStartDate(range.startDate)
+      setEndDate(range.endDate)
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1200px' }}>
-      {/* 1. Header Page Title & Top Controls (Sentence Case) */}
+      {/* Toast Feedback */}
+      {toast && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '1.5rem',
+            right: '1.5rem',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.625rem',
+            padding: '0.875rem 1.25rem',
+            borderRadius: '8px',
+            backgroundColor: toast.type === 'success' ? '#02482e' : '#991b1b',
+            color: '#ffffff',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+          }}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircleIcon width={20} height={20} className="text-emerald-300" />
+          ) : (
+            <AlertCircleIcon width={20} height={20} className="text-red-300" />
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
+
+      {/* 1. Header Page Title & Top Controls */}
       <div
         style={{
           display: 'flex',
@@ -93,96 +176,112 @@ export default function AdminDashboardPage() {
               color: '#6b7280',
             }}
           >
-            Kelola hak akses, konfigurasi SKM, dan laporan tahunan
+            Kelola hak akses, konfigurasi SKM, dan laporan analitik berkala
           </p>
         </div>
 
-        {/* Right Filter & Export Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <select
-            value={rekapYear}
-            onChange={(e) => setRekapYear(e.target.value)}
-            style={{
-              padding: '6px 12px',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              backgroundColor: '#ffffff',
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#374151',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-          </select>
+        {/* Right Filter & All-in-One Export Controls */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {/* Shortcut Preset Periode */}
+            <select
+              value={activePreset}
+              onChange={(e) => handleApplyPreset(e.target.value as any)}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: '1px solid #d1d5db',
+                backgroundColor: '#ffffff',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: '#374151',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="tahun-ini">Tahun Berjalan</option>
+              <option value="bulan-ini">Bulan Ini</option>
+              <option value="bulan-lalu">Bulan Lalu</option>
+              <option value="semua">Semua Waktu</option>
+              <option value="custom">Rentang Kustom</option>
+            </select>
 
-          <ExportMenu
-            buttonText="Export"
-            onExportExcel={() => {
-              window.open(
-                `/api/laporan/export?format=xlsx&category=all&startDate=${rekapYear}-01-01&endDate=${rekapYear}-12-31`,
-                '_blank'
-              )
-            }}
-            onExportPDF={async () => {
-              const columns = [
-                { header: 'No', key: 'no' },
-                { header: 'ID / Public ID', key: 'publicId' },
-                { header: 'Nama Pemohon', key: 'nama' },
-                { header: 'Institusi', key: 'instansi' },
-                { header: 'Bidang', key: 'bidang' },
-                { header: 'Tanggal Mulai', key: 'tanggalMulai' },
-                { header: 'Status', key: 'status' },
-              ]
-              const dataRows = recentPengajuans.map((item, idx) => ({
-                no: idx + 1,
-                publicId: item.public_id || `#${item.id}`,
-                nama: item.nama_lengkap,
-                instansi: item.asal_instansi,
-                bidang: item.bidang_nama || '-',
-                tanggalMulai: item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-',
-                status: item.status,
-              }))
-              await exportTableToPDF({
-                title: 'Ringkasan Eksekutif & Permohonan Magang Terbaru',
-                subtitle: `Kementerian Pertanian — BRMP-PH (Tahun ${rekapYear})`,
-                dateRange: `Tahun ${rekapYear}`,
-                filename: `ringkasan_dashboard_${rekapYear}_${Date.now()}`,
-                columns,
-                data: dataRows,
-              })
-            }}
-            onExportWord={async () => {
-              const columns = [
-                { header: 'No', key: 'no' },
-                { header: 'ID / Public ID', key: 'publicId' },
-                { header: 'Nama Pemohon', key: 'nama' },
-                { header: 'Institusi', key: 'instansi' },
-                { header: 'Bidang', key: 'bidang' },
-                { header: 'Tanggal Pengajuan', key: 'tanggalMulai' },
-                { header: 'Status', key: 'status' },
-              ]
-              const dataRows = recentPengajuans.map((item, idx) => ({
-                no: idx + 1,
-                publicId: item.public_id || `#${item.id}`,
-                nama: item.nama_lengkap,
-                instansi: item.asal_instansi,
-                bidang: item.bidang_nama || '-',
-                tanggalMulai: item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-',
-                status: item.status,
-              }))
-              await exportTableToWord({
-                title: 'Ringkasan Eksekutif & Permohonan Magang Terbaru',
-                subtitle: `Kementerian Pertanian — BRMP-PH (Tahun ${rekapYear})`,
-                dateRange: `Tahun ${rekapYear}`,
-                filename: `ringkasan_dashboard_${rekapYear}_${Date.now()}`,
-                columns,
-                data: dataRows,
-              })
-            }}
-          />
+            {/* Dropdown Tahun Dinamis */}
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                const newY = e.target.value
+                setSelectedYear(newY)
+                if (activePreset === 'tahun-ini') {
+                  handleApplyPreset('tahun-ini', newY)
+                }
+              }}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: '1px solid #d1d5db',
+                backgroundColor: '#ffffff',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: '#374151',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {availableYears.map((yr) => (
+                <option key={yr} value={String(yr)}>
+                  Tahun {yr}
+                </option>
+              ))}
+            </select>
+
+            {/* Tombol Ekspor Terpadu All-in-One */}
+            <ExportButtonGroup
+              filterParams={{
+                startDate,
+                endDate,
+              }}
+              totalRowCount={stats.totalPengajuan}
+              onExportSuccess={(msg) => showToast('success', msg)}
+              onExportError={(msg) => showToast('error', msg)}
+            />
+          </div>
+
+          {/* Quick Date Range Picker Bar (Muncul bila user butuh kustom tanggal spesifik seperti 16 Jan - 09 Feb) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '11px', color: '#64748b' }}>
+            <span>Periode WIB:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value)
+                setActivePreset('custom')
+              }}
+              style={{
+                padding: '3px 6px',
+                borderRadius: '4px',
+                border: '1px solid #cbd5e1',
+                fontSize: '11px',
+                outline: 'none',
+              }}
+            />
+            <span>s.d</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => {
+                setEndDate(e.target.value)
+                setActivePreset('custom')
+              }}
+              style={{
+                padding: '3px 6px',
+                borderRadius: '4px',
+                border: '1px solid #cbd5e1',
+                fontSize: '11px',
+                outline: 'none',
+              }}
+            />
+          </div>
         </div>
       </div>
 

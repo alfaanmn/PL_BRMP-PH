@@ -14,28 +14,61 @@ import type {
   ExportFormat,
 } from '@/types/laporan.types'
 
+import { getInclusiveStartWib, getInclusiveEndWib, getWibParts } from '@/lib/helpers/date-wib.helper'
+
 /**
- * Helper untuk menyusun query filter tanggal yang inklusif dan tidak mendrop data valid
+ * Helper untuk menyusun query filter tanggal yang inklusif zona waktu WIB (+07:00) dan tidak mendrop data valid
  */
 function applyDateFilter(query: any, startDate?: string, endDate?: string) {
   if (startDate && endDate) {
-    const endInclusive = `${endDate}T23:59:59.999Z`
-    const startInclusive = `${startDate}T00:00:00.000Z`
+    const endInclusive = getInclusiveEndWib(endDate)
+    const startInclusive = getInclusiveStartWib(startDate)
     // Mencakup pengajuan yang dibuat pada periode ini ATAU magang yang berlangsung pada periode ini
     return query.or(
       `and(created_at.gte.${startInclusive},created_at.lte.${endInclusive}),and(tanggal_mulai.lte.${endDate},tanggal_selesai.gte.${startDate})`
     )
   } else if (startDate) {
-    const startInclusive = `${startDate}T00:00:00.000Z`
+    const startInclusive = getInclusiveStartWib(startDate)
     return query.or(`created_at.gte.${startInclusive},tanggal_selesai.gte.${startDate}`)
   } else if (endDate) {
-    const endInclusive = `${endDate}T23:59:59.999Z`
+    const endInclusive = getInclusiveEndWib(endDate)
     return query.or(`created_at.lte.${endInclusive},tanggal_mulai.lte.${endDate}`)
   }
   return query
 }
 
 export const laporanService = {
+  /**
+   * Mengambil daftar tahun unik yang memiliki data pengajuan (Dinamis dari database + Tahun berjalan WIB)
+   */
+  async getAvailableYears(client?: any): Promise<{ data: number[]; error: string | null }> {
+    try {
+      const supabase = client || createClient()
+      const { data, error } = await supabase
+        .from('pengajuans')
+        .select('created_at')
+        .not('created_at', 'is', null)
+        .order('created_at', { ascending: false })
+
+      const currentYear = getWibParts().year
+      const yearsSet = new Set<number>([currentYear])
+
+      if (data && Array.isArray(data)) {
+        for (const row of data) {
+          if (row.created_at) {
+            const y = new Date(row.created_at).getFullYear()
+            if (!isNaN(y) && y >= 2020 && y <= currentYear + 1) {
+              yearsSet.add(y)
+            }
+          }
+        }
+      }
+      return { data: Array.from(yearsSet).sort((a, b) => b - a), error: error ? error.message : null }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memuat daftar tahun.'
+      return { data: [getWibParts().year], error: msg }
+    }
+  },
   /**
    * Mengambil daftar master bidang untuk dropdown filter
    */
